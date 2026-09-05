@@ -1,0 +1,9 @@
+{
+  "name": "@app/shared",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "echo \"shared 包直接以 TS 源码被引用，无需构建\""
+  }
+}

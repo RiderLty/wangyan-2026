@@ -1,0 +1,16 @@
+# 依赖与构建产物
+node_modules/
+dist/
+*.tsbuildinfo
+
+# 环境变量（.env.example 例外）
+.env
+.env.local
+
+# 日志
+*.log
+
+# 编辑器
+.idea/
+.vscode/
+.DS_Store

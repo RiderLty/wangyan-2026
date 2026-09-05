@@ -1,0 +1,36 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { HealthController } from './health.controller';
+
+/**
+ * 根模块：聚合各业务模块（论文 4.1.3 模块化设计）
+ * 业务模块按论文小节逐个加入：
+ *   auth(5.2) users notes(5.3) realtime(5.4) teams(5.5)
+ *   share(5.6) versions recycle-bin(5.7) export(5.8)
+ */
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '../../.env'],
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.get('POSTGRES_HOST', 'localhost'),
+        port: Number(config.get('POSTGRES_PORT', 5432)),
+        username: config.get('POSTGRES_USER'),
+        password: config.get('POSTGRES_PASSWORD'),
+        database: config.get('POSTGRES_DB'),
+        // 实体在各业务模块注册后自动加载
+        autoLoadEntities: true,
+        // 开发期自动同步表结构；生产改用迁移（论文 4.3 数据库设计）
+        synchronize: config.get('NODE_ENV', 'development') !== 'production',
+      }),
+    }),
+  ],
+  controllers: [HealthController],
+})
+export class AppModule {}
