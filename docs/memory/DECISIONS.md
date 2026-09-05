@@ -39,6 +39,17 @@
 - 理由：一套脚本管理前后端；packages/shared 放前后端共用的 TS 类型与 DTO，避免接口定义手写两遍对不上；目录结构本身可作为论文 5.1.2 的素材。
 - 影响论文小节：5.1.2
 
+## D-005：开发/部署拓扑（NAS 数据库 + Mac 开发）
+
+- 日期：2026-09-05
+- 背景：原 LXC 容器（NAS 内）根文件系统为 shfs（FUSE）、Docker 存储驱动为 vfs，IO 极慢；用户要求不破坏 NAS 环境；演示仅需 PPT 截图。
+- 选项：LXC 内开发 / 全容器化 / NAS 常驻数据库容器 + Mac 原生开发
+- 决定：**NAS（192.168.3.3）用两条 docker run 部署 postgres:16-alpine(:15432) 与 redis:7-alpine(:16379)，数据根目录 /mnt/user/appdata/wangyan-2026/；Mac mini（192.168.3.177，Apple Silicon）原生跑 Node 开发（无容器）；代码经 NAS 上的 bare 仓库（/mnt/user/storage/Projects/wangyan-2026.git）同步**。
+- 理由：NAS 7×24 在线适合常驻数据库，Mac 开发体验最好；LXC 的 shfs+vfs 组合不适合开发也不适合构建；高位端口因 NAS 已被占用（原生 postgres 5432、redis 6379、neko-master 3000）；数据集中一个目录便于迁移备份，docker rm -f 即完全清除。
+- 附件：部署命令存档于根目录 `nas-db-setup.sh`（⚠️ 含密码，禁止公开）；NAS Docker 24.0.9 无 compose 插件，故不用 compose 部署。
+- 状态：**容器尚未部署**（用户要求手动执行脚本），Mac 工具链（brew/node/pnpm）尚未安装。
+- 影响论文小节：2.5、5.1.1、5.1.3、5.9
+
 ## D-004：目录组织与 Docker 编排方案
 
 - 日期：2026-09-05

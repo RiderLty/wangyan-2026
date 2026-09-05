@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：项目从零开始，尚未初始化代码。下一步：搭建 monorepo 脚手架 + Docker 开发环境（对应大纲 5.1）。
+> 当前状态：脚手架已完成并迁移到 Mac（~/projects/wangyan-2026）。待办：NAS 手动执行 nas-db-setup.sh 部署数据库容器；Mac 装 brew/node/pnpm 后 pnpm install 验证。下一步：5.2 用户认证模块。
 
 ## 状态图例
 
@@ -9,9 +9,9 @@
 ## 第5章 实现进度（主账本）
 
 ### 5.1 开发环境与工具
-- ⬜ 5.1.1 开发环境配置
-- ⬜ 5.1.2 项目目录结构
-- ⬜ 5.1.3 Docker开发环境搭建
+- 🟨 5.1.1 开发环境配置（拓扑已定 D-005：NAS 数据库 + Mac 开发；Mac 工具链未装）
+- ✅ 5.1.2 项目目录结构（pnpm workspace，见 README.md；截图待补）
+- 🟨 5.1.3 Docker开发环境搭建（nas-db-setup.sh 已存档，容器待用户手动部署）
 
 ### 5.2 用户认证模块实现
 - ⬜ 5.2.1 注册功能实现
@@ -64,8 +64,9 @@
 
 ## 待讨论 / 阻塞
 
-- [ ] Markdown 编辑器选型：Tiptap vs Vditor（D-001 待定，需先做对比再定）
-- [ ] ORM 选型：TypeORM vs Prisma（D-002 待定）
+- [ ] NAS：手动执行 nas-db-setup.sh（用户亲自操作，勿自动部署）
+- [ ] Mac：安装 Homebrew + node@22 + pnpm，pnpm install 并验证前后端构建
+- [ ] pnpm-lock.yaml 首次生成后需提交
 
 ## 论文可引用核心代码（随进度补充）
 
