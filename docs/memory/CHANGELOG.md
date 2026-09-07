@@ -1,5 +1,19 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-08] NAS 数据库容器部署与验证（5.1.3 完成）
+
+- 做了什么：
+  - 经用户授权，代为在 NAS（192.168.3.3）执行 nas-db-setup.sh：wangyan-postgres（postgres:16-alpine，:15432）与 wangyan-redis（redis:7-alpine，:16379）均已 up，`--restart unless-stopped`
+  - 数据落在 D-006 新目录 /mnt/user/storage/Projects/wangyan-2026-db-data/{postgres,redis}，已确认有实际数据写入
+  - NAS 侧验证：pg_isready accepting connections ✅、redis-cli PING → PONG ✅
+  - Mac 侧端到端验证（用 workspace 内 pg/ioredis 走 .env 凭据）：PostgreSQL 16.15 连通 + JSONB 查询 OK ✅、Redis PING/SET/GET/DEL roundtrip ✅
+  - 修复 nas-db-setup.sh 验证段：原脚本容器刚起就 pg_isready 必失败且 set -e 会跳过 redis 验证，改为 until 轮询等待
+- 为什么：完成大纲 5.1.3 Docker 开发环境搭建；打通 Mac 开发 → NAS 数据库链路，为 5.2 用户认证模块（TypeORM 建表）铺路
+- 新增依赖：无（验证脚本复用已有 pg / ioredis）
+- 产出素材：无（环境验证，无界面）
+- 遗留问题：
+  - [ ] 本次部署未提交 NAS 本地的容器变更无回滚脚本需求（docker rm -f + 删数据目录即完全清除，运维速查见 nas-db-setup.sh）
+
 ## [2026-09-08] NAS 数据目录变更（D-006）
 
 - 做了什么：
