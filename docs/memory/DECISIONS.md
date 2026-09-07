@@ -47,7 +47,7 @@
 - 决定：**NAS（192.168.3.3）用两条 docker run 部署 postgres:16-alpine(:15432) 与 redis:7-alpine(:16379)，数据根目录 /mnt/user/appdata/wangyan-2026/；Mac mini（192.168.3.177，Apple Silicon）原生跑 Node 开发（无容器）；代码经 NAS 上的 bare 仓库（/mnt/user/storage/Projects/wangyan-2026.git）同步**。
 - 理由：NAS 7×24 在线适合常驻数据库，Mac 开发体验最好；LXC 的 shfs+vfs 组合不适合开发也不适合构建；高位端口因 NAS 已被占用（原生 postgres 5432、redis 6379、neko-master 3000）；数据集中一个目录便于迁移备份，docker rm -f 即完全清除。
 - 附件：部署命令存档于根目录 `nas-db-setup.sh`（⚠️ 含密码，禁止公开）；NAS Docker 24.0.9 无 compose 插件，故不用 compose 部署。
-- 状态：**容器尚未部署**（用户要求手动执行脚本），Mac 工具链（brew/node/pnpm）尚未安装。
+- 状态：**容器尚未部署**（用户要求手动执行脚本），Mac 工具链（brew/node/pnpm）尚未安装。数据目录变更见 D-006。
 - 影响论文小节：2.5、5.1.1、5.1.3、5.9
 
 ## D-004：目录组织与 Docker 编排方案
@@ -63,3 +63,13 @@
   - Docker：单份 `docker-compose.yml` 编排 4 服务（postgres / redis / server / web），server 与 web 各写多阶段构建 Dockerfile，web 生产镜像内用 nginx 托管；开发期仅容器化 db/redis，前后端本地跑热重载。
 - 理由：模块目录与论文小节一一对应，"论文可引用代码"的映射天然成立；compose 单文件配合多阶段构建即可同时满足开发与"一键启动"演示（论文 5.9）。
 - 影响论文小节：4.1.1、4.1.3、5.1.2、5.1.3、5.9、附录B
+
+## D-006：NAS 数据库数据目录变更（修订 D-005）
+
+- 日期：2026-09-08
+- 背景：D-005 原定数据根目录为 `/mnt/user/appdata/wangyan-2026/`；用户指定改为 `/mnt/user/storage/Projects/wangyan-2026-db-data/`，与 NAS 上的项目 bare 仓库（/mnt/user/storage/Projects/wangyan-2026.git）同盘同区，项目相关数据集中一处管理。
+- 选项：维持原 appdata 目录 / 移至 storage/Projects 下
+- 决定：数据根目录改为 **`/mnt/user/storage/Projects/wangyan-2026-db-data/`**（内含 postgres/、redis/ 两个子目录）。
+- 理由：与代码仓库同处一个 Projects 目录，项目资产（代码 + 数据）一体化，备份与"清干净重来"的边界更清晰；不改变 D-005 的其余拓扑（NAS 容器 + Mac 开发、高位端口不变）。
+- 影响文件：nas-db-setup.sh、README.md
+- 影响论文小节：2.5、5.1.3（部署描述按新目录撰写）

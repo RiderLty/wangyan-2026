@@ -1,5 +1,17 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-08] NAS 数据目录变更（D-006）
+
+- 做了什么：
+  - 按用户要求，NAS 数据库容器数据目录由 `/mnt/user/appdata/wangyan-2026/` 改为 `/mnt/user/storage/Projects/wangyan-2026-db-data/`（与 bare 仓库同在 storage/Projects 下）
+  - 同步修改：nas-db-setup.sh（6 处）、README.md（1 处）
+  - 新增决策 D-006（修订 D-005 的数据目录，其余拓扑不变）
+- 为什么：项目代码与数据集中到 Projects 目录，备份/清除边界更清晰（用户指定）
+- 新增依赖：无
+- 产出素材：无
+- 遗留问题：
+  - [ ] NAS 上执行 nas-db-setup.sh（用户手动，尚未部署容器，对应 5.1.3）
+
 ## [2026-09-07] 环境搭建收尾：构建复验 + 提交 pnpm-lock.yaml
 
 - 做了什么：
