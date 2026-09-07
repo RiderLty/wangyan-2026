@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：脚手架已完成并迁移到 Mac（~/projects/wangyan-2026）。待办：NAS 手动执行 nas-db-setup.sh 部署数据库容器；Mac 装 brew/node/pnpm 后 pnpm install 验证。下一步：5.2 用户认证模块。
+> 当前状态：环境搭建完成（node22/pnpm11，install + 前后端 build 复验通过，pnpm-lock.yaml 已提交）。下一步：5.2 用户认证模块；NAS 容器待用户手动部署（5.1.3）。
 
 ## 状态图例
 
@@ -9,7 +9,7 @@
 ## 第5章 实现进度（主账本）
 
 ### 5.1 开发环境与工具
-- 🟨 5.1.1 开发环境配置（拓扑已定 D-005：NAS 数据库 + Mac 开发；Mac 工具链未装）
+- ✅ 5.1.1 开发环境配置（拓扑 D-005；Mac node@22 + pnpm@11.25 已装，install/build 验证通过）
 - ✅ 5.1.2 项目目录结构（pnpm workspace，见 README.md；截图待补）
 - 🟨 5.1.3 Docker开发环境搭建（nas-db-setup.sh 已存档，容器待用户手动部署）
 
@@ -65,8 +65,6 @@
 ## 待讨论 / 阻塞
 
 - [ ] NAS：手动执行 nas-db-setup.sh（用户亲自操作，勿自动部署）
-- [ ] Mac：安装 Homebrew + node@22 + pnpm，pnpm install 并验证前后端构建
-- [ ] pnpm-lock.yaml 首次生成后需提交
 
 ## 论文可引用核心代码（随进度补充）
 

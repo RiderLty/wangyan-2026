@@ -1,5 +1,31 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-07] 环境搭建收尾：构建复验 + 提交 pnpm-lock.yaml
+
+- 做了什么：
+  - 复验环境：node 22.22.0 / pnpm 11.25.0，`pnpm install` 幂等通过（662 包，无需重装）
+  - 复验构建：`pnpm -r build` —— apps/server（nest build）✅、apps/web（tsc --noEmit + vite build，1468 模块）✅、packages/shared（纯 TS 源码引用，无需构建）✅
+  - 提交 pnpm-lock.yaml（连同上一次会话遗留的 pnpm-workspace.yaml allowBuilds 配置与记忆三件套更新）
+- 为什么：5.1.1 开发环境配置收尾；lockfile 入库保证依赖可复现（大纲 5.1.1）
+- 新增依赖：无
+- 产出素材：无（环境验证，无界面）
+- 遗留问题：
+  - [ ] NAS 上执行 nas-db-setup.sh（用户手动，尚未部署容器，对应 5.1.3）
+
+## [2026-09-06] Mac 工具链验证：pnpm install 排错
+
+- 做了什么：
+  - 复现 `pnpm install` 报错并定位：真实错误只有一个——pnpm v10+ 的 `ERR_PNPM_IGNORED_BUILDS`（默认禁止依赖跑安装脚本），被拦下的是 esbuild / leveldown / @nestjs/core 三个包；其余为 npmmirror 慢导致的重试 WARN（自动恢复）与 level 旧包链的 deprecated 警告（来自 y-websocket 的 optional 依赖 y-leveldb，无害）
+  - 修复：填 `pnpm-workspace.yaml` 的 `allowBuilds`（pnpm 自动生成的占位原本是 "set this to true or false"）。注意 pnpm 11 已不读 package.json 的 `pnpm.onlyBuiltDependencies` 字段，配置必须放 workspace yaml
+  - 重新 install 成功：662 个包，leveldown 原生模块经 node-gyp 本机编译通过（需 Xcode CLT，已具备）
+  - 验证 `pnpm build`：apps/server（nest build）✅、apps/web（tsc --noEmit + vite build，1468 模块）✅
+- 为什么：PROGRESS 待办"Mac 工具链 + pnpm install 验证"，属大纲 5.1.1 开发环境配置
+- 新增依赖：无（仅批准已有依赖的构建脚本，allowBuilds 是配置不是依赖）
+- 产出素材：无（环境验证，无界面）
+- 遗留问题：
+  - [ ] pnpm-lock.yaml 已生成，待提交（用户确认后 git commit）
+  - [ ] NAS 上执行 nas-db-setup.sh（用户手动，尚未部署容器）
+
 ## [2026-09-05] 脚手架搭建 + 开发环境定稿 + Mac 迁移
 
 - 做了什么：
