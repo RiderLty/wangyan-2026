@@ -1,5 +1,19 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-08] 数据库设计稿（D-007，未建表）
+
+- 做了什么：
+  - 通读大纲（4.3 点名 7 表、3.3 七模块、4.5 RBAC、5.x 实现）与服务端现状（空脚手架，无实体约束）
+  - 与用户确认 4 项核心决策：新增 folders 表 / JSONB 快照+yjs_updates 增量表 / 软删+recycle_bin 元数据 / 版本手动+关键事件快照
+  - 第二轮细化：拆出 team_invitations、枚举用 varchar+CHECK、建 4 个视图、范式与反规范化逐条分析
+  - 用户增项取舍：**加** tags+note_tags、attachments；**不加** audit_logs、refresh_tokens 设备管理（如实记录）
+  - 产出 docs/diagrams/database-design.md：13 基表 + 4 视图 + 索引 + Redis 键 + RBAC 落表 + 扩展预留
+- 为什么：5.2 编码前定全库结构，TypeORM 实体与附录 A DDL 的事实来源（论文 4.3）
+- 新增依赖：无（纯设计，未写代码）
+- 产出素材：docs/diagrams/database-design.md（兼作 4.3.1/4.3.9 ER 图文字底稿，用户据此画图）
+- 遗留问题：
+  - [ ] 设计稿待用户过目确认后，才在 5.2 起按实体落地建表（用户要求：不许直接写数据库）
+
 ## [2026-09-08] NAS 数据库容器部署与验证（5.1.3 完成）
 
 - 做了什么：

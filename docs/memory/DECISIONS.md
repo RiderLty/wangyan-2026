@@ -73,3 +73,20 @@
 - 理由：与代码仓库同处一个 Projects 目录，项目资产（代码 + 数据）一体化，备份与"清干净重来"的边界更清晰；不改变 D-005 的其余拓扑（NAS 容器 + Mac 开发、高位端口不变）。
 - 影响文件：nas-db-setup.sh、README.md
 - 影响论文小节：2.5、5.1.3（部署描述按新目录撰写）
+
+## D-007：数据库设计总案（13 表 + 4 视图）
+
+- 日期：2026-09-08
+- 背景：进入 5.2 前需定全库表结构。大纲 4.3 点名 7 张表（users/teams/team_members/notes/note_versions/share_links/recycle_bin）为实现底线，另有 4 个设计缺口需决策。
+- 选项与决定（均经用户确认）：
+  1. 文件夹：新增 folders 表（自引用嵌套），支撑 5.3.3
+  2. Yjs 与 JSONB 共存：notes.content 存 ProseMirror 快照 JSONB（满足"正文 JSONB"锁定约束，供列表/搜索/导出/版本） + yjs_updates 表存 CRDT 二进制增量（bytea，追加式），定时合并回写快照——Y-Websocket 持久化的标准做法
+  3. 回收站：notes.deleted_at 软删标记 + recycle_bin 只记删除元数据（谁/何时/何时到期），笔记本体不搬家，保住外键引用
+  4. 版本策略：手动 + 关键事件快照（回滚前、编辑会话结束且有变更），不做纯定时
+  5. 颗粒度：team_invitations 从 team_members 拆出（邀请≠成员，两个生命周期）；枚举一律 varchar+CHECK（不用 PG enum，扩展友好）
+  6. 增项：加 tags+note_tags（标签双维度分类）与 attachments（附件，文件本体落盘只存元数据）；**不加**审计日志、登录设备管理（用户明确取舍）
+  7. 视图：v_active_notes / v_team_overview / v_recycle_bin_items / v_note_latest_version，只读统计走视图、CRUD 走基表
+  8. 受控反规范化 4 处（content_text 派生列、recycle_bin 快照、版本快照、owner 双重表达），均记录理由，论文 4.3 主动交代
+- 理由：表结构与大纲 4.3 逐节对齐保证论文-实现一致；Yjs 增量与快照分离兼顾实时性与查询性能；邀请/成员拆表符合生命周期建模；uuid 主键 + varchar+CHECK 为后续扩展留余地。
+- 设计稿：docs/diagrams/database-design.md（表结构/范式分析/索引/视图/Redis 键/RBAC 落表）
+- 影响论文小节：4.3 全部、4.4.2、4.5、5.3.3、5.5.2、附录A
