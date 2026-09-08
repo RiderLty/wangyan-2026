@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：环境搭建完成（5.1 ✅）；数据库设计稿已完成（13 表+4 视图，docs/diagrams/database-design.md，D-007），待用户确认后再落地实体。下一步：确认设计 → 5.2 用户认证。
+> 当前状态：5.2 用户认证模块完成（注册/登录/JWT/守卫/登出全链路已在 NAS 真实库验证，10 条用例全过，3 张截图）。下一步：5.3 个人笔记管理（Tiptap 编辑器 + folders + 搜索）。
 
 ## 状态图例
 
@@ -14,10 +14,10 @@
 - ✅ 5.1.3 Docker开发环境搭建（NAS postgres:15432 / redis:16379 已部署，Mac 侧 .env 连通验证通过 2026-09-08）
 
 ### 5.2 用户认证模块实现
-- ⬜ 5.2.1 注册功能实现
-- ⬜ 5.2.2 登录与JWT Token生成
-- ⬜ 5.2.3 路由守卫与身份校验
-- ⬜ 5.2.4 界面展示与核心代码
+- ✅ 5.2.1 注册功能实现（唯一性校验+bcrypt；用例 AUTH-01~05）
+- ✅ 5.2.2 登录与JWT Token生成（jti+Redis 黑名单登出；用例 AUTH-06~07）
+- ✅ 5.2.3 路由守卫与身份校验（JwtAuthGuard+RequireAuth+axios 拦截器；用例 AUTH-08~10）
+- ✅ 5.2.4 界面展示与核心代码（截图 5.2.1/5.2.2/5.2.4；论文可引用：auth.service.ts、jwt.strategy.ts、AuthContext.tsx）
 
 ### 5.3 个人笔记管理模块实现
 - ⬜ 5.3.1 笔记的创建与编辑
@@ -64,8 +64,8 @@
 
 ## 待讨论 / 阻塞
 
-- [ ] 数据库设计稿（D-007）待用户确认，确认前不许写实体/建表（用户明确要求）
+（无）
 
 ## 论文可引用核心代码（随进度补充）
 
-（暂无）
+- 5.2 认证：`apps/server/src/modules/auth/auth.service.ts`（注册/登录/黑名单登出）、`strategies/jwt.strategy.ts`、`apps/web/src/auth/AuthContext.tsx`

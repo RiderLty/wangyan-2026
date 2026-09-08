@@ -1,39 +1,43 @@
-import { Layout, Typography, Steps } from 'antd';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Spin } from 'antd';
+import type { ReactNode } from 'react';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
-const { Header, Content, Footer } = Layout;
-const { Title, Paragraph } = Typography;
+/** 路由守卫（论文 5.2.3）：未登录访问受保护页 → 重定向 /login */
+function RequireAuth({ children }: { children: ReactNode }) {
+  const { user, initializing } = useAuth();
+  const location = useLocation();
+  if (initializing) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Spin size="large" tip="正在验证登录状态..." />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  return <>{children}</>;
+}
 
-/** 脚手架验证页：确认前后端联调链路后，按论文模块逐步替换（5.2~5.8） */
+/** 路由表：公开页（登录/注册）+ 受保护页（业务） */
 export default function App() {
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <Typography.Title level={4} style={{ color: '#fff', margin: 0 }}>
-          在线Markdown笔记编辑与管理平台
-        </Typography.Title>
-      </Header>
-      <Content style={{ padding: '24px 48px' }}>
-        <Title level={3}>脚手架搭建成功 🎉</Title>
-        <Paragraph type="secondary">
-          React 18 + TypeScript + Ant Design 前端已就绪，API 通过 Vite 代理至 NestJS
-          后端（/api），WebSocket 代理至 /ws。
-        </Paragraph>
-        <Steps
-          direction="vertical"
-          size="small"
-          current={1}
-          items={[
-            { title: '脚手架搭建', description: 'monorepo + Docker 编排' },
-            { title: '用户认证模块（5.2）', description: '注册 / 登录 / JWT' },
-            { title: '个人笔记管理（5.3）', description: 'Tiptap 编辑器 + 文件夹 + 搜索' },
-            { title: '实时协作编辑（5.4）', description: 'Yjs + WebSocket + 多光标' },
-            { title: '团队协作（5.5）', description: '团队 / 邀请 / 权限' },
-            { title: '分享 / 版本 / 回收站 / 导出（5.6~5.8）' },
-            { title: '部署与测试（5.9 / 第6章）' },
-          ]}
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <HomePage />
+            </RequireAuth>
+          }
         />
-      </Content>
-      <Footer style={{ textAlign: 'center' }}>毕业论文配套系统 · 2026</Footer>
-    </Layout>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthProvider>
   );
 }

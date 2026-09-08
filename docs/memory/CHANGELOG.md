@@ -1,5 +1,21 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-08] 5.2 用户认证模块完成（设计稿已获用户确认）
+
+- 做了什么：
+  - 服务端：Redis 全局模块（ioredis 连 NAS）；users 模块（User 实体对齐 database-design.md §3.1，`select:false` 隐藏密码列 + toSafe 脱敏）；auth 模块（注册/登录/登出 + JwtStrategy + JwtAuthGuard），TypeORM `uuidExtension:'pgcrypto'` 用 PG16 内置 gen_random_uuid()
+  - 认证模型决策：单 JWT（7d）+ jti，登出写 Redis 黑名单 `auth:denylist:{jti}`（TTL=token 剩余寿命），不做 refresh_token 双令牌（毕业设计复杂度收益比，见 auth.service.ts 注释）
+  - 前端：/login /register 页（Antd Form 前后端同规则校验）+ AuthContext + axios 拦截器（Bearer 注入 / 401 统一跳登录）+ 路由守卫 RequireAuth
+  - 验证：curl 走通 10 条用例（注册/重复 409/弱密码 400/登录/守卫 401/登出拉黑），NAS 库与 Redis 键均确认；Edge headless 截图 3 张存 docs/assets/
+  - 产出 docs/api.md（认证分组）与 docs/testing/5.2-auth-tests.md（AUTH-01~10 全过）
+- 为什么：对应大纲 5.2.1~5.2.4；数据库设计稿经用户"确认"后才动工
+- 新增依赖：@types/passport-jwt（dev，passport-jwt 已有的类型声明包）；其余全部使用脚手架已声明依赖（bcryptjs/@nestjs/jwt/passport 等），零新增运行时依赖
+- 产出素材：docs/assets/5.2.1-register.png、5.2.2-login.png、5.2.4-home.png；docs/testing/5.2-auth-tests.md；docs/api.md
+- 遗留问题：
+  - [ ] vite build 754KB chunk 警告（antd 体积），5.9 打包优化时可用 manualChunks 分包，不影响功能
+  - [ ] 测试遗留账号 lty@wangyan.test（username"另一个人"）可从库中删除；演示账号 demo@wangyan.test 保留
+  - [ ] 实现细节：登录用户名"凌天"（2 字符）被 MinLength(3) 正确拦截——中文用户名按字符数计，前端规则一致
+
 ## [2026-09-08] 数据库设计稿（D-007，未建表）
 
 - 做了什么：
