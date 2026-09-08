@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：5.2 用户认证模块完成（注册/登录/JWT/守卫/登出全链路已在 NAS 真实库验证，10 条用例全过，3 张截图）。下一步：5.3 个人笔记管理（Tiptap 编辑器 + folders + 搜索）。
+> 当前状态：5.3 个人笔记管理完成（folders/notes/tags/note_tags/recycle_bin 五表落地 + Tiptap 三栏工作台 + 搜索，26 条用例全过，4 张截图）。下一步：5.4 实时协作编辑（WebSocket 服务端 + Yjs 前端集成 + 多光标）。
 
 ## 状态图例
 
@@ -20,11 +20,11 @@
 - ✅ 5.2.4 界面展示与核心代码（截图 5.2.1/5.2.2/5.2.4；论文可引用：auth.service.ts、jwt.strategy.ts、AuthContext.tsx）
 
 ### 5.3 个人笔记管理模块实现
-- ⬜ 5.3.1 笔记的创建与编辑
-- ⬜ 5.3.2 Markdown实时预览
-- ⬜ 5.3.3 笔记分类与文件夹管理
-- ⬜ 5.3.4 笔记搜索功能
-- ⬜ 5.3.5 界面展示与核心代码
+- ✅ 5.3.1 笔记的创建与编辑（notes CRUD + 800ms 防抖自动保存 + 软删进回收站；用例 NOTE-01~08）
+- ✅ 5.3.2 Markdown实时预览（Tiptap input rules 即时渲染，见 D-008-2；界面见 5.3.2 截图）
+- ✅ 5.3.3 笔记分类与文件夹管理（folders 树 + tags 双维度；用例 NOTE-13~22）
+- ✅ 5.3.4 笔记搜索功能（content_text ILIKE + 通配符转义 + ?q= 深链；用例 NOTE-23~26）
+- ✅ 5.3.5 界面展示与核心代码（截图 5.3.1~5.3.4 四张；论文可引用：notes.service.ts、prosemirror.util.ts、NoteEditorPanel.tsx、HomePage.tsx）
 
 ### 5.4 实时协作编辑模块实现
 - ⬜ 5.4.1 WebSocket服务端实现
@@ -69,3 +69,4 @@
 ## 论文可引用核心代码（随进度补充）
 
 - 5.2 认证：`apps/server/src/modules/auth/auth.service.ts`（注册/登录/黑名单登出）、`strategies/jwt.strategy.ts`、`apps/web/src/auth/AuthContext.tsx`
+- 5.3 笔记管理：`apps/server/src/modules/notes/notes.service.ts`（CRUD/搜索/越权防护）、`prosemirror.util.ts`（JSONB→纯文本派生）、`folder.entity.ts`（自引用+唯一索引）、`apps/web/src/components/notes/NoteEditorPanel.tsx`（Tiptap 集成）、`apps/web/src/pages/HomePage.tsx`（三栏工作台+防抖自动保存）

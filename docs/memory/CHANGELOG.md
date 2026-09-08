@@ -1,5 +1,25 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-08] 5.3 个人笔记管理模块完成
+
+- 做了什么：
+  - 服务端：modules/notes/ 落地 5 个实体（Note/Folder/Tag/NoteTag/RecycleBin），与 database-design.md 逐字段对应，物理外键 + CHECK（chk_notes_team_folder/visibility）+ 索引（idx_notes_owner 等）经 NAS 真实库 synchronize 验证落库
+  - 接口：notes CRUD（软删写 recycle_bin）、folders 树管理（同级重名/防成环/非空删除三重校验）、tags + 打标（复合主键幂等）、GET /notes?keyword= 搜索（content_text ILIKE + 通配符转义）；越权一律 404
+  - 前端：HomePage 改为三栏工作台（文件夹树+标签/搜索 | 笔记列表 | Tiptap 编辑器），800ms 防抖自动保存四态状态栏，URL 深链 ?q= / ?note=
+  - 测试：26 条用例全过（含越权/注入/幂等/中文检索），截图 4 张（Edge headless，临时 /__dev_login 路由用后已删并 grep 验证）
+  - 设计稿回写两处实现调整（表达式索引→服务层查重；取消 gin_notes_search→ILIKE），见 D-008
+- 为什么：对应大纲 5.3.1~5.3.5；表结构按 D-007 设计稿，搜索策略调整见 D-008
+- 新增依赖：
+  - @ant-design/icons@^5.6.1（antd5 配套图标；pnpm 严格模式必须显式声明传递依赖）
+  - @tiptap/extension-placeholder@^2.8.0（空文档占位提示）
+  - 安装波折：npmmirror 两次网络超时，第三次成功；icons 曾误装 v6，改 pin ^5 对齐 antd5
+- 产出素材：docs/assets/5.3.1-note-edit.png、5.3.2-realtime-preview.png、5.3.3-folders.png、5.3.4-search.png；docs/testing/5.3-notes-tests.md（NOTE-01~26）；docs/api.md 笔记分组补全
+- 遗留问题：
+  - [ ] vite 1.3MB chunk 警告（antd+tiptap），5.9 打包时 manualChunks 分包
+  - [ ] notes.team_id 暂无物理外键（teams 实体 5.5 落地时补建），服务端恒写 NULL 不受影响
+  - [ ] 搜索为 ILIKE 无索引，数据量大后可考虑 pg_trgm 或 zhparser（论文 7.3 素材）
+  - [ ] 演示数据已 seed（毕业论文/课程学习文件夹 + 3 笔记 + 2 标签），测试表附录有清单
+
 ## [2026-09-08] 5.2 用户认证模块完成（设计稿已获用户确认）
 
 - 做了什么：

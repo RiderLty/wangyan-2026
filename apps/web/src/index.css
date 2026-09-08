@@ -8,3 +8,245 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
+
+/* ---------- 工作台三栏布局（论文 5.3.5 界面） ---------- */
+.side-panel {
+  padding: 12px !important;
+  overflow-y: auto;
+  border-right: 1px solid #f0f0f0;
+}
+
+.panel-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+  padding-inline: 4px;
+}
+
+.folder-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding-right: 4px;
+}
+
+.folder-node-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-node-more {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.ant-tree-node-content-wrapper:hover .folder-node-more {
+  opacity: 1;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  padding-inline: 4px;
+}
+
+.tag-delete-dot {
+  color: #999;
+  margin-right: 2px;
+  font-size: 11px;
+}
+
+/* ---------- 中栏笔记列表 ---------- */
+.note-list-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px;
+}
+
+.note-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.note-list-loading {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.note-item {
+  cursor: pointer;
+  border-radius: 6px;
+  padding-block: 6px !important;
+  padding-inline: 8px !important;
+}
+
+.note-item:hover {
+  background: #f5f5f5;
+}
+
+.note-item-active {
+  background: #e6f4ff !important;
+}
+
+.note-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ---------- 右栏编辑器 ---------- */
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 32px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.editor-empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editor-header .ant-input {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.save-status {
+  font-size: 12px;
+  color: #8c8c8c;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.save-status-dirty {
+  color: #faad14;
+}
+
+.save-status-error {
+  color: #ff4d4f;
+}
+
+.editor-tags {
+  padding-block: 4px 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.editor-toolbar {
+  padding-block: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+
+.editor-content {
+  flex: 1;
+  padding-block: 16px;
+}
+
+.editor-meta {
+  font-size: 12px !important;
+  margin-bottom: 0 !important;
+}
+
+/* ---------- ProseMirror 正文排版（5.3.2 实时预览的渲染样式） ---------- */
+.editor-content .ProseMirror {
+  outline: none;
+  min-height: 50vh;
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.editor-content .ProseMirror p {
+  margin-block: 0.5em;
+}
+
+.editor-content .ProseMirror h1 {
+  font-size: 1.7em;
+  font-weight: 700;
+  margin-block: 0.6em 0.4em;
+}
+
+.editor-content .ProseMirror h2 {
+  font-size: 1.4em;
+  font-weight: 700;
+  margin-block: 0.6em 0.4em;
+}
+
+.editor-content .ProseMirror h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin-block: 0.5em 0.3em;
+}
+
+.editor-content .ProseMirror ul,
+.editor-content .ProseMirror ol {
+  padding-left: 1.4em;
+  margin-block: 0.5em;
+}
+
+.editor-content .ProseMirror blockquote {
+  border-left: 3px solid #d9d9d9;
+  padding-left: 12px;
+  color: #595959;
+  margin-block: 0.6em;
+}
+
+.editor-content .ProseMirror pre {
+  background: #f6f6f6;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+.editor-content .ProseMirror code {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: #f6f6f6;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.editor-content .ProseMirror pre code {
+  background: none;
+  padding: 0;
+}
+
+.editor-content .ProseMirror hr {
+  border: none;
+  border-top: 1px solid #e8e8e8;
+  margin-block: 1em;
+}
+
+/* Placeholder 扩展（空文档提示） */
+.editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #bbb;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

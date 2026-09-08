@@ -5,6 +5,7 @@ import { HealthController } from './health.controller';
 import { RedisModule } from './common/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { NotesModule } from './modules/notes/notes.module';
 
 /**
  * 根模块：聚合各业务模块（论文 4.1.3 模块化设计）
@@ -38,6 +39,7 @@ import { UsersModule } from './modules/users/users.module';
     RedisModule,
     UsersModule,
     AuthModule,
+    NotesModule,
   ],
   controllers: [HealthController],
 })

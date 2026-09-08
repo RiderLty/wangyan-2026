@@ -93,8 +93,9 @@ notes 1──1 recycle_bin       （一篇笔记至多一条回收站记录）
 | created_at / updated_at | timestamptz | NOT NULL | |
 
 约束：`UNIQUE (owner_id, parent_id, name)`。
-⚠️ 实现细节：PG 唯一约束对 NULL 不去重（同一人可建多个同名根文件夹），
-需用函数唯一索引 `UNIQUE INDEX ON folders (owner_id, COALESCE(parent_id, '00000000-0000-0000-0000-000000000000'::uuid), name)`。
+⚠️ 实现调整（2026-09-08，5.3 落地时）：typeorm 0.3.31 装饰器已不支持表达式索引，
+故建普通复合唯一索引（覆盖 parent_id 非空场景）；"根级 NULL 不去重"的边缘场景
+由 FoldersService 在创建/改名/移动前显式查重兜底（见 folders.service.ts assertNameAvailable）。
 
 ### 3.3 teams（团队表，论文 4.3.3）
 
@@ -281,16 +282,16 @@ CHECK 约束：`team_id IS NULL OR folder_id IS NULL`（团队笔记无个人文
 | idx_notes_owner | notes(owner_id, deleted_at) | 个人笔记列表（最高频） |
 | idx_notes_team | notes(team_id, deleted_at) | 团队笔记列表 |
 | idx_notes_folder | notes(folder_id) | 文件夹内笔记 |
-| gin_notes_search | notes USING GIN (to_tsvector('simple', title \|\| ' ' \|\| content_text)) | 全文检索（5.3.4） |
 | idx_yjs_note | yjs_updates(note_id, id) | CRDT 增量按序回放 |
 | idx_versions_note | note_versions(note_id, version_no DESC) | 版本列表 |
 | idx_share_note | share_links(note_id) | 笔记的分享链接列表 |
 | idx_recycle_expires | recycle_bin(expires_at) | 定时清理扫描 |
 | uq 团队邀请 | team_invitations(team_id, invitee_email) | 防重复邀请 |
 
-> 中文检索说明（诚实原则）：'simple' 分词器对中文无词级切分，5.3.4 实现为
-> tsvector 全文 + ILIKE '%kw%' 兜底的组合；zhparser 中文分词插件列入 7.3 改进方向，
-> 论文里如实写，不吹。
+> 中文检索说明（诚实原则，5.3.4 落地确认）：'simple' 分词器对中文无词级切分，
+> tsvector 对中文子串匹配基本无效，故 5.3.4 实现直接采用 content_text 的
+> ILIKE '%kw%'（通配符转义），GIN/tsvector 不再引入；zhparser 中文分词列入 7.3 改进方向。
+> 设计稿中的 gin_notes_search 索引随之取消，论文 4.3/5.3.4 按实际实现表述。
 
 ---
 
