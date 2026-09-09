@@ -135,12 +135,9 @@ export default function HomePage() {
     }
   }, [refreshNotes]);
 
-  const scheduleSave = (patch: { title?: string; content?: Record<string, unknown> }) => {
+  const scheduleSave = (patch: { title?: string }) => {
     // 空标题不落库（服务端 MinLength(1)），界面显示"未命名笔记"占位
-    if (patch.title !== undefined && !patch.title.trim()) {
-      delete patch.title;
-      if (Object.keys(patch).length === 0) return;
-    }
+    if (patch.title !== undefined && !patch.title.trim()) return;
     pendingRef.current = { ...pendingRef.current, ...patch };
     setSaveStatus('pending');
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -368,8 +365,8 @@ export default function HomePage() {
             noteTags={noteTags}
             allTags={tags}
             saveStatus={saveStatus}
+            // 5.4 起正文由 Yjs 协作同步、服务端合并回写；自动保存仅覆盖标题
             onTitleChange={(t) => scheduleSave({ title: t })}
-            onContentChange={(json) => scheduleSave({ content: json })}
             onAttachTag={(tagId) => {
               if (!activeNote) return;
               void attachNoteTag(activeNote.id, tagId).then((r) => {

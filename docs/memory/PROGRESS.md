@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：5.3 个人笔记管理完成（folders/notes/tags/note_tags/recycle_bin 五表落地 + Tiptap 三栏工作台 + 搜索，26 条用例全过，4 张截图）。下一步：5.4 实时协作编辑（WebSocket 服务端 + Yjs 前端集成 + 多光标）。
+> 当前状态：5.4 实时协作编辑完成（y-websocket 服务端 + 增量日志/快照持久化 + 多光标 + CRDT 并发合并，14 条用例全过，3 张截图）。下一步：5.5 团队协作模块（teams/team_members/team_invitations + RBAC）。
 
 ## 状态图例
 
@@ -27,11 +27,11 @@
 - ✅ 5.3.5 界面展示与核心代码（截图 5.3.1~5.3.4 四张；论文可引用：notes.service.ts、prosemirror.util.ts、NoteEditorPanel.tsx、HomePage.tsx）
 
 ### 5.4 实时协作编辑模块实现
-- ⬜ 5.4.1 WebSocket服务端实现
-- ⬜ 5.4.2 Yjs前端集成
-- ⬜ 5.4.3 多用户光标同步
-- ⬜ 5.4.4 冲突合并与一致性保证
-- ⬜ 5.4.5 界面展示与核心代码
+- ✅ 5.4.1 WebSocket服务端实现（y-websocket setupWSConnection 挂 Nest HTTP server，/ws/:noteId，握手 JWT+归属校验；用例 COLLAB-01~04）
+- ✅ 5.4.2 Yjs前端集成（Collaboration 扩展 + WebsocketProvider，正文改由 Yjs 驱动、服务端会话结束合并回写快照；用例 COLLAB-05~10）
+- ✅ 5.4.3 多用户光标同步（CollaborationCursor + awareness，在线人数/光标姓名标签；用例 COLLAB-12~14）
+- ✅ 5.4.4 冲突合并与一致性保证（Node 双客户端并发编辑收敛验证 A===B；防误清保护；用例 COLLAB-11）
+- ✅ 5.4.5 界面展示与核心代码（截图 5.4.2/5.4.3/5.4.4；论文可引用：collaboration.persistence.ts、realtime.service.ts、yjs-convert.ts、NoteEditorPanel.tsx）
 
 ### 5.5 团队协作模块实现
 - ⬜ 5.5.1 团队的创建与管理
@@ -70,3 +70,4 @@
 
 - 5.2 认证：`apps/server/src/modules/auth/auth.service.ts`（注册/登录/黑名单登出）、`strategies/jwt.strategy.ts`、`apps/web/src/auth/AuthContext.tsx`
 - 5.3 笔记管理：`apps/server/src/modules/notes/notes.service.ts`（CRUD/搜索/越权防护）、`prosemirror.util.ts`（JSONB→纯文本派生）、`folder.entity.ts`（自引用+唯一索引）、`apps/web/src/components/notes/NoteEditorPanel.tsx`（Tiptap 集成）、`apps/web/src/pages/HomePage.tsx`（三栏工作台+防抖自动保存）
+- 5.4 实时协作：`apps/server/src/modules/realtime/collaboration.persistence.ts`（增量回放/播种/合并回写/压缩/防误清）、`realtime.service.ts`（upgrade 握手鉴权）、`yjs-convert.ts`（PM JSON→Yjs 播种）、`apps/web/src/components/notes/NoteEditorPanel.tsx`（Collaboration+Cursor+awareness）

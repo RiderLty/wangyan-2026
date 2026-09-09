@@ -1,5 +1,25 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-09] 5.4 实时协作编辑模块完成
+
+- 做了什么：
+  - 服务端 modules/realtime/：yjs_updates 实体（bigserial+bytea 追加日志）、CollaborationPersistence（bindState 回放/播种 + 2s 缓冲合并入库 + writeState 合并回写快照/增量压缩/防误清保护）、RealtimeService（手动挂载 ws upgrade 到 Nest HTTP server，握手 JWT+归属校验，复用 AuthModule 的 JwtModule）
+  - 转换层：yjs-convert.ts 按 y-prosemirror sync-plugin 的映射实现 schema-free 的 PM JSON→Y.XmlFragment 播种（官方 prosemirrorJSONToYXmlFragment 需要 PM Schema）；回写方向用官方 yXmlFragmentToProsemirrorJSON
+  - 前端：NoteEditorPanel 重构为协作驱动（Collaboration+CollaborationCursor+WebsocketProvider，StarterKit history:false 改用 Yjs UndoManager，会话用 useEffect 管理生命周期），在线人数+连接状态 UI，协作光标 CSS
+  - 验证：Node 双客户端 4 断言全过（播种/并发收敛/awareness/回写压缩）；WS 越权 401；双浏览器窗口多光标截图（CDP 驱动真实光标）
+- 为什么：对应大纲 5.4.1~5.4.5；架构按 D-007 分工落地，实现决策见 D-009
+- 新增依赖：y-websocket@^2.1.0、y-prosemirror@^1.3.7（server+web，Yjs 生态标准件）
+- 产出素材：docs/assets/5.4.2-yjs-integration.png、5.4.3-cursor-sync.png、5.4.4-crdt-merge.png；docs/testing/5.4-collab-tests.md（COLLAB-01~14）；docs/api.md WebSocket 事件节（4.6.4）
+- 诚实记录——调试期间发生的真实事故与修复：
+  - StrictMode 下 useMemo 双调用泄漏 WebsocketProvider → 幽灵在线用户；已改 useEffect 生命周期
+  - 泄漏连接的空文档 + 无保护 writeState 级联清掉了 N1 笔记正文（依 5.3 测试记录重建，新增防误清保护 COLLAB-10）；期间一度误判"连了两个数据库"，实为两次读数之间发生了回写（时序误读，已如实记录排障过程）
+  - collab-test.mjs 跑两遍给 CRDT 笔记留下重复段落（CRDT 状态是事实来源，PATCH content 会被回放覆盖），已清帧+去重修复
+- 遗留问题：
+  - [ ] 团队笔记的协作权限（notes.visibility）在 5.5 落地 RealtimeService 扩展
+  - [ ] yjs:doc:{noteId} Redis 热文档缓存未实现（设计稿标注"实现时可裁剪"，当前内存 doc 即热缓存）
+  - [ ] vite 1.3MB chunk 警告延续（5.9 分包）
+  - [ ] Edge headless 截图需临时 /__dev_login 路由，本次已用后移除并 grep 验证
+
 ## [2026-09-08] 5.3 个人笔记管理模块完成
 
 - 做了什么：

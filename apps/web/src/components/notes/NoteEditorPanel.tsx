@@ -1,7 +1,12 @@
+import { useEffect, useMemo, useState } from 'react';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Button, Divider, Empty, Input, Select, Space, Tag, Tooltip, Typography } from 'antd';
+import Collaboration from '@tiptap/extension-collaboration';
+import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+import { WebsocketProvider } from 'y-websocket';
+import * as Y from 'yjs';
+import { Button, Divider, Empty, Input, Select, Space, Tag, Tooltip, Typography, Avatar } from 'antd';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -13,21 +18,45 @@ import {
   LoadingOutlined,
   CheckOutlined,
   EditOutlined,
+  TeamOutlined,
+  ApiOutlined,
 } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
+import { useAuth } from '../../auth/AuthContext';
 
 /**
- * Tiptap 编辑器面板（论文 5.3.1 创建与编辑 / 5.3.2 实时预览）
+ * Tiptap 协作编辑器面板（论文 5.4.2 Yjs前端集成 / 5.4.3 多用户光标同步）
  *
- * 实时预览说明（D-001 选型依据）：Tiptap 基于 ProseMirror，输入 Markdown 语法
- * （如 "# " "## " "- " "> "）由 input rules 即时转换为渲染后的富文本，
- * 即"所写即所见"的实时预览；正文以 ProseMirror JSON 存 PostgreSQL JSONB。
+ * 5.3→5.4 演进：正文改由 Yjs 驱动——
+ * - Collaboration 扩展把编辑器绑定到 Y.Doc 的 'default' fragment，
+ *   文档初值由服务端从 notes.content 快照播种（见服务端 collaboration.persistence.ts）
+ * - WebsocketProvider 经 /ws 代理连服务端 y-websocket，增量与 awareness 双向同步
+ * - 历史撤销从 ProseMirror history 切换为 Yjs UndoManager（StarterKit.history:false）
+ * - 标题仍走 PATCH 自动保存；正文由服务端在"编辑会话结束"时合并回写 JSONB 快照（D-007）
  */
+
+const USER_COLORS = [
+  '#f5222d', '#fa541c', '#fa8c16', '#52c41a',
+  '#13c2c2', '#1677ff', '#722ed1', '#eb2f96',
+];
+
+/** 按用户名哈希取稳定颜色（同一用户在多端颜色一致，论文 4.4.3 用户感知） */
+function colorFor(name: string): string {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return USER_COLORS[h % USER_COLORS.length];
+}
+
+interface OnlineUser {
+  clientID: number;
+  name: string;
+  color: string;
+}
 
 const toolbarBtn = { paddingInline: 8, paddingInlineEnd: 8 };
 
-/** 保存状态指示（自动保存：800ms 防抖，论文 5.3.1） */
+/** 保存状态指示：标题防抖 PATCH（正文由服务端协作回写） */
 function SaveStatus({ status }: { status: 'saved' | 'pending' | 'saving' | 'error' }) {
   if (status === 'saving')
     return (
@@ -42,13 +71,50 @@ function SaveStatus({ status }: { status: 'saved' | 'pending' | 'saving' | 'erro
       </span>
     );
   if (status === 'error')
-    return (
-      <span className="save-status save-status-error">保存失败，请重试</span>
-    );
+    return <span className="save-status save-status-error">保存失败，请重试</span>;
   return (
     <span className="save-status">
       <CheckOutlined /> 已保存
     </span>
+  );
+}
+
+/** 实时协作状态区（5.4.3 用户感知）：连接状态 + 在线成员头像 */
+function CollabStatus({
+  connected,
+  onlineUsers,
+}: {
+  connected: boolean;
+  onlineUsers: OnlineUser[];
+}) {
+  return (
+    <Tooltip
+      title={
+        connected
+          ? `实时协作已连接，当前 ${onlineUsers.length + 1} 人在线`
+          : '正在连接实时协作服务器…'
+      }
+    >
+      <span className="collab-status">
+        {connected ? (
+          <ApiOutlined style={{ color: '#52c41a' }} />
+        ) : (
+          <LoadingOutlined style={{ color: '#faad14' }} />
+        )}
+        <Avatar.Group maxCount={3} size="small">
+          {onlineUsers.map((u) => (
+            <Tooltip key={u.clientID} title={u.name}>
+              <Avatar style={{ backgroundColor: u.color, fontSize: 12 }}>
+                {u.name.charAt(0)}
+              </Avatar>
+            </Tooltip>
+          ))}
+        </Avatar.Group>
+        <span style={{ fontSize: 12, color: '#8c8c8c' }}>
+          <TeamOutlined /> {onlineUsers.length + 1}
+        </span>
+      </span>
+    </Tooltip>
   );
 }
 
@@ -58,7 +124,6 @@ export interface NoteEditorPanelProps {
   allTags: TagInfo[];
   saveStatus: 'saved' | 'pending' | 'saving' | 'error';
   onTitleChange: (title: string) => void;
-  onContentChange: (json: Record<string, unknown>) => void;
   onAttachTag: (tagId: string) => void;
   onDetachTag: (tagId: string) => void;
 }
@@ -69,40 +134,61 @@ export default function NoteEditorPanel({
   allTags,
   saveStatus,
   onTitleChange,
-  onContentChange,
   onAttachTag,
   onDetachTag,
 }: NoteEditorPanelProps) {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
+  const [connected, setConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
 
-  // 切换笔记时同步标题（正文由 key 重挂载编辑器处理）
   useEffect(() => {
     setTitle(note?.title ?? '');
-  }, [note?.id, note?.title]);
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({ placeholder: '开始写点什么…（输入 # 、- 、> 等Markdown语法试试）' }),
-    ],
-    content: note?.content ?? { type: 'doc', content: [] },
-    onUpdate: ({ editor: ed }) => {
-      onContentChange(ed.getJSON() as Record<string, unknown>);
-    },
-  });
-
-  // note 切换后重设编辑器内容（由父组件 key 重挂载，这里兜底）
-  useEffect(() => {
-    if (editor && note) {
-      const current = JSON.stringify(editor.getJSON());
-      if (current !== JSON.stringify(note.content)) {
-        editor.commands.setContent(note.content as never, false);
-      }
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note?.id]);
 
-  if (!note || !editor) {
+  // 协作会话：每篇笔记一个 Y.Doc + WebsocketProvider。
+  // 用 useEffect 管理生命周期（useMemo 在 StrictMode 双调用下会泄漏废弃连接）
+  const wsUrl = useMemo(
+    () => `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`,
+    [],
+  );
+  const [session, setSession] = useState<{ ydoc: Y.Doc; provider: WebsocketProvider } | null>(
+    null,
+  );
+  useEffect(() => {
+    if (!note) {
+      setSession(null);
+      return;
+    }
+    const ydoc = new Y.Doc();
+    const p = new WebsocketProvider(wsUrl, note.id, ydoc, {
+      params: { token: localStorage.getItem(TOKEN_KEY) ?? '' },
+    });
+    p.on('status', (evt: { status: string }) => setConnected(evt.status === 'connected'));
+    p.awareness.on('change', () => {
+      const users: OnlineUser[] = [];
+      p.awareness.getStates().forEach((state, clientID) => {
+        const u = (state as { user?: { name: string; color: string } }).user;
+        if (u && clientID !== p.awareness.clientID) {
+          users.push({ clientID, name: u.name, color: u.color });
+        }
+      });
+      setOnlineUsers(users);
+    });
+    setSession({ ydoc, provider: p });
+    return () => {
+      setConnected(false);
+      setOnlineUsers([]);
+      p.destroy();
+      ydoc.destroy();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note?.id, wsUrl]);
+
+  const provider = session?.provider ?? null;
+
+  if (!note || !provider) {
     return (
       <div className="editor-panel editor-empty">
         <Empty description="选择左侧笔记，或新建一篇开始编辑" />
@@ -112,9 +198,84 @@ export default function NoteEditorPanel({
 
   const attachableTags = allTags.filter((t) => !noteTags.some((nt) => nt.id === t.id));
 
+  // 会话就绪后才挂载编辑器体（key=Y.Doc clientID）：保证 useEditor 创建时
+  // Collaboration/Cursor 必然在场，避免 deps 异步重建导致的旧实例渲染
+  return (
+    <EditorBody
+      key={session!.ydoc.clientID}
+      ydoc={session!.ydoc}
+      provider={provider}
+      username={user?.username ?? '我'}
+      title={title}
+      saveStatus={saveStatus}
+      connected={connected}
+      onlineUsers={onlineUsers}
+      note={note}
+      noteTags={noteTags}
+      attachableTags={attachableTags}
+      onTitleInput={setTitle}
+      onTitleChange={onTitleChange}
+      onAttachTag={onAttachTag}
+      onDetachTag={onDetachTag}
+    />
+  );
+}
+
+/** 编辑器主体：仅协作会话就绪后挂载（论文 5.4.2） */
+function EditorBody({
+  ydoc,
+  provider,
+  username,
+  title,
+  saveStatus,
+  connected,
+  onlineUsers,
+  note,
+  noteTags,
+  attachableTags,
+  onTitleInput,
+  onTitleChange,
+  onAttachTag,
+  onDetachTag,
+}: {
+  ydoc: Y.Doc;
+  provider: WebsocketProvider;
+  username: string;
+  title: string;
+  saveStatus: 'saved' | 'pending' | 'saving' | 'error';
+  connected: boolean;
+  onlineUsers: OnlineUser[];
+  note: NoteDetail;
+  noteTags: NoteTagInfo[];
+  attachableTags: TagInfo[];
+  onTitleInput: (title: string) => void;
+  onTitleChange: (title: string) => void;
+  onAttachTag: (tagId: string) => void;
+  onDetachTag: (tagId: string) => void;
+}) {
+  const editor = useEditor({
+    extensions: [
+      // 历史撤销交给 Yjs UndoManager（协作下 ProseMirror history 不可用）
+      StarterKit.configure({ history: false }),
+      Placeholder.configure({
+        placeholder: '开始写点什么…（输入 # 、- 、> 等Markdown语法试试）',
+      }),
+      Collaboration.configure({ document: ydoc }),
+      CollaborationCursor.configure({
+        provider,
+        user: { name: username, color: colorFor(username) },
+      }),
+    ],
+    editable: true,
+  });
+
+  if (!editor) {
+    return null;
+  }
+
   return (
     <div className="editor-panel">
-      {/* 笔记标题 + 保存状态 */}
+      {/* 笔记标题 + 协作状态 + 保存状态 */}
       <div className="editor-header">
         <Input
           variant="borderless"
@@ -123,10 +284,11 @@ export default function NoteEditorPanel({
           placeholder="未命名笔记"
           maxLength={200}
           onChange={(e) => {
-            setTitle(e.target.value);
+            onTitleInput(e.target.value);
             onTitleChange(e.target.value);
           }}
         />
+        <CollabStatus connected={connected} onlineUsers={onlineUsers} />
         <SaveStatus status={saveStatus} />
       </div>
 
@@ -271,7 +433,7 @@ export default function NoteEditorPanel({
         </Space>
       </div>
 
-      {/* ProseMirror 编辑区：输入即渲染 = 实时预览 */}
+      {/* ProseMirror 编辑区：Yjs 驱动，多端实时同步（5.4.2） */}
       <EditorContent editor={editor} className="editor-content" />
 
       <Typography.Paragraph type="secondary" className="editor-meta">

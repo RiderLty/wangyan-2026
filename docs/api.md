@@ -114,4 +114,33 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 
 ## 三、团队接口（5.5，待实现）
 
-## 四、WebSocket 事件（4.6.4 / 5.4，待实现）
+## 四、WebSocket 事件（论文 4.6.4 / 5.4）
+
+### 连接建立
+
+| 项 | 说明 |
+|---|---|
+| 地址 | `ws://<host>/ws/{noteId}?token=<JWT>`（开发期经 Vite 代理 `/ws`；生产经 nginx 反代） |
+| 鉴权 | upgrade 握手期校验 JWT + 笔记归属（浏览器 WebSocket 无法带请求头，token 走查询参数）；失败返回 HTTP 401 并关闭 |
+| 权限 | 5.4 阶段仅个人笔记 owner 本人；团队笔记权限在 5.5 扩展 |
+| 协议 | y-websocket 协议（y-protocols/sync + awareness），二进制消息 |
+
+### 消息类型（y-protocols 二进制协议）
+
+| type | 名称 | 方向 | 说明 |
+|---|---|---|---|
+| 0 | Sync | 双向 | 同步步1（交换状态向量）/ 同步步2（差量）/ 实时增量广播——CRDT 收敛由 Yjs YATA 算法保证（5.4.4） |
+| 1 | Awareness | 双向 | 用户感知状态（光标位置、姓名、颜色）——多光标与在线列表的数据源（5.4.3） |
+
+### 感知状态（Awareness State）
+
+```json
+{ "user": { "name": "演示用户", "color": "#1677ff" }, "cursor": "<相对位置>" }
+```
+
+### 服务端持久化行为（D-007 增量/快照分工，论文 4.4.2）
+
+- 连接期间：每帧增量缓冲 2s 合并写入 `yjs_updates`（bytea，追加式）
+- 打开文档：按自增序回放 `yjs_updates`；无帧则从 `notes.content` 快照播种并存种子帧
+- 末个连接断开：Yjs 文档合并回写 `notes.content` + `content_text`，并压缩（compaction）已合并增量行；
+  "会话文档为空且库中快照非空"时跳过回写（防误清保护）

@@ -103,3 +103,19 @@
   5. **URL 深链**：工作台支持 ?q=（初始搜索词）与 ?note=（直达笔记），作为可分享链接，同时支撑 headless 截图
 - 新增依赖：@ant-design/icons@^5（图标，antd5 生态配套，pnpm 严格模式须显式声明）；@tiptap/extension-placeholder（空文档占位提示）
 - 影响论文小节：5.3.1、5.3.2、5.3.4、4.6.2
+
+## D-009：实时协作架构落地（5.4，Yjs + WebSocket）
+
+- 日期：2026-09-09
+- 背景：D-007 已定"yjs_updates 增量日志 + notes.content 快照"分工，5.4 需选服务端实现与持久化机制。
+- 选项：① y-websocket 参考实现（setupWSConnection）+ 自定义持久化适配器；② 基于原生 ws 手写 y-protocols 同步；③ NestJS @WebSocketGateway 网关自建协议
+- 决定：**①**。理由：y-websocket 是 Yjs 官方推荐的服务端参考实现（含 ping 保活、awareness 广播、末连接销毁等完整细节），配合自定义 IDatabasePersistence（bindState/writeState）即可落 D-007 的增量/快照分工；②重复造轮子且易错；③绕开官方生态。
+- 要点：
+  1. **挂载方式**：不启用 Nest WsAdapter，在 main.ts 手动处理 HTTP server 的 upgrade 事件（/ws/:noteId），与 REST 共进程共端口（论文 4.1.1 网关层）
+  2. **握手鉴权**：浏览器 WebSocket 无法带 Authorization 头 → token 走查询参数，upgrade 期校验 JWT（复用 AuthModule 的 JwtModule）+ 笔记归属，失败 401
+  3. **播种转换**：y-prosemirror 官方 prosemirrorJSONToYXmlFragment 需要 PM Schema（服务端无），按其 sync-plugin 的存储映射（marks→同名属性、text→XmlText delta）写 schema-free 的 pmJsonToYFragment；反向回写用官方 yXmlFragmentToProsemirrorJSON（schema-free）
+  4. **增量缓冲**：每帧增量缓冲 2s 用 Y.mergeUpdates 合并成一帧入库，避免逐键写行
+  5. **防误清保护**：writeState 时"会话文档为空且库中快照非空"→ 跳过回写（调试期真实发生过空会话清空正文的事故，详见 CHANGELOG）
+  6. **前端会话生命周期**：Y.Doc/WebsocketProvider 必须用 useEffect 管理（useMemo 在 StrictMode 下双调用会泄漏连接，产生幽灵在线用户）
+- 新增依赖：y-websocket@^2.1、y-prosemirror@^1.3.7（server+web）
+- 影响论文小节：4.4.1、4.4.2、4.4.3、4.6.4、5.4.1~5.4.5、7.2.1
