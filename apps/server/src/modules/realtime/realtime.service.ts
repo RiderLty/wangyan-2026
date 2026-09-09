@@ -7,7 +7,8 @@ import type { Duplex } from 'stream';
 import type { WebSocket as WsSocket } from 'ws';
 import { setPersistence, setupWSConnection } from 'y-websocket/bin/utils';
 import { Note } from '../notes/note.entity';
-import { IsNull, Repository } from 'typeorm';
+import { TeamMember } from '../teams/team-member.entity';
+import { Repository } from 'typeorm';
 import { CollaborationPersistence } from './collaboration.persistence';
 
 /**
@@ -29,6 +30,7 @@ export class RealtimeService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(Note) private readonly notesRepo: Repository<Note>,
+    @InjectRepository(TeamMember) private readonly membersRepo: Repository<TeamMember>,
     private readonly persistence: CollaborationPersistence,
   ) {}
 
@@ -45,19 +47,30 @@ export class RealtimeService {
       const noteId = match[1];
       const token = url.searchParams.get('token') ?? '';
 
-      // 握手期鉴权：JWT 有效 + 笔记存在 + 是本人未删除的个人笔记
+      // 握手期鉴权（论文 4.5.2/4.5.3，与 REST 层 RBAC 对齐）：
+      // 笔记 owner、团队 owner/admin 恒可协作；普通成员须 visibility=team_edit
+      // （team_read/private 成员拒绝连接——y-websocket 无法限制只读写穿，论文 5.5.3 说明）
       let allowed = false;
       try {
         const payload = await this.jwtService.verifyAsync<{ sub: string }>(token);
         const note = await this.notesRepo.findOne({
           where: { id: noteId },
-          select: ['id', 'owner_id', 'team_id', 'deleted_at'],
+          select: ['id', 'owner_id', 'team_id', 'visibility', 'deleted_at'],
         });
-        allowed =
-          !!note &&
-          note.owner_id === payload.sub &&
-          note.team_id === null &&
-          note.deleted_at === null;
+        if (note && note.deleted_at === null) {
+          if (note.owner_id === payload.sub) {
+            allowed = true;
+          } else if (note.team_id) {
+            const member = await this.membersRepo.findOne({
+              where: { team_id: note.team_id, user_id: payload.sub },
+              select: ['role'],
+            });
+            allowed =
+              member?.role === 'owner' ||
+              member?.role === 'admin' ||
+              (!!member && note.visibility === 'team_edit');
+          }
+        }
       } catch {
         allowed = false;
       }

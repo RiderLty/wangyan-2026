@@ -17,11 +17,11 @@ export interface TagInfo {
   note_count: number;
 }
 
-/** 笔记列表项（不含正文） */
+/** 笔记列表项（不含正文；团队笔记无 folder_id，见 5.5.3） */
 export interface NoteListItem {
   id: string;
   title: string;
-  folder_id: string | null;
+  folder_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -62,15 +62,24 @@ export const createTag = (data: { name: string; color?: string }) =>
   api.post<TagInfo>('/tags', data).then((r) => r.data);
 export const deleteTag = (id: string) => api.delete(`/tags/${id}`);
 
-// ---------- 笔记（5.3.1 / 5.3.4） ----------
+// ---------- 笔记（5.3.1 / 5.3.4；团队笔记字段见 5.5.3） ----------
 export const listNotes = (query: NoteQuery = {}) =>
   api.get<NoteListItem[]>('/notes', { params: query }).then((r) => r.data);
 export const getNote = (id: string) => api.get<NoteDetail>(`/notes/${id}`).then((r) => r.data);
-export const createNote = (data: { title?: string; folder_id?: string }) =>
-  api.post<NoteDetail>('/notes', data).then((r) => r.data);
+export const createNote = (data: {
+  title?: string;
+  folder_id?: string;
+  team_id?: string;
+  visibility?: 'private' | 'team_read' | 'team_edit';
+}) => api.post<NoteDetail>('/notes', data).then((r) => r.data);
 export const updateNote = (
   id: string,
-  data: { title?: string; content?: Record<string, unknown>; folder_id?: string | null },
+  data: {
+    title?: string;
+    content?: Record<string, unknown>;
+    folder_id?: string | null;
+    visibility?: 'private' | 'team_read' | 'team_edit';
+  },
 ) => api.patch<NoteDetail>(`/notes/${id}`, data).then((r) => r.data);
 export const deleteNote = (id: string) => api.delete(`/notes/${id}`);
 

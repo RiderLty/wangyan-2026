@@ -123,6 +123,11 @@ export interface NoteEditorPanelProps {
   noteTags: NoteTagInfo[];
   allTags: TagInfo[];
   saveStatus: 'saved' | 'pending' | 'saving' | 'error';
+  /** 5.5.3 RBAC：team_read 成员只读（服务端同样拒绝写入） */
+  editable: boolean;
+  /** 仅笔记 owner / 团队 owner+admin 可调整可见性 */
+  canManageVisibility: boolean;
+  onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
   onTitleChange: (title: string) => void;
   onAttachTag: (tagId: string) => void;
   onDetachTag: (tagId: string) => void;
@@ -133,6 +138,9 @@ export default function NoteEditorPanel({
   noteTags,
   allTags,
   saveStatus,
+  editable,
+  canManageVisibility,
+  onVisibilityChange,
   onTitleChange,
   onAttachTag,
   onDetachTag,
@@ -157,7 +165,9 @@ export default function NoteEditorPanel({
     null,
   );
   useEffect(() => {
-    if (!note) {
+    // 只读成员（team_read）不建立协作会话：服务端拒绝其 WS 连接（防写穿），
+    // 走 REST 快照只读渲染（ReadableView）
+    if (!note || !editable) {
       setSession(null);
       return;
     }
@@ -184,14 +194,26 @@ export default function NoteEditorPanel({
       ydoc.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note?.id, wsUrl]);
+  }, [note?.id, editable, wsUrl]);
 
-  const provider = session?.provider ?? null;
-
-  if (!note || !provider) {
+  if (!note) {
     return (
       <div className="editor-panel editor-empty">
         <Empty description="选择左侧笔记，或新建一篇开始编辑" />
+      </div>
+    );
+  }
+
+  // 团队只读成员：REST 快照只读渲染（论文 4.5.2 team_read）
+  if (!editable) {
+    return <ReadableView key={note.id} note={note} />;
+  }
+
+  // 协作会话尚未建立（Y.Doc/Provider 初始化中）
+  if (!session) {
+    return (
+      <div className="editor-panel editor-empty">
+        <Empty description="正在建立协作会话…" />
       </div>
     );
   }
@@ -204,7 +226,7 @@ export default function NoteEditorPanel({
     <EditorBody
       key={session!.ydoc.clientID}
       ydoc={session!.ydoc}
-      provider={provider}
+      provider={session!.provider}
       username={user?.username ?? '我'}
       title={title}
       saveStatus={saveStatus}
@@ -213,6 +235,9 @@ export default function NoteEditorPanel({
       note={note}
       noteTags={noteTags}
       attachableTags={attachableTags}
+      editable={editable}
+      canManageVisibility={canManageVisibility}
+      onVisibilityChange={onVisibilityChange}
       onTitleInput={setTitle}
       onTitleChange={onTitleChange}
       onAttachTag={onAttachTag}
@@ -233,6 +258,9 @@ function EditorBody({
   note,
   noteTags,
   attachableTags,
+  editable,
+  canManageVisibility,
+  onVisibilityChange,
   onTitleInput,
   onTitleChange,
   onAttachTag,
@@ -248,6 +276,9 @@ function EditorBody({
   note: NoteDetail;
   noteTags: NoteTagInfo[];
   attachableTags: TagInfo[];
+  editable: boolean;
+  canManageVisibility: boolean;
+  onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
   onTitleInput: (title: string) => void;
   onTitleChange: (title: string) => void;
   onAttachTag: (tagId: string) => void;
@@ -266,8 +297,12 @@ function EditorBody({
         user: { name: username, color: colorFor(username) },
       }),
     ],
-    editable: true,
+    editable,
   });
+
+  useEffect(() => {
+    editor?.setEditable(editable);
+  }, [editor, editable]);
 
   if (!editor) {
     return null;
@@ -275,7 +310,7 @@ function EditorBody({
 
   return (
     <div className="editor-panel">
-      {/* 笔记标题 + 协作状态 + 保存状态 */}
+      {/* 笔记标题 + 团队可见性 + 协作状态 + 保存状态 */}
       <div className="editor-header">
         <Input
           variant="borderless"
@@ -283,47 +318,67 @@ function EditorBody({
           value={title}
           placeholder="未命名笔记"
           maxLength={200}
+          disabled={!editable}
           onChange={(e) => {
             onTitleInput(e.target.value);
             onTitleChange(e.target.value);
           }}
         />
+        {/* 团队笔记可见性（5.5.3，仅 owner/团队管理员可改） */}
+        {note.team_id && canManageVisibility && (
+          <Select
+            size="small"
+            value={note.visibility}
+            style={{ minWidth: 96 }}
+            onChange={(v) => onVisibilityChange(v as 'private' | 'team_read' | 'team_edit')}
+            options={[
+              { value: 'private', label: '🔒 仅自己' },
+              { value: 'team_read', label: '👁 团队可读' },
+              { value: 'team_edit', label: '✏ 团队可编辑' },
+            ]}
+          />
+        )}
+        {note.team_id && !canManageVisibility && (
+          <Tag>{note.visibility === 'team_read' ? '团队只读' : note.visibility === 'team_edit' ? '团队可编辑' : '私有'}</Tag>
+        )}
         <CollabStatus connected={connected} onlineUsers={onlineUsers} />
         <SaveStatus status={saveStatus} />
       </div>
 
-      {/* 标签行 */}
-      <div className="editor-tags">
-        <Space size={4} wrap>
-          {noteTags.map((t) => (
-            <Tag
-              key={t.id}
-              color={t.color ?? 'default'}
-              closable
-              onClose={(e) => {
-                e.preventDefault();
-                onDetachTag(t.id);
+      {/* 标签行（个人笔记专属：标签按 D-007 归个人所有） */}
+      {!note.team_id && (
+        <div className="editor-tags">
+          <Space size={4} wrap>
+            {noteTags.map((t) => (
+              <Tag
+                key={t.id}
+                color={t.color ?? 'default'}
+                closable
+                onClose={(e) => {
+                  e.preventDefault();
+                  onDetachTag(t.id);
+                }}
+              >
+                {t.name}
+              </Tag>
+            ))}
+            <Select
+              size="small"
+              variant="borderless"
+              placeholder="+ 标签"
+              style={{ minWidth: 72 }}
+              value={null}
+              options={attachableTags.map((t) => ({ value: t.id, label: t.name }))}
+              onSelect={(value: string | null) => {
+                if (value) onAttachTag(value);
               }}
-            >
-              {t.name}
-            </Tag>
-          ))}
-          <Select
-            size="small"
-            variant="borderless"
-            placeholder="+ 标签"
-            style={{ minWidth: 72 }}
-            value={null}
-            options={attachableTags.map((t) => ({ value: t.id, label: t.name }))}
-            onSelect={(value: string | null) => {
-              if (value) onAttachTag(value);
-            }}
-          />
-        </Space>
-      </div>
+            />
+          </Space>
+        </div>
+      )}
 
-      {/* 工具栏（5.3.2：Markdown 语法即时渲染，工具栏提供等价按钮） */}
-      <div className="editor-toolbar">
+      {/* 工具栏（5.3.2：Markdown 语法即时渲染，工具栏提供等价按钮；只读态禁用） */}
+      <div className={`editor-toolbar${editable ? '' : ' editor-toolbar-readonly'}`}>
         <Space size={0} split={<Divider type="vertical" />} wrap>
           <Tooltip title="一级标题 (# )">
             <Button
@@ -439,6 +494,28 @@ function EditorBody({
       <Typography.Paragraph type="secondary" className="editor-meta">
         创建于 {new Date(note.created_at).toLocaleString('zh-CN')} · 更新于{' '}
         {new Date(note.updated_at).toLocaleString('zh-CN')}
+      </Typography.Paragraph>
+    </div>
+  );
+}
+
+/** 团队只读视图（论文 4.5.2 team_read）：REST 快照渲染，无协作会话 */
+function ReadableView({ note }: { note: NoteDetail }) {
+  const editor = useEditor({
+    extensions: [StarterKit.configure({ history: false })],
+    content: note.content as never,
+    editable: false,
+  });
+  return (
+    <div className="editor-panel">
+      <div className="editor-header">
+        <Input variant="borderless" size="large" value={note.title} disabled />
+        <Tag>🔒 团队只读</Tag>
+      </div>
+      <EditorContent editor={editor} className="editor-content editor-content-readonly" />
+      <Typography.Paragraph type="secondary" className="editor-meta">
+        创建于 {new Date(note.created_at).toLocaleString('zh-CN')} · 更新于{' '}
+        {new Date(note.updated_at).toLocaleString('zh-CN')} · 团队只读笔记不可编辑
       </Typography.Paragraph>
     </div>
   );

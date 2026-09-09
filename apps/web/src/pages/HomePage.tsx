@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   App as AntdApp,
   Avatar,
@@ -10,12 +10,19 @@ import {
   Tag,
   Typography,
 } from 'antd';
-import { LogoutOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
+import {
+  LogoutOutlined,
+  PlusOutlined,
+  TagOutlined,
+  TeamOutlined,
+  UserAddOutlined,
+} from '@ant-design/icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import FolderTreePanel, { type FolderFilter } from '../components/notes/FolderTreePanel';
 import NoteListPanel from '../components/notes/NoteListPanel';
 import NoteEditorPanel from '../components/notes/NoteEditorPanel';
+import TeamManageModal from '../components/teams/TeamManageModal';
 import {
   attachNoteTag,
   createFolder,
@@ -38,12 +45,25 @@ import {
   type NoteTagInfo,
   type TagInfo,
 } from '../api/notes';
+import {
+  acceptInvitation,
+  createTeam,
+  declineInvitation,
+  listMembers,
+  listTeamInvitations,
+  listTeamNotes,
+  listTeams,
+  myInvitations,
+  type TeamInfo,
+  type TeamInvitationInfo,
+  type TeamMemberInfo,
+} from '../api/teams';
 
 const { Header, Sider, Content } = Layout;
 
 /**
- * 个人笔记管理工作台（论文 5.3 界面）
- * 三栏布局：文件夹树+标签/搜索 | 笔记列表 | Tiptap 编辑器（5.3.1~5.3.4）
+ * 笔记管理工作台（论文 5.3 个人空间 + 5.5 团队空间）
+ * 三栏布局：文件夹树/标签/团队/搜索 | 笔记列表 | Tiptap 编辑器
  */
 export default function HomePage() {
   const { user, logout } = useAuth();
@@ -58,6 +78,19 @@ export default function HomePage() {
   const [notes, setNotes] = useState<NoteListItem[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
 
+  // ---------- 团队状态（5.5） ----------
+  const [teams, setTeams] = useState<TeamInfo[]>([]);
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [invitations, setInvitations] = useState<TeamInvitationInfo[]>([]);
+  const [createTeamModal, setCreateTeamModal] = useState<{ open: boolean; name: string } | null>(
+    null,
+  );
+  const [manageTeam, setManageTeam] = useState<{ team: TeamInfo } | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMemberInfo[]>([]);
+  const [teamInvRecords, setTeamInvRecords] = useState<
+    { id: string; invitee_email: string; status: string }[]
+  >([]);
+
   // ---------- 过滤状态（5.3.3 分类 / 5.3.4 搜索） ----------
   const [folderFilter, setFolderFilter] = useState<FolderFilter>('all');
   const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -69,7 +102,7 @@ export default function HomePage() {
     return () => clearTimeout(t);
   }, [keyword]);
 
-  // ---------- 编辑状态（5.3.1 自动保存） ----------
+  // ---------- 编辑状态（5.3.1 自动保存；团队笔记可见性 5.5.3） ----------
   const [activeNote, setActiveNote] = useState<NoteDetail | null>(null);
   const [noteTags, setNoteTags] = useState<NoteTagInfo[]>([]);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'pending' | 'saving' | 'error'>('saved');
@@ -83,6 +116,27 @@ export default function HomePage() {
     name: string;
   } | null>(null);
   const [tagModal, setTagModal] = useState<{ open: boolean; name: string } | null>(null);
+
+  // ---------- 团队数据刷新 ----------
+  const refreshTeams = useCallback(async () => {
+    setTeams(await listTeams());
+  }, []);
+
+  const refreshInvitations = useCallback(async () => {
+    setInvitations(await myInvitations());
+  }, []);
+
+  useEffect(() => {
+    void refreshTeams();
+    void refreshInvitations();
+  }, [refreshTeams, refreshInvitations]);
+
+  /** 打开团队管理弹窗并拉取成员/邀请记录 */
+  const openManageTeam = useCallback(async (team: TeamInfo) => {
+    setManageTeam({ team });
+    setTeamMembers(await listMembers(team.id));
+    setTeamInvRecords(await listTeamInvitations(team.id));
+  }, []);
 
   // 自动保存：800ms 防抖（论文 5.3.1；PATCH /notes/:id）
   const activeIdRef = useRef<string | null>(null);
@@ -100,15 +154,20 @@ export default function HomePage() {
   const refreshNotes = useCallback(async () => {
     setNotesLoading(true);
     try {
-      const query: Parameters<typeof listNotes>[0] = {};
-      if (folderFilter !== 'all') query.folder_id = folderFilter;
-      if (activeTag) query.tag_id = activeTag;
-      if (kwQuery.trim()) query.keyword = kwQuery.trim();
-      setNotes(await listNotes(query));
+      if (selectedTeamId) {
+        // 团队空间：RBAC 可见性过滤在服务端完成（5.5.3）
+        setNotes(await listTeamNotes(selectedTeamId, kwQuery.trim() || undefined));
+      } else {
+        const query: Parameters<typeof listNotes>[0] = {};
+        if (folderFilter !== 'all') query.folder_id = folderFilter;
+        if (activeTag) query.tag_id = activeTag;
+        if (kwQuery.trim()) query.keyword = kwQuery.trim();
+        setNotes(await listNotes(query));
+      }
     } finally {
       setNotesLoading(false);
     }
-  }, [folderFilter, activeTag, kwQuery]);
+  }, [selectedTeamId, folderFilter, activeTag, kwQuery]);
 
   useEffect(() => {
     void refreshFolders();
@@ -169,10 +228,14 @@ export default function HomePage() {
 
   const handleCreateNote = async () => {
     await flushSave();
-    const created = await createNote(
-      folderFilter !== 'all' && folderFilter !== 'root' ? { folder_id: folderFilter } : {},
-    );
+    const created = selectedTeamId
+      ? // 团队新笔记默认团队可编辑（协作场景最常用；可随时调可见性）
+        await createNote({ team_id: selectedTeamId, visibility: 'team_edit' })
+      : await createNote(
+          folderFilter !== 'all' && folderFilter !== 'root' ? { folder_id: folderFilter } : {},
+        );
     await refreshNotes();
+    await refreshTeams();
     await selectNote(created.id);
   };
 
@@ -182,9 +245,14 @@ export default function HomePage() {
       setActiveNote(null);
       setNoteTags([]);
     }
-    await deleteNote(id);
-    message.success('已移入回收站（5.7 提供恢复界面）');
+    try {
+      await deleteNote(id);
+      message.success('已移入回收站（5.7 提供恢复界面）');
+    } catch {
+      message.error('删除失败：仅笔记创建者或团队管理员可删除');
+    }
     await refreshNotes();
+    await refreshTeams();
   };
 
   // ---------- 文件夹操作（5.3.3） ----------
@@ -244,8 +312,52 @@ export default function HomePage() {
     navigate('/login');
   };
 
-  const contextTitle =
-    folderFilter === 'all'
+  /** 当前笔记的 RBAC 访问级别（5.5.3）：决定编辑器可编辑性与可见性管理 */
+  const editorAccess = useMemo(() => {
+    if (!activeNote) return { editable: false, canManageVisibility: false };
+    if (!activeNote.team_id) return { editable: true, canManageVisibility: false };
+    const team = teams.find((t) => t.id === activeNote.team_id);
+    const isNoteOwner = activeNote.owner_id === user?.id;
+    const role = team?.my_role;
+    const isAdmin = role === 'owner' || role === 'admin';
+    const editable =
+      isNoteOwner || isAdmin || activeNote.visibility === 'team_edit';
+    return {
+      editable,
+      canManageVisibility: isNoteOwner || isAdmin,
+    };
+  }, [activeNote, teams, user?.id]);
+
+  /** 团队管理动作 */
+  const handleCreateTeam = async () => {
+    const name = createTeamModal?.name.trim();
+    if (!name) return;
+    await createTeam({ name });
+    setCreateTeamModal(null);
+    message.success('团队已创建');
+    await refreshTeams();
+  };
+
+  const refreshManageModal = async (teamId: string) => {
+    setTeamMembers(await listMembers(teamId));
+    setTeamInvRecords(await listTeamInvitations(teamId));
+    await refreshTeams();
+  };
+
+  const handleAcceptInvitation = async (inv: TeamInvitationInfo) => {
+    await acceptInvitation(inv.id);
+    message.success(`已加入「${inv.team_name}」`);
+    await Promise.all([refreshInvitations(), refreshTeams()]);
+  };
+
+  const handleDeclineInvitation = async (inv: TeamInvitationInfo) => {
+    await declineInvitation(inv.id);
+    await refreshInvitations();
+  };
+
+  const contextTitle = selectedTeamId
+    ? (teams.find((t) => t.id === selectedTeamId)?.name ?? '团队笔记')
+    : folderFilter === 'all'
       ? '全部笔记'
       : folderFilter === 'root'
         ? '未归档'
@@ -288,8 +400,9 @@ export default function HomePage() {
           />
           <FolderTreePanel
             folders={folders}
-            selected={folderFilter}
+            selected={selectedTeamId ? '' : folderFilter}
             onSelect={(k) => {
+              setSelectedTeamId(null);
               setFolderFilter(k);
               setActiveTag(null);
             }}
@@ -308,16 +421,12 @@ export default function HomePage() {
             />
           </div>
           <div className="tag-cloud">
-            {tags.length === 0 && (
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                还没有标签
-              </Typography.Text>
-            )}
             {tags.map((t) => (
               <Tag.CheckableTag
                 key={t.id}
                 checked={activeTag === t.id}
                 onChange={() => {
+                  setSelectedTeamId(null);
                   setActiveTag(activeTag === t.id ? null : t.id);
                   setFolderFilter('all');
                 }}
@@ -342,6 +451,83 @@ export default function HomePage() {
               </Tag.CheckableTag>
             ))}
           </div>
+
+          {/* 团队（5.5） */}
+          <div className="panel-caption" style={{ marginTop: 16 }}>
+            团队
+            <Button
+              type="text"
+              size="small"
+              icon={<PlusOutlined />}
+              onClick={() => setCreateTeamModal({ open: true, name: '' })}
+              title="创建团队"
+            />
+          </div>
+          <div className="team-list">
+            {teams.map((t) => (
+              <div
+                key={t.id}
+                className={`team-item${selectedTeamId === t.id ? ' team-item-active' : ''}`}
+                onClick={() => {
+                  setSelectedTeamId(t.id);
+                  setFolderFilter('all');
+                  setActiveTag(null);
+                }}
+              >
+                <span className="team-item-name">
+                  <TeamOutlined /> {t.name}
+                  <Typography.Text type="secondary" style={{ fontSize: 11, marginLeft: 4 }}>
+                    {t.note_count}
+                  </Typography.Text>
+                </span>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<UserAddOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void openManageTeam(t);
+                  }}
+                  title="成员与邀请"
+                />
+              </div>
+            ))}
+            {teams.length === 0 && (
+              <Typography.Text type="secondary" style={{ fontSize: 12, paddingInline: 4 }}>
+                还没有团队，点 + 创建
+              </Typography.Text>
+            )}
+          </div>
+
+          {/* 收到的邀请（5.5.2） */}
+          {invitations.length > 0 && (
+            <>
+              <div className="panel-caption" style={{ marginTop: 16 }}>
+                收到的邀请
+              </div>
+              <div className="team-list">
+                {invitations.map((inv) => (
+                  <div key={inv.id} className="team-item invitation-item">
+                    <span className="team-item-name" style={{ fontSize: 12 }}>
+                      {inv.inviter_name} 邀你加入「{inv.team_name}」
+                    </span>
+                    <span>
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={() => void handleAcceptInvitation(inv)}
+                      >
+                        接受
+                      </Button>
+                      <Button size="small" onClick={() => void handleDeclineInvitation(inv)}>
+                        拒绝
+                      </Button>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </Sider>
 
         {/* 中栏：笔记列表（5.3.1） */}
@@ -365,6 +551,15 @@ export default function HomePage() {
             noteTags={noteTags}
             allTags={tags}
             saveStatus={saveStatus}
+            editable={editorAccess.editable}
+            canManageVisibility={editorAccess.canManageVisibility}
+            onVisibilityChange={(visibility) => {
+              if (!activeNote) return;
+              void updateNote(activeNote.id, { visibility }).then(() => {
+                message.success('可见性已更新');
+                void refreshNotes();
+              });
+            }}
             // 5.4 起正文由 Yjs 协作同步、服务端合并回写；自动保存仅覆盖标题
             onTitleChange={(t) => scheduleSave({ title: t })}
             onAttachTag={(tagId) => {
@@ -425,6 +620,41 @@ export default function HomePage() {
           onPressEnter={() => void handleCreateTag()}
         />
       </Modal>
+
+      {/* 创建团队弹窗（5.5.1） */}
+      <Modal
+        open={!!createTeamModal?.open}
+        title="创建团队"
+        okText="创建"
+        cancelText="取消"
+        onOk={() => void handleCreateTeam()}
+        onCancel={() => setCreateTeamModal(null)}
+        destroyOnClose
+      >
+        <Input
+          placeholder="团队名称"
+          maxLength={100}
+          prefix={<TeamOutlined />}
+          value={createTeamModal?.name}
+          onChange={(e) => setCreateTeamModal((m) => (m ? { ...m, name: e.target.value } : m))}
+          onPressEnter={() => void handleCreateTeam()}
+        />
+      </Modal>
+
+      {/* 团队管理弹窗：成员/角色/邀请（5.5.1 + 5.5.2） */}
+      {manageTeam && (
+        <TeamManageModal
+          team={manageTeam.team}
+          members={teamMembers}
+          invitationRecords={teamInvRecords}
+          myUserId={user?.id ?? ''}
+          onClose={() => setManageTeam(null)}
+          onChanged={() => {
+            void refreshManageModal(manageTeam.team.id);
+            if (selectedTeamId === manageTeam.team.id) void refreshNotes();
+          }}
+        />
+      )}
     </Layout>
   );
 }

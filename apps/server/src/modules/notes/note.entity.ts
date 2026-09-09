@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Folder } from './folder.entity';
 import { User } from '../users/user.entity';
+import { Team } from '../teams/team.entity';
 
 /**
  * 笔记表实体（database-design.md §3.6 / 论文 4.3.5）—— 全库枢纽
@@ -41,9 +42,13 @@ export class Note {
   @JoinColumn({ name: 'owner_id' })
   owner: User | null;
 
-  /** NULL = 个人笔记；非空 = 团队笔记。FK→teams 在 5.5 teams 实体落地时补建 */
+  /** NULL = 个人笔记；非空 = 团队笔记（5.5 团队模块落地物理外键） */
   @Column({ type: 'uuid', nullable: true })
   team_id: string | null;
+
+  @ManyToOne(() => Team, { onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'team_id' })
+  team: Team | null;
 
   /** 仅个人笔记使用（5.3.3 文件夹管理） */
   @Column({ type: 'uuid', nullable: true })

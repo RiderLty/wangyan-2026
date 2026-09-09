@@ -5,6 +5,7 @@ import { Folder } from './folder.entity';
 import { Tag } from './tag.entity';
 import { NoteTag } from './note-tag.entity';
 import { RecycleBin } from './recycle-bin.entity';
+import { TeamMember } from '../teams/team-member.entity';
 import { NotesController } from './notes.controller';
 import { FoldersController } from './folders.controller';
 import { TagsController } from './tags.controller';
@@ -12,10 +13,10 @@ import { NotesService } from './notes.service';
 import { FoldersService } from './folders.service';
 import { TagsService } from './tags.service';
 
-/** 个人笔记管理模块（论文 5.3）：笔记 CRUD / 文件夹 / 标签 / 搜索 */
+/** 个人笔记管理模块（论文 5.3）：笔记 CRUD / 文件夹 / 标签 / 搜索；团队笔记 RBAC 见 5.5.3 */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Note, Folder, Tag, NoteTag, RecycleBin]),
+    TypeOrmModule.forFeature([Note, Folder, Tag, NoteTag, RecycleBin, TeamMember]),
   ],
   controllers: [NotesController, FoldersController, TagsController],
   providers: [NotesService, FoldersService, TagsService],

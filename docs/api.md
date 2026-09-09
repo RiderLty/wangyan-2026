@@ -112,7 +112,51 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 | GET /tags | —— | `[{ id, name, color, note_count }]`（只统计未删除笔记） |
 | DELETE /tags/:id | —— | 级联清理 note_tags 关联 |
 
-## 三、团队接口（5.5，待实现）
+## 三、团队接口（论文 4.6.3 / 5.5）
+
+> RBAC 三角色（论文 4.5.1/4.5.3）：owner（创建者，全部权限）/ admin（管理员，成员与笔记管理）/
+> member（成员，退队 + 看非私有 + 编辑 team_edit 笔记）。权限校验失败 403，目标不可见一律 404。
+
+### 团队 CRUD（5.5.1）
+
+| 接口 | 权限 | 说明 |
+|---|---|---|
+| POST /teams | 登录 | `{ "name", "description?" }`；创建者自动写入 team_members(role=owner)（R4 双写） |
+| GET /teams | 登录 | 我参与的团队：`[{ id, name, my_role, is_owner, member_count, note_count }]` |
+| PATCH /teams/:id | owner/admin | 改名/描述 |
+| DELETE /teams/:id | owner | 解散；仍有笔记 → 400（防误删，与文件夹同策略） |
+
+### 成员管理（5.5.1）
+
+| 接口 | 权限 | 说明 |
+|---|---|---|
+| GET /teams/:id/members | 成员 | `[{ user_id, username, email, role, joined_at }]`（owner 在前） |
+| PATCH /teams/:id/members/:userId | owner | `{ "role": "admin"\|"member" }`；不可改创建者角色 |
+| DELETE /teams/:id/members/:userId | owner/admin/本人 | 移除成员；传自己 userId = 退队；创建者不可被移除 |
+
+### 邀请与审批（5.5.2）
+
+| 接口 | 权限 | 说明 |
+|---|---|---|
+| POST /teams/:id/invitations | owner/admin | `{ "email" }`；有效期 7 天；重复 pending → 400；非 pending 旧行复用（重置 pending），满足 UNIQUE(team_id, invitee_email) |
+| GET /teams/:id/invitations | owner/admin | 团队邀请记录 |
+| POST /teams/:id/invitations/:iid/cancel | owner/admin | 撤回（status→cancelled） |
+| GET /teams/invitations/mine | 登录 | 我收到的待处理邀请（按邮箱或关联 id 匹配，未过期） |
+| POST /teams/invitations/:iid/accept | 收件人 | pending + 未过期 → 插入 team_members(role=member)，status→accepted |
+| POST /teams/invitations/:iid/decline | 收件人 | status→declined |
+
+### 团队笔记（5.5.3，论文 4.5.2 笔记级权限）
+
+| 接口 | 权限 | 说明 |
+|---|---|---|
+| POST /notes | 任意成员 | Body 带 `team_id` + `visibility`（private/team_read/team_edit，默认 private）；团队笔记 folder_id 必须为空（CHECK 约束） |
+| GET /teams/:id/notes?keyword= | 任意成员 | owner/admin 见全部；member 见 非私有 + 自己创建的 |
+| GET /notes/:id | 访问矩阵 | owner > team_admin > team_edit（可编辑）> team_read（只读）；不可见 → 404 不暴露存在性 |
+| PATCH /notes/:id `visibility` | 笔记 owner / 团队 owner+admin | 其余字段编辑权限到 team_edit 为止 |
+| DELETE /notes/:id | 笔记 owner / 团队 owner+admin | 软删除进回收站 |
+
+实时协作连接权限与上表编辑权限对齐：owner / 团队 owner+admin / visibility=team_edit 的成员可连
+`/ws/:noteId`；team_read、无权限成员连接被 401 拒绝（y-websocket 无法限制只读写穿，防"只读成员改数据"）。
 
 ## 四、WebSocket 事件（论文 4.6.4 / 5.4）
 

@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { NotesModule } from './modules/notes/notes.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
+import { TeamsModule } from './modules/teams/teams.module';
 
 /**
  * 根模块：聚合各业务模块（论文 4.1.3 模块化设计）
@@ -42,6 +43,7 @@ import { RealtimeModule } from './modules/realtime/realtime.module';
     AuthModule,
     NotesModule,
     RealtimeModule,
+    TeamsModule,
   ],
   controllers: [HealthController],
 })

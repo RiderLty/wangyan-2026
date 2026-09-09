@@ -1,5 +1,26 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-09] 5.5 团队协作模块完成
+
+- 做了什么：
+  - 服务端 modules/teams/：Team/TeamMember（role CHECK + unique(team,user)）/TeamInvitation（status CHECK + unique(team,email)）三实体；Note 补上 team_id 物理外键（5.3 遗留项清账，onDelete RESTRICT）
+  - 团队 CRUD（R4 owner 双写事务保证一致；有笔记禁删与文件夹同策略）+ 成员管理（owner 调角色/admin 移除/本人退队/创建者不可移除）
+  - 邀请审批：邮箱邀请 7 天有效、重复 pending 拦截、非 pending 旧行复用重置（满足唯一约束且支持再次邀请）、接受（事务插 member）/拒绝/撤回/我的邀请
+  - 团队笔记 RBAC：四级访问矩阵 owner>team_admin>team_edit>team_read（notes.service.getAccessLevel 集中实现，不可见一律 404）；visibility 修改限 owner/团队管理员；GET /teams/:id/notes 按角色过滤
+  - 协作权限对齐 REST：owner/团队 owner+admin/team_edit 成员可连 WS；team_read 拒绝（y-websocket 无法限只读写穿，论文如实说明）
+  - 前端：侧栏团队列表+创建弹窗、团队管理弹窗（成员/角色/邀请/记录撤回，独立组件 TeamManageModal）、收到的邀请卡片（接受/拒绝）、编辑器团队可见性下拉、team_read 只读视图（REST 快照渲染）
+- 为什么：对应大纲 5.5.1~5.5.4；RBAC 落表按 D-007 §8 映射
+- 新增依赖：无
+- 产出素材：docs/assets/5.5.1~5.5.4 四张截图；docs/testing/5.5-team-tests.md（TEAM-01~23）；docs/api.md 团队接口节（4.6.3）
+- 诚实记录：
+  - 冒烟时发现 removeMember 传非 UUID 参数返回 500（DB 类型错误未转 4xx），记录为已知边界（前端不产生该输入）
+  - collab-test.mjs 重复执行会经 Yjs 追加重复演示段落（CRDT 状态是事实来源），清理时误删正文一次，已按"清帧+API 重写"流程恢复；该脚本属临时验证工具不入库
+- 遗留问题：
+  - [ ] 邀请过期批量置 expired 属 5.7.4 定时清理（当前接受时即时校验已覆盖）
+  - [ ] 团队笔记搜索：个人搜索接口不含团队笔记（团队内 keyword 已支持）；跨团队全局搜索列为 7.3 改进
+  - [ ] vite 1.3MB chunk 警告延续（5.9 分包）
+  - [ ] 视图 v_team_overview 等 4 个视图未建（设计稿定位"只读统计走视图"，当前等价 SQL 在服务层；DDL 附录导出时统一建）
+
 ## [2026-09-09] 5.4 实时协作编辑模块完成
 
 - 做了什么：
