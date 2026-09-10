@@ -119,3 +119,17 @@
   6. **前端会话生命周期**：Y.Doc/WebsocketProvider 必须用 useEffect 管理（useMemo 在 StrictMode 下双调用会泄漏连接，产生幽灵在线用户）
 - 新增依赖：y-websocket@^2.1、y-prosemirror@^1.3.7（server+web）
 - 影响论文小节：4.4.1、4.4.2、4.4.3、4.6.4、5.4.1~5.4.5、7.2.1
+
+## D-010：分享模块与访客协作实现（5.6）
+
+- 日期：2026-09-10
+- 背景：share_links 需要链接生成/访问控制/有效期管理三件套；访客"可编辑"如何落地需决策。
+- 选项（访客编辑）：① 访客只读快照+邮件/注册后编辑（削弱演示效果）；② 访客以 share-token 鉴权进 Yjs 实时协作（与 5.4 同一条链路）
+- 决定：**②**。理由：分享 token 本身即凭证（论文 4.5.4），edit 链接的访客走 `?share=token` 的 WS 握手鉴权进入同一 Yjs 文档，与登录用户实时协作——把 7.2.1 CRDT 卖点延伸到访客角色；只读链接拒绝连接防写穿。
+- 要点：
+  1. token 用 Node crypto randomBytes(16).hex（32 位，等价 nanoid 语义）——零新依赖
+  2. 公开解析统一 404 防枚举（停用/过期/已删/伪造同文案）；元数据 Redis 缓存 60s（cache:share:{token}），管理端变更即时失效；visit_count 不缓存实时累加
+  3. 分享权限 = 笔记 owner 或团队 owner/admin（分享是扩权动作，普通成员不可）
+  4. **播种竞态修复**（真实事故）：y-websocket 不 await bindState，"连接即断→writeState 销毁→新连接再播种"会让同一快照出现两份（CRDT 两处位置）。修复：CollaborationPersistence 按笔记加异步互斥锁，bindState/writeState 串行化
+- 新增依赖：dayjs@web（antd5 DatePicker 生态标准件，pnpm 严格模式须显式声明）
+- 影响论文小节：4.3.7、4.5.4、4.6.2 补充、5.6.1~5.6.4、7.2.1

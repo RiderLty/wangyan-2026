@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：5.5 团队协作模块完成（teams/team_members/team_invitations 落地 + RBAC 三角色 + 团队笔记可见性 + 协作权限对齐，23 条用例全过，4 张截图）。下一步：5.6 笔记分享模块（share_links + 访客只读/可编辑页 + Redis 缓存）。
+> 当前状态：5.6 笔记分享模块完成（share_links + 访客公开页 + Redis 缓存 + 访客协作 WS 鉴权 + 播种竞态互斥锁修复，17 条用例全过，2 张截图）。下一步：5.7 版本管理与回收站（note_versions + 回收站界面 + 定时清理）。
 
 ## 状态图例
 
@@ -40,10 +40,10 @@
 - ✅ 5.5.4 界面展示与核心代码（截图 5.5.1~5.5.4；论文可引用：teams.service.ts（RBAC 集中实现）、realtime.service.ts（WS 权限）、TeamManageModal.tsx）
 
 ### 5.6 笔记分享模块实现
-- ⬜ 5.6.1 分享链接生成
-- ⬜ 5.6.2 链接访问权限控制
-- ⬜ 5.6.3 分享链接有效期管理
-- ⬜ 5.6.4 界面展示与核心代码
+- ✅ 5.6.1 分享链接生成（share_links 实体 + crypto 32 位 token + 权限/有效期选择；用例 SHARE-01~04）
+- ✅ 5.6.2 链接访问权限控制（公开接口统一 404 防枚举 + Redis 60s 缓存 + 访客 edit 链接进 Yjs 协作；用例 SHARE-05~15）
+- ✅ 5.6.3 分享链接有效期管理（expires_at NULL=永久 + is_enabled 即时停用 + 缓存失效联动；用例 SHARE-08~12）
+- ✅ 5.6.4 界面展示与核心代码（截图 5.6.1/5.6.2；论文可引用：share.service.ts（缓存与解析）、realtime.service.ts（访客 WS 鉴权）、SharePage.tsx、ShareModal.tsx）
 
 ### 5.7 版本管理与回收站实现
 - ⬜ 5.7.1 版本历史记录
@@ -72,3 +72,4 @@
 - 5.3 笔记管理：`apps/server/src/modules/notes/notes.service.ts`（CRUD/搜索/越权防护）、`prosemirror.util.ts`（JSONB→纯文本派生）、`folder.entity.ts`（自引用+唯一索引）、`apps/web/src/components/notes/NoteEditorPanel.tsx`（Tiptap 集成）、`apps/web/src/pages/HomePage.tsx`（三栏工作台+防抖自动保存）
 - 5.4 实时协作：`apps/server/src/modules/realtime/collaboration.persistence.ts`（增量回放/播种/合并回写/压缩/防误清）、`realtime.service.ts`（upgrade 握手鉴权）、`yjs-convert.ts`（PM JSON→Yjs 播种）、`apps/web/src/components/notes/NoteEditorPanel.tsx`（Collaboration+Cursor+awareness）
 - 5.5 团队协作：`apps/server/src/modules/teams/teams.service.ts`（RBAC 集中：assertRole/邀请生命周期/可见性过滤）、`notes.service.ts` 的 getAccessLevel（四级笔记访问矩阵）、`apps/web/src/components/teams/TeamManageModal.tsx`
+- 5.6 笔记分享：`apps/server/src/modules/share/share.service.ts`（token 解析/Redis 缓存/防枚举 404）、`realtime.service.ts`（访客 share-token WS 鉴权）、`collaboration.persistence.ts`（按笔记互斥锁防播种竞态）、`apps/web/src/pages/SharePage.tsx`（访客公开页）

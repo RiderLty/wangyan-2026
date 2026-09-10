@@ -158,6 +158,31 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 实时协作连接权限与上表编辑权限对齐：owner / 团队 owner+admin / visibility=team_edit 的成员可连
 `/ws/:noteId`；team_read、无权限成员连接被 401 拒绝（y-websocket 无法限制只读写穿，防"只读成员改数据"）。
 
+## 三A、分享接口（论文 5.6 / 4.3.7 share_links）
+
+### 管理（需登录；分享权限 = 笔记 owner 或团队 owner/admin，5.6.1）
+
+| 接口 | Body/Query | 说明 |
+|---|---|---|
+| POST /share | `{ "note_id", "permission": "read"\|"edit", "expires_at?": ISO8601 }` | 生成 32 位随机 token；expires_at 缺省 = 永久（5.6.3） |
+| GET /share?note_id= | —— | 该笔记的链接列表（含 visit_count） |
+| PATCH /share/:id | `{ "permission?", "expires_at?" }` | 改权限/改期；变更即时失效 Redis 缓存 |
+| PATCH /share/:id/enabled | `{ "is_enabled": bool }` | 停用/恢复，不等过期 |
+| DELETE /share/:id | —— | 删除链接 |
+
+### 访客公开接口（无需登录，5.6.2）
+
+| 接口 | 说明 |
+|---|---|
+| GET /api/public/share/:token | 元数据 `{ note_id, title, permission, expires_at }`；Redis 缓存 60s（`cache:share:{token}`）；停用/过期/笔记已删/伪造 → 统一 404 防枚举 |
+| GET /api/public/share/:token/content | 正文快照，visit_count +1（不缓存，实时可见） |
+
+### 访客实时协作（5.6.2，论文 4.5.4）
+
+- `WS /ws/:noteId?share=<token>`：JWT 校验失败时回落到分享 token 校验——
+  token 有效且 `permission=edit` 才放行（只读链接拒绝，防写穿）。
+- 访客与登录用户进入同一 Yjs 文档实时协作（前端公开页 /s/:token）。
+
 ## 四、WebSocket 事件（论文 4.6.4 / 5.4）
 
 ### 连接建立

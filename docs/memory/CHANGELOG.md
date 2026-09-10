@@ -1,5 +1,24 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-10] 5.6 笔记分享模块完成
+
+- 做了什么：
+  - 服务端 modules/share/：ShareLink 实体（token unique/permission CHECK/is_enabled/expires_at NULL=永久/visit_count）；创建/列表/改期/启停/删除（分享权限=笔记 owner 或团队 owner/admin）；公开解析（Redis cache:share:{token} 60s + 变更即失效 + 统一 404 防枚举 + 访问计数）
+  - 访客协作（D-010）：RealtimeService 增加 ?share=token 通道，JWT 校验失败回落分享 token 校验，edit 链接放行 / read 拒绝
+  - 前端：ShareModal（权限/有效期生成、启停开关、计数、复制、删除）、公开页 /s/:token（read 只读渲染 / edit 挂访客协作，awareness 名"访客"）
+  - 修复真实竞态：bindState 不被 await 导致的"断连销毁→再播种"双份内容，加按笔记异步互斥锁（bindState/writeState 串行化）
+  - 清账：/__dev_login 临时截图路由移除（5.5 收尾时声称已移除实际遗漏，本次更正并 grep 验证）
+- 为什么：对应大纲 5.6.1~5.6.4；表结构按 D-007 §3.12，实现决策 D-010
+- 新增依赖：dayjs@web（antd5 日期生态标准件）
+- 产出素材：docs/assets/5.6.1-share-modal.png、5.6.2-guest-collab.png；docs/testing/5.6-share-tests.md（SHARE-01~17）；docs/api.md 分享接口节
+- 诚实记录——本次排障波折（详见测试表"过程记录"）：
+  - 分享页截图发现正文双份，先后排查出两层原因：① 播种竞态（真 bug，加锁修复）；② 此前截图窗口未死透（pkill 的 `\|` 模式在 ERE 失效），僵尸连接重连新服务端反复播种旧内容（运维失误）。两处分别修复后双探针回归稳定
+  - 演示笔记 N1/CRDT 笔记在排障中多次内容污染，均按"清 yjs 帧 + API 重写"流程恢复
+- 遗留问题：
+  - [ ] 访客协作无法区分不同访客（awareness 统一显示"访客"，随机色区分端）；7.3 可扩展访客昵称
+  - [ ] 过期链接批量清理属 5.7.4 定时任务（当前访问时即时校验已覆盖）
+  - [ ] vite 1.3MB chunk 警告延续（5.9 分包）
+
 ## [2026-09-09] 5.5 团队协作模块完成
 
 - 做了什么：

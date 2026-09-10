@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
+import { ShareModule } from '../share/share.module';
 import { Note } from '../notes/note.entity';
 import { TeamMember } from '../teams/team-member.entity';
 import { YjsUpdate } from './yjs-update.entity';
@@ -9,8 +10,8 @@ import { CollaborationPersistence } from './collaboration.persistence';
 
 /** 实时协作模块（论文 5.4）：WebSocket 同步 + Yjs 增量持久化 + 快照合并 */
 @Module({
-  // 复用 AuthModule 导出的已配置 JwtModule（同一密钥校验握手 token）
-  imports: [TypeOrmModule.forFeature([Note, TeamMember, YjsUpdate]), AuthModule],
+  // 复用 AuthModule 的 JwtModule（同一密钥校验握手 token）；ShareModule 提供访客协作鉴权（5.6.2）
+  imports: [TypeOrmModule.forFeature([Note, TeamMember, YjsUpdate]), AuthModule, ShareModule],
   providers: [RealtimeService, CollaborationPersistence],
   exports: [RealtimeService],
 })

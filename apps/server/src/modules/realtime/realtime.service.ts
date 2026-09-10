@@ -10,6 +10,7 @@ import { Note } from '../notes/note.entity';
 import { TeamMember } from '../teams/team-member.entity';
 import { Repository } from 'typeorm';
 import { CollaborationPersistence } from './collaboration.persistence';
+import { ShareService } from '../share/share.service';
 
 /**
  * 实时协作服务（论文 5.4.1 WebSocket 服务端实现）
@@ -32,6 +33,7 @@ export class RealtimeService {
     @InjectRepository(Note) private readonly notesRepo: Repository<Note>,
     @InjectRepository(TeamMember) private readonly membersRepo: Repository<TeamMember>,
     private readonly persistence: CollaborationPersistence,
+    private readonly shareService: ShareService,
   ) {}
 
   attachCollaboration(httpServer: HttpServer): void {
@@ -47,10 +49,12 @@ export class RealtimeService {
       const noteId = match[1];
       const token = url.searchParams.get('token') ?? '';
 
-      // 握手期鉴权（论文 4.5.2/4.5.3，与 REST 层 RBAC 对齐）：
-      // 笔记 owner、团队 owner/admin 恒可协作；普通成员须 visibility=team_edit
-      // （team_read/private 成员拒绝连接——y-websocket 无法限制只读写穿，论文 5.5.3 说明）
+      // 握手期鉴权（论文 4.5.2/4.5.3/4.5.4，与 REST 层 RBAC 对齐）：
+      // ① Bearer JWT：笔记 owner、团队 owner/admin、team_edit 成员
+      // ② 分享链接访客（5.6.2）：?share=token，token 有效且 permission=edit
+      // team_read/无权成员拒绝连接——y-websocket 无法限制只读写穿，论文 5.5.3 说明
       let allowed = false;
+      const shareToken = url.searchParams.get('share');
       try {
         const payload = await this.jwtService.verifyAsync<{ sub: string }>(token);
         const note = await this.notesRepo.findOne({
@@ -72,7 +76,11 @@ export class RealtimeService {
           }
         }
       } catch {
-        allowed = false;
+        // 无/无效 JWT → 尝试分享链接访客通道（5.6.2）
+        if (shareToken) {
+          const sharedNoteId = await this.shareService.assertShareEdit(shareToken);
+          allowed = sharedNoteId === noteId;
+        }
       }
       if (!allowed) {
         this.logger.warn(`[协作] 拒绝 WebSocket 连接：note=${noteId}`);

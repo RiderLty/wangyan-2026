@@ -345,3 +345,34 @@ body {
   height: 0;
   pointer-events: none;
 }
+
+/* ---------- 公开分享页（5.6.2 访客视角） ---------- */
+.share-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: #001529;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.share-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.share-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.share-content .ProseMirror {
+  min-height: 30vh;
+}

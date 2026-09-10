@@ -31,6 +31,23 @@ export class CollaborationPersistence {
   private readonly flushTimers = new Map<string, ReturnType<typeof setTimeout>>();
   /** bindState 回放期间抑制 update 监听器重复入库（回放触发的 update 事件已在库中） */
   private readonly loadingDocs = new Set<string>();
+  /**
+   * 按笔记的异步互斥锁（论文 5.4.4 一致性）：y-websocket 不 await bindState，
+   * "连接即断开 → writeState 销毁文档 → 新连接重新播种"的竞态会让同一快照
+   * 被播种两次（CRDT 中成为两份内容）。bindState/writeState 串行化消除该窗口。
+   */
+  private readonly locks = new Map<string, Promise<unknown>>();
+
+  private async withLock<T>(noteId: string, fn: () => Promise<T>): Promise<T> {
+    const prev = this.locks.get(noteId) ?? Promise.resolve();
+    const next = prev.then(fn, fn);
+    this.locks.set(noteId, next);
+    try {
+      return await next;
+    } finally {
+      if (this.locks.get(noteId) === next) this.locks.delete(noteId);
+    }
+  }
 
   constructor(
     @InjectRepository(YjsUpdate) private readonly updatesRepo: Repository<YjsUpdate>,
@@ -39,6 +56,15 @@ export class CollaborationPersistence {
 
   async bindState(docName: string, ydoc: Y.Doc): Promise<void> {
     const noteId = docName;
+    // y-websocket 不 await 本方法：文档在播种期间被销毁（连接即断）时按已完成处理
+    try {
+      await this.withLock(noteId, () => this.doBindState(noteId, ydoc));
+    } catch (err) {
+      this.logger.warn(`[协作] bindState ${noteId} 中止（文档可能已销毁）: ${err}`);
+    }
+  }
+
+  private async doBindState(noteId: string, ydoc: Y.Doc): Promise<void> {
     this.loadingDocs.add(noteId);
 
     const rows = await this.updatesRepo.find({
@@ -82,6 +108,11 @@ export class CollaborationPersistence {
 
   async writeState(docName: string, ydoc: Y.Doc): Promise<void> {
     const noteId = docName;
+    // 与 bindState 串行（防竞态见 locks 注释）；结束后再清理
+    await this.withLock(noteId, () => this.doWriteState(noteId, ydoc));
+  }
+
+  private async doWriteState(noteId: string, ydoc: Y.Doc): Promise<void> {
     this.flushBuffer(noteId);
 
     // Yjs 文档 → ProseMirror JSON 快照（y-prosemirror 官方 schema-free 转换）

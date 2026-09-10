@@ -23,6 +23,7 @@ import FolderTreePanel, { type FolderFilter } from '../components/notes/FolderTr
 import NoteListPanel from '../components/notes/NoteListPanel';
 import NoteEditorPanel from '../components/notes/NoteEditorPanel';
 import TeamManageModal from '../components/teams/TeamManageModal';
+import ShareModal from '../components/share/ShareModal';
 import {
   attachNoteTag,
   createFolder,
@@ -116,6 +117,7 @@ export default function HomePage() {
     name: string;
   } | null>(null);
   const [tagModal, setTagModal] = useState<{ open: boolean; name: string } | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // ---------- 团队数据刷新 ----------
   const refreshTeams = useCallback(async () => {
@@ -312,19 +314,20 @@ export default function HomePage() {
     navigate('/login');
   };
 
-  /** 当前笔记的 RBAC 访问级别（5.5.3）：决定编辑器可编辑性与可见性管理 */
+  /** 当前笔记的 RBAC 访问级别（5.5.3）：决定编辑器可编辑性与可见性管理；5.6 分享权限同管理级 */
   const editorAccess = useMemo(() => {
-    if (!activeNote) return { editable: false, canManageVisibility: false };
-    if (!activeNote.team_id) return { editable: true, canManageVisibility: false };
+    if (!activeNote) return { editable: false, canManageVisibility: false, canShare: false };
+    if (!activeNote.team_id)
+      return { editable: true, canManageVisibility: false, canShare: true };
     const team = teams.find((t) => t.id === activeNote.team_id);
     const isNoteOwner = activeNote.owner_id === user?.id;
     const role = team?.my_role;
     const isAdmin = role === 'owner' || role === 'admin';
-    const editable =
-      isNoteOwner || isAdmin || activeNote.visibility === 'team_edit';
+    const editable = isNoteOwner || isAdmin || activeNote.visibility === 'team_edit';
     return {
       editable,
       canManageVisibility: isNoteOwner || isAdmin,
+      canShare: isNoteOwner || isAdmin,
     };
   }, [activeNote, teams, user?.id]);
 
@@ -553,6 +556,8 @@ export default function HomePage() {
             saveStatus={saveStatus}
             editable={editorAccess.editable}
             canManageVisibility={editorAccess.canManageVisibility}
+            canShare={editorAccess.canShare}
+            onShare={() => setShareModalOpen(true)}
             onVisibilityChange={(visibility) => {
               if (!activeNote) return;
               void updateNote(activeNote.id, { visibility }).then(() => {
@@ -640,6 +645,15 @@ export default function HomePage() {
           onPressEnter={() => void handleCreateTeam()}
         />
       </Modal>
+
+      {/* 分享链接管理弹窗（5.6） */}
+      {activeNote && (
+        <ShareModal
+          noteId={activeNote.id}
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+        />
+      )}
 
       {/* 团队管理弹窗：成员/角色/邀请（5.5.1 + 5.5.2） */}
       {manageTeam && (

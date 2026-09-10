@@ -20,6 +20,7 @@ import {
   EditOutlined,
   TeamOutlined,
   ApiOutlined,
+  ShareAltOutlined,
 } from '@ant-design/icons';
 import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
@@ -127,6 +128,9 @@ export interface NoteEditorPanelProps {
   editable: boolean;
   /** 仅笔记 owner / 团队 owner+admin 可调整可见性 */
   canManageVisibility: boolean;
+  /** 5.6：可分享 = 笔记 owner / 团队 owner+admin（服务端同样校验） */
+  canShare: boolean;
+  onShare: () => void;
   onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
   onTitleChange: (title: string) => void;
   onAttachTag: (tagId: string) => void;
@@ -140,6 +144,8 @@ export default function NoteEditorPanel({
   saveStatus,
   editable,
   canManageVisibility,
+  canShare,
+  onShare,
   onVisibilityChange,
   onTitleChange,
   onAttachTag,
@@ -237,6 +243,8 @@ export default function NoteEditorPanel({
       attachableTags={attachableTags}
       editable={editable}
       canManageVisibility={canManageVisibility}
+      canShare={canShare}
+      onShare={onShare}
       onVisibilityChange={onVisibilityChange}
       onTitleInput={setTitle}
       onTitleChange={onTitleChange}
@@ -260,6 +268,8 @@ function EditorBody({
   attachableTags,
   editable,
   canManageVisibility,
+  canShare,
+  onShare,
   onVisibilityChange,
   onTitleInput,
   onTitleChange,
@@ -278,6 +288,8 @@ function EditorBody({
   attachableTags: TagInfo[];
   editable: boolean;
   canManageVisibility: boolean;
+  canShare: boolean;
+  onShare: () => void;
   onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
   onTitleInput: (title: string) => void;
   onTitleChange: (title: string) => void;
@@ -340,6 +352,14 @@ function EditorBody({
         )}
         {note.team_id && !canManageVisibility && (
           <Tag>{note.visibility === 'team_read' ? '团队只读' : note.visibility === 'team_edit' ? '团队可编辑' : '私有'}</Tag>
+        )}
+        {/* 分享入口（5.6.1，仅 owner/团队管理员可见） */}
+        {canShare && (
+          <Tooltip title="生成分享链接">
+            <Button size="small" icon={<ShareAltOutlined />} onClick={onShare}>
+              分享
+            </Button>
+          </Tooltip>
         )}
         <CollabStatus connected={connected} onlineUsers={onlineUsers} />
         <SaveStatus status={saveStatus} />
