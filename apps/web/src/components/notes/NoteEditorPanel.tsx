@@ -21,6 +21,7 @@ import {
   TeamOutlined,
   ApiOutlined,
   ShareAltOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
@@ -131,6 +132,8 @@ export interface NoteEditorPanelProps {
   /** 5.6：可分享 = 笔记 owner / 团队 owner+admin（服务端同样校验） */
   canShare: boolean;
   onShare: () => void;
+  /** 5.7：版本历史入口（任意可见成员可查看，回滚在服务端校验） */
+  onOpenVersions: () => void;
   onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
   onTitleChange: (title: string) => void;
   onAttachTag: (tagId: string) => void;
@@ -146,6 +149,7 @@ export default function NoteEditorPanel({
   canManageVisibility,
   canShare,
   onShare,
+  onOpenVersions,
   onVisibilityChange,
   onTitleChange,
   onAttachTag,
@@ -245,6 +249,7 @@ export default function NoteEditorPanel({
       canManageVisibility={canManageVisibility}
       canShare={canShare}
       onShare={onShare}
+      onOpenVersions={onOpenVersions}
       onVisibilityChange={onVisibilityChange}
       onTitleInput={setTitle}
       onTitleChange={onTitleChange}
@@ -270,6 +275,7 @@ function EditorBody({
   canManageVisibility,
   canShare,
   onShare,
+  onOpenVersions,
   onVisibilityChange,
   onTitleInput,
   onTitleChange,
@@ -290,6 +296,7 @@ function EditorBody({
   canManageVisibility: boolean;
   canShare: boolean;
   onShare: () => void;
+  onOpenVersions: () => void;
   onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
   onTitleInput: (title: string) => void;
   onTitleChange: (title: string) => void;
@@ -361,6 +368,10 @@ function EditorBody({
             </Button>
           </Tooltip>
         )}
+        {/* 版本历史（5.7.1） */}
+        <Tooltip title="版本历史与回滚">
+          <Button size="small" icon={<HistoryOutlined />} onClick={onOpenVersions} />
+        </Tooltip>
         <CollabStatus connected={connected} onlineUsers={onlineUsers} />
         <SaveStatus status={saveStatus} />
       </div>

@@ -1,5 +1,22 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-10] 5.7 版本管理与回收站完成
+
+- 做了什么：
+  - 服务端：NoteVersion 实体（version_no 笔记内递增、source CHECK manual/auto/rollback）；VersionsService（手动保存/列表/详情/回滚）+ versions 路由；writeState 内实现"会话结束且有变更自动建版（auto）"；回滚双路径（热文档 CRDT 清空重建实时生效 / 冷文档回写快照作废帧）；RecycleBin 模块（列表含剩余天数/恢复放回原文件夹/彻底删除外键级联）；CleanupService（@nestjs/schedule 每小时+启动：到期回收清除、过期邀请置 expired）
+  - 前端：VersionDrawer（版本列表来源标签/只读预览/手动保存/回滚确认）+ RecycleBinModal（剩余天数/恢复/彻底删除）+ 侧栏回收站入口 + 编辑器版本历史按钮
+  - 修复 VER-05 缺陷：回滚前快照的去重逻辑原本只比较内容，纯改标题场景会丢失回滚前版本，改为标题+内容双比较
+- 为什么：对应大纲 5.7.1~5.7.5；快照策略按 D-007 ④，回滚策略 D-011
+- 新增依赖：@nestjs/schedule（服务端官方定时任务模块）
+- 产出素材：docs/assets/5.7.1-version-drawer.png、5.7.3-recycle-bin.png；docs/testing/5.7-versions-recycle-tests.md（VER/BIN/CLN 共 15 条）；docs/api.md 版本与回收站节
+- 诚实记录：
+  - 测试中"开题答辩记录"被彻底删除（BIN-02 语义如此，不可恢复）；"私有草稿"保留在回收站作演示
+  - VER-05 首测失败（回滚前快照丢失）如实记录于测试表
+- 遗留问题：
+  - [ ] 版本无分页（单笔记版本量大后需要，数据量小不阻塞）
+  - [ ] 团队笔记删除者的回收站可见性：列表按 original_owner（笔记创建者）过滤，团队管理员看不到他人删除的记录（7.3 可扩展）
+  - [ ] vite 1.3MB chunk 警告延续（5.9 分包）
+
 ## [2026-09-10] 5.6 笔记分享模块完成
 
 - 做了什么：

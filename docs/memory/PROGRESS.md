@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：5.6 笔记分享模块完成（share_links + 访客公开页 + Redis 缓存 + 访客协作 WS 鉴权 + 播种竞态互斥锁修复，17 条用例全过，2 张截图）。下一步：5.7 版本管理与回收站（note_versions + 回收站界面 + 定时清理）。
+> 当前状态：5.7 版本管理与回收站完成（手动/自动/回滚前三态快照 + CRDT 热文档回滚 + 回收站恢复/级联清除 + 定时清理，17 条用例全过，2 张截图）。下一步：5.8 笔记导出（PDF/Markdown），业务模块全部完成后进入 5.9 部署与第 6 章测试。
 
 ## 状态图例
 
@@ -46,11 +46,11 @@
 - ✅ 5.6.4 界面展示与核心代码（截图 5.6.1/5.6.2；论文可引用：share.service.ts（缓存与解析）、realtime.service.ts（访客 WS 鉴权）、SharePage.tsx、ShareModal.tsx）
 
 ### 5.7 版本管理与回收站实现
-- ⬜ 5.7.1 版本历史记录
-- ⬜ 5.7.2 版本回滚与恢复
-- ⬜ 5.7.3 回收站与软删除
-- ⬜ 5.7.4 定时清理机制
-- ⬜ 5.7.5 界面展示与核心代码
+- ✅ 5.7.1 版本历史记录（note_versions 三态来源 manual/auto/rollback；writeState 会话结束有变更自动建版；用例 VER-01~03/06）
+- ✅ 5.7.2 版本回滚与恢复（热文档=CRDT 清空重建实时生效，冷文档=回写快照作废帧；回滚前自动快照；用例 VER-04/05/07/08）
+- ✅ 5.7.3 回收站与软删除（列表含剩余天数/恢复放回原文件夹/彻底删除级联；用例 BIN-01~04）
+- ✅ 5.7.4 定时清理机制（@nestjs/schedule 每小时+启动扫描：到期回收彻底清除、过期邀请置 expired；用例 CLN-01~03）
+- ✅ 5.7.5 界面展示与核心代码（截图 5.7.1/5.7.3；论文可引用：versions.service.ts（CRDT 回滚双路径）、collaboration.persistence.ts（自动建版）、cleanup.service.ts、VersionDrawer.tsx）
 
 ### 5.8 笔记导出功能实现
 - ⬜ 5.8.1 导出为PDF
@@ -73,3 +73,4 @@
 - 5.4 实时协作：`apps/server/src/modules/realtime/collaboration.persistence.ts`（增量回放/播种/合并回写/压缩/防误清）、`realtime.service.ts`（upgrade 握手鉴权）、`yjs-convert.ts`（PM JSON→Yjs 播种）、`apps/web/src/components/notes/NoteEditorPanel.tsx`（Collaboration+Cursor+awareness）
 - 5.5 团队协作：`apps/server/src/modules/teams/teams.service.ts`（RBAC 集中：assertRole/邀请生命周期/可见性过滤）、`notes.service.ts` 的 getAccessLevel（四级笔记访问矩阵）、`apps/web/src/components/teams/TeamManageModal.tsx`
 - 5.6 笔记分享：`apps/server/src/modules/share/share.service.ts`（token 解析/Redis 缓存/防枚举 404）、`realtime.service.ts`（访客 share-token WS 鉴权）、`collaboration.persistence.ts`（按笔记互斥锁防播种竞态）、`apps/web/src/pages/SharePage.tsx`（访客公开页）
+- 5.7 版本与回收站：`apps/server/src/modules/notes/versions.service.ts`（三态快照+CRDT 回滚双路径）、`collaboration.persistence.ts` writeState（自动建版）、`recycle-bin/cleanup.service.ts`（定时清理）、`apps/web/src/components/notes/VersionDrawer.tsx`

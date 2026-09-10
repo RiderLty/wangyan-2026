@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { HealthController } from './health.controller';
 import { RedisModule } from './common/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -9,6 +10,7 @@ import { NotesModule } from './modules/notes/notes.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { ShareModule } from './modules/share/share.module';
+import { RecycleBinModule } from './modules/recycle-bin/recycle-bin.module';
 
 /**
  * 根模块：聚合各业务模块（论文 4.1.3 模块化设计）
@@ -18,6 +20,8 @@ import { ShareModule } from './modules/share/share.module';
  */
 @Module({
   imports: [
+    // 定时任务（论文 5.7.4：回收站到期清理、邀请过期标记）
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '../../.env'],
@@ -46,6 +50,7 @@ import { ShareModule } from './modules/share/share.module';
     RealtimeModule,
     TeamsModule,
     ShareModule,
+    RecycleBinModule,
   ],
   controllers: [HealthController],
 })

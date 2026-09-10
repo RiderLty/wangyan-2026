@@ -24,6 +24,8 @@ import NoteListPanel from '../components/notes/NoteListPanel';
 import NoteEditorPanel from '../components/notes/NoteEditorPanel';
 import TeamManageModal from '../components/teams/TeamManageModal';
 import ShareModal from '../components/share/ShareModal';
+import VersionDrawer from '../components/notes/VersionDrawer';
+import RecycleBinModal from '../components/notes/RecycleBinModal';
 import {
   attachNoteTag,
   createFolder,
@@ -118,6 +120,8 @@ export default function HomePage() {
   } | null>(null);
   const [tagModal, setTagModal] = useState<{ open: boolean; name: string } | null>(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [versionDrawerOpen, setVersionDrawerOpen] = useState(false);
+  const [recycleOpen, setRecycleOpen] = useState(false);
 
   // ---------- 团队数据刷新 ----------
   const refreshTeams = useCallback(async () => {
@@ -502,6 +506,19 @@ export default function HomePage() {
             )}
           </div>
 
+          {/* 回收站（5.7.3） */}
+          <div className="panel-caption" style={{ marginTop: 16 }}>
+            回收站
+            <Button
+              type="text"
+              size="small"
+              onClick={() => setRecycleOpen(true)}
+              title="打开回收站"
+            >
+              查看
+            </Button>
+          </div>
+
           {/* 收到的邀请（5.5.2） */}
           {invitations.length > 0 && (
             <>
@@ -558,6 +575,7 @@ export default function HomePage() {
             canManageVisibility={editorAccess.canManageVisibility}
             canShare={editorAccess.canShare}
             onShare={() => setShareModalOpen(true)}
+            onOpenVersions={() => setVersionDrawerOpen(true)}
             onVisibilityChange={(visibility) => {
               if (!activeNote) return;
               void updateNote(activeNote.id, { visibility }).then(() => {
@@ -645,6 +663,27 @@ export default function HomePage() {
           onPressEnter={() => void handleCreateTeam()}
         />
       </Modal>
+
+      {/* 版本历史抽屉（5.7.1/5.7.2） */}
+      {activeNote && (
+        <VersionDrawer
+          noteId={activeNote.id}
+          open={versionDrawerOpen}
+          onClose={() => setVersionDrawerOpen(false)}
+          onChanged={() => {
+            // 回滚后重新拉取正文（title 也可能变化）
+            if (activeIdRef.current) void selectNote(activeIdRef.current);
+            void refreshNotes();
+          }}
+        />
+      )}
+
+      {/* 回收站弹窗（5.7.3） */}
+      <RecycleBinModal
+        open={recycleOpen}
+        onClose={() => setRecycleOpen(false)}
+        onChanged={() => void refreshNotes()}
+      />
 
       {/* 分享链接管理弹窗（5.6） */}
       {activeNote && (

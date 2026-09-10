@@ -158,6 +158,30 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 实时协作连接权限与上表编辑权限对齐：owner / 团队 owner+admin / visibility=team_edit 的成员可连
 `/ws/:noteId`；team_read、无权限成员连接被 401 拒绝（y-websocket 无法限制只读写穿，防"只读成员改数据"）。
 
+## 三B、版本与回收站接口（论文 5.7）
+
+### 版本（需登录；查看=任意可见成员，编辑=可编辑级别，5.7.1/5.7.2）
+
+| 接口 | 说明 |
+|---|---|
+| POST /notes/:id/versions | 手动保存当前状态为版本（source=manual，version_no 笔记内递增） |
+| GET /notes/:id/versions | 版本列表（version_no/title/source/created_at，倒序） |
+| GET /notes/:id/versions/:versionNo | 快照详情（含 content，预览用） |
+| POST /notes/:id/versions/rollback | Body `{ "version_no" }`；回滚前当前状态自动存为 source=rollback 版本 |
+
+快照来源三态：`manual` 手动 / `auto` 编辑会话结束且有变更（服务端 writeState 自动，D-007 策略④）/
+`rollback` 回滚前。回滚的两种路径：热文档（有协作会话）以 CRDT 操作实时生效；冷文档直接回写快照并作废旧增量帧。
+
+### 回收站（仅本人，5.7.3）
+
+| 接口 | 说明 |
+|---|---|
+| GET /recycle-bin | `[{ id, note_id, title, deleted_at, expires_at, days_remaining }]` |
+| POST /recycle-bin/:id/restore | 清 deleted_at 并放回原文件夹（原文件夹已删则保持未归档） |
+| DELETE /recycle-bin/:id | 彻底删除：版本/分享/标签/协作增量经外键级联一并清除 |
+
+定时清理（5.7.4）：每小时 + 启动时扫描，回收站到期（删除+30 天）彻底清除，过期团队邀请置 expired。
+
 ## 三A、分享接口（论文 5.6 / 4.3.7 share_links）
 
 ### 管理（需登录；分享权限 = 笔记 owner 或团队 owner/admin，5.6.1）

@@ -4,6 +4,7 @@ import { IsNull, LessThanOrEqual, Repository } from 'typeorm';
 import * as Y from 'yjs';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 import { Note } from '../notes/note.entity';
+import { NoteVersion } from '../notes/note-version.entity';
 import { prosemirrorToPlainText } from '../notes/prosemirror.util';
 import { YjsUpdate } from './yjs-update.entity';
 import { pmJsonToYFragment } from './yjs-convert';
@@ -52,6 +53,7 @@ export class CollaborationPersistence {
   constructor(
     @InjectRepository(YjsUpdate) private readonly updatesRepo: Repository<YjsUpdate>,
     @InjectRepository(Note) private readonly notesRepo: Repository<Note>,
+    @InjectRepository(NoteVersion) private readonly versionsRepo: Repository<NoteVersion>,
   ) {}
 
   async bindState(docName: string, ydoc: Y.Doc): Promise<void> {
@@ -119,16 +121,17 @@ export class CollaborationPersistence {
     const fragment = ydoc.getXmlFragment('default');
     const json = yXmlFragmentToProsemirrorJSON(fragment);
 
+    const stored = await this.notesRepo.findOne({
+      where: { id: noteId },
+      select: ['id', 'owner_id', 'title', 'content', 'content_text'],
+    });
+
     // 数据保护（论文 5.4.4 一致性）：空会话不覆盖非空快照。
     // 场景：客户端在同步完成前断开（或异常空连接），其空文档若直接合并
     // 会把正文清空——CRDT 语义上"空"也是一种合法状态，但为防误清，
     // 约定"文档空且库中快照非空"时跳过回写（真正清空笔记属 5.7 回收站范畴）。
     const isEmptyDoc = fragment.length === 0;
     if (isEmptyDoc) {
-      const stored = await this.notesRepo.findOne({
-        where: { id: noteId },
-        select: ['id', 'content'],
-      });
       const storedBlocks = (stored?.content as { content?: unknown[] })?.content?.length ?? 0;
       if (storedBlocks > 0) {
         this.logger.warn(
@@ -138,10 +141,39 @@ export class CollaborationPersistence {
       }
     }
 
-    await this.notesRepo.update(
-      { id: noteId },
-      { content: json, content_text: prosemirrorToPlainText(json) },
-    );
+    const newText = prosemirrorToPlainText(json);
+    if (!stored) return;
+
+    // 关键事件自动快照（D-007 快照策略④ / 论文 5.7.1）：编辑会话结束且有变更时
+    // 保存版本（source=auto），与最新版本（标题+内容）相同则跳过
+    if (stored.content_text !== newText) {
+      const latest = await this.versionsRepo.findOne({
+        where: { note_id: noteId },
+        order: { version_no: 'DESC' },
+      });
+      const sameAsLatest =
+        latest &&
+        latest.title === stored.title &&
+        JSON.stringify(latest.content) === JSON.stringify(json);
+      if (!sameAsLatest) {
+        const maxRow = await this.versionsRepo
+          .createQueryBuilder('v')
+          .where('v.note_id = :noteId', { noteId })
+          .select('MAX(v.version_no)', 'max')
+          .getRawOne();
+        await this.versionsRepo.insert({
+          note_id: noteId,
+          version_no: (maxRow?.max ?? 0) + 1,
+          title: stored.title,
+          content: json,
+          source: 'auto',
+          created_by: stored.owner_id,
+        });
+        this.logger.log(`[协作] 笔记 ${noteId} 会话结束有变更，已建自动版本`);
+      }
+    }
+
+    await this.notesRepo.update({ id: noteId }, { content: json, content_text: newText });
 
     // compaction：清理回放前已合并的增量行；播种首帧保留（它代表当前快照起点）
     const maxId = this.replayedMaxId.get(noteId) ?? null;
