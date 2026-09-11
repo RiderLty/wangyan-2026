@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SharePage from './pages/SharePage';
+import PrintPage from './pages/PrintPage';
 
 /** 路由守卫（论文 5.2.3）：未登录访问受保护页 → 重定向 /login */
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -35,6 +36,14 @@ export default function App() {
           element={
             <RequireAuth>
               <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/print/:noteId"
+          element={
+            <RequireAuth>
+              <PrintPage />
             </RequireAuth>
           }
         />

@@ -147,3 +147,13 @@
   4. 定时清理用 @nestjs/schedule（NestJS 官方定时模块，@Cron 装饰器可进论文 5.7.4），每小时+启动扫描
 - 新增依赖：@nestjs/schedule（服务端官方定时任务模块）
 - 影响论文小节：4.3.6、4.3.8、5.7.1~5.7.5
+
+## D-012：笔记导出实现方案（5.8，纯前端）
+
+- 日期：2026-09-11
+- 背景：大纲 5.8 要求导出 PDF 与 Markdown；用户明确指示采用前端实现。
+- 选项（PDF）：① 服务端 puppeteer 无头浏览器渲染 PDF；② 前端打印视图 + 浏览器"打印/另存为 PDF"；（Markdown：① 服务端自写序列化器；② tiptap-markdown 扩展）
+- 决定：PDF 走 **②**（/print/:noteId 干净排版 + 自动 window.print）；Markdown 走 **②** tiptap-markdown。
+- 理由：不引入服务端无头浏览器依赖（5.9 Docker 镜像更小、无崩溃风险），排版与分页交给浏览器打印引擎；tiptap-markdown 与编辑器共用同一套 Tiptap schema，导出内容与所见严格一致，避免二次实现序列化器造成偏差。经用户确认。
+- 新增依赖：tiptap-markdown@^0.9（web，Markdown 序列化）、dayjs 已有；服务端零新增
+- 影响论文小节：5.8.1、5.8.2、5.8.3

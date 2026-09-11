@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：5.7 版本管理与回收站完成（手动/自动/回滚前三态快照 + CRDT 热文档回滚 + 回收站恢复/级联清除 + 定时清理，17 条用例全过，2 张截图）。下一步：5.8 笔记导出（PDF/Markdown），业务模块全部完成后进入 5.9 部署与第 6 章测试。
+> 当前状态：5.8 笔记导出完成（前端方案：Markdown=tiptap-markdown 序列化、PDF=打印视图，真实产物 PDF/MD 入库 docs/assets）。第 5 章功能模块全部完成，下一步：5.9 系统部署（Docker 镜像/Compose/一键启动）+ DDL 附录导出，然后第 6 章测试整编。
 
 ## 状态图例
 
@@ -53,9 +53,9 @@
 - ✅ 5.7.5 界面展示与核心代码（截图 5.7.1/5.7.3；论文可引用：versions.service.ts（CRDT 回滚双路径）、collaboration.persistence.ts（自动建版）、cleanup.service.ts、VersionDrawer.tsx）
 
 ### 5.8 笔记导出功能实现
-- ⬜ 5.8.1 导出为PDF
-- ⬜ 5.8.2 导出为Markdown
-- ⬜ 5.8.3 界面展示与核心代码
+- ✅ 5.8.1 导出为PDF（前端打印视图 /print/:noteId + 自动调起系统打印，用户指定前端方案 D-012；真实产物 docs/assets/5.8.1-export.pdf；用例 EXP-03/04）
+- ✅ 5.8.2 导出为Markdown（tiptap-markdown 序列化 ProseMirror JSON，与编辑器同 schema；真实产物 docs/assets/5.8.2-export.md；用例 EXP-01/02）
+- ✅ 5.8.3 界面展示与核心代码（截图 5.8.3-export-menu.png；论文可引用：utils/export.ts、PrintPage.tsx）
 
 ### 5.9 系统部署实现
 - ⬜ 5.9.1 Docker镜像构建
@@ -74,3 +74,4 @@
 - 5.5 团队协作：`apps/server/src/modules/teams/teams.service.ts`（RBAC 集中：assertRole/邀请生命周期/可见性过滤）、`notes.service.ts` 的 getAccessLevel（四级笔记访问矩阵）、`apps/web/src/components/teams/TeamManageModal.tsx`
 - 5.6 笔记分享：`apps/server/src/modules/share/share.service.ts`（token 解析/Redis 缓存/防枚举 404）、`realtime.service.ts`（访客 share-token WS 鉴权）、`collaboration.persistence.ts`（按笔记互斥锁防播种竞态）、`apps/web/src/pages/SharePage.tsx`（访客公开页）
 - 5.7 版本与回收站：`apps/server/src/modules/notes/versions.service.ts`（三态快照+CRDT 回滚双路径）、`collaboration.persistence.ts` writeState（自动建版）、`recycle-bin/cleanup.service.ts`（定时清理）、`apps/web/src/components/notes/VersionDrawer.tsx`
+- 5.8 笔记导出：`apps/web/src/utils/export.ts`（Markdown 序列化/下载/打印视图入口）、`apps/web/src/pages/PrintPage.tsx`（PDF 打印排版）

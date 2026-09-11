@@ -6,7 +6,7 @@ import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { WebsocketProvider } from 'y-websocket';
 import * as Y from 'yjs';
-import { Button, Divider, Empty, Input, Select, Space, Tag, Tooltip, Typography, Avatar } from 'antd';
+import { Button, Divider, Dropdown, Empty, Input, Select, Space, Tag, Tooltip, Typography, Avatar } from 'antd';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -22,9 +22,13 @@ import {
   ApiOutlined,
   ShareAltOutlined,
   HistoryOutlined,
+  DownloadOutlined,
+  FileMarkdownOutlined,
+  FilePdfOutlined,
 } from '@ant-design/icons';
 import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
+import { exportMarkdown, openPrintView } from '../../utils/export';
 import { useAuth } from '../../auth/AuthContext';
 
 /**
@@ -372,6 +376,32 @@ function EditorBody({
         <Tooltip title="版本历史与回滚">
           <Button size="small" icon={<HistoryOutlined />} onClick={onOpenVersions} />
         </Tooltip>
+        {/* 导出（5.8）：Markdown 直接下载；PDF 走打印视图 */}
+        <Dropdown
+          trigger={['click']}
+          menu={{
+            items: [
+              {
+                key: 'markdown',
+                icon: <FileMarkdownOutlined />,
+                label: '导出 Markdown（.md）',
+                onClick: () => {
+                  exportMarkdown(note);
+                },
+              },
+              {
+                key: 'pdf',
+                icon: <FilePdfOutlined />,
+                label: '导出 PDF（打印视图）',
+                onClick: () => openPrintView(note.id),
+              },
+            ],
+          }}
+        >
+          <Button size="small" icon={<DownloadOutlined />}>
+            导出
+          </Button>
+        </Dropdown>
         <CollabStatus connected={connected} onlineUsers={onlineUsers} />
         <SaveStatus status={saveStatus} />
       </div>

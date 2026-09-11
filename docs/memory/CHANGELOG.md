@@ -1,5 +1,18 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-11] 5.8 笔记导出完成（第 5 章功能模块全部完成）
+
+- 做了什么：
+  - 前端导出方案（D-012，用户指定纯前端）：utils/export.ts——Markdown 用 tiptap-markdown（headless Editor 实例序列化 ProseMirror JSON，与编辑器同 schema）+ Blob 下载（文件名安全化）；PDF 走 /print/:noteId 打印视图（干净排版+导出时间戳+自动 window.print，浏览器另存为 PDF）
+  - 编辑器头部"导出"下拉（trigger click）：导出 Markdown（.md）/ 导出 PDF（打印视图）；PrintPage 路由（RequireAuth 保护）+ 打印媒体 CSS
+  - 验证：CDP 驱动真实浏览器——Markdown 序列化输出核对（标题/加粗/列表全对）、Page.printToPDF 生成真实 A4 PDF（204KB 1 页）；产物入库 docs/assets/5.8.1-export.pdf、5.8.2-export.md
+- 为什么：对应大纲 5.8.1~5.8.3；方案经用户确认（"前端实现"）
+- 新增依赖：tiptap-markdown@^0.9（web，Markdown 序列化，与 Tiptap 同 schema）；服务端零新增
+- 产出素材：docs/assets/5.8.1-export.pdf、5.8.2-export.md、5.8.3-export-menu.png；docs/testing/5.8-export-tests.md（EXP-01~06）；纯前端实现，api.md 无需增补
+- 遗留问题：
+  - [ ] PDF 分页样式（页眉页脚/页码）依赖浏览器打印设置，如需定制可后续加 @page 规则
+  - [ ] vite 1.3MB chunk 警告延续（5.9 manualChunks 分包）
+
 ## [2026-09-10] 5.7 版本管理与回收站完成
 
 - 做了什么：

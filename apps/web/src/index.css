@@ -376,3 +376,55 @@ body {
 .share-content .ProseMirror {
   min-height: 30vh;
 }
+
+/* ---------- PDF 打印视图（5.8.1） ---------- */
+.print-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.print-title {
+  margin-bottom: 4px !important;
+}
+
+.print-meta {
+  font-size: 12px;
+  color: #8c8c8c;
+  border-bottom: 1px solid #e8e8e8;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.print-content .ProseMirror {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* 打印媒体：只保留正文（隐藏宿主界面），交给浏览器分页 */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .ant-layout-header,
+  .ant-layout-sider,
+  .note-list-panel,
+  .editor-toolbar,
+  .editor-tags,
+  .editor-meta,
+  .save-status,
+  .collab-status,
+  .ant-drawer,
+  .ant-modal,
+  .ant-message {
+    display: none !important;
+  }
+
+  .print-page {
+    max-width: none;
+    padding: 0;
+  }
+}
