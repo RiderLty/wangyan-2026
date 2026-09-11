@@ -1,3 +1,8 @@
+# nginx 配置模板（论文 5.9.2 服务编排）
+# 经 nginx 官方镜像的 envsubst 机制渲染：BACKEND_HOST 由部署环境注入——
+#   Docker Compose：BACKEND_HOST=server（服务名 DNS）
+#   NAS 单机 docker run：BACKEND_HOST=192.168.3.3（宿主机发布端口）
+# 注意：$uri/$host 等 nginx 变量不在环境变量中，envsubst 不会替换
 server {
     listen 80;
     server_name _;
@@ -12,14 +17,14 @@ server {
 
     # REST API 反代（论文 4.6 系统接口设计）
     location /api {
-        proxy_pass http://server:13000;
+        proxy_pass http://${BACKEND_HOST}:13000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
 
     # WebSocket 反代（实时协作，论文 4.4.1）
     location /ws {
-        proxy_pass http://server:13000;
+        proxy_pass http://${BACKEND_HOST}:13000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
