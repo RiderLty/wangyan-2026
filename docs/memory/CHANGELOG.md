@@ -1,5 +1,23 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-11] 第 6 章测试整编（6.2.7 汇总 + 6.3 性能实测）
+
+- 做了什么：
+  - docs/testing/6.2-summary.md：8 张模块测试表汇总——121 条用例 100% 通过 + 6 个"测试发现并修复的缺陷"清单（6.2.7 素材）
+  - 性能实测（对 NAS 部署系统 192.168.3.3:18080，经 nginx）：
+    - 6.3.1 接口响应：读 avg 5.3ms/p95 7.7ms；登录 72.8ms（bcrypt 预期成本）；写入 23.8ms
+    - 6.3.2 WS 并发：200/200 连接成功，建连 avg 10ms/p95 13.4ms
+    - 6.3.3 编辑传播延迟：avg 0.8ms/p95 1.7ms（增量内存广播不阻塞——D-007 架构收益的直接证据）
+  - 复现脚本入库 scripts/perf/（api-latency / ws-concurrent / edit-latency）
+  - docs/testing/perf.md：6.1 环境表 + 6.3 三组数据 + 6.3.4 分析五条 + 6.4 兼容性框架表
+- 为什么：对应大纲 6.1/6.2.7/6.3；AGENTS §6 要求性能数据"部署后协助设计压测方案与记录"
+- 新增依赖：无（Node 原生 fetch/performance.now + workspace 内 ws/yjs）
+- 产出素材：docs/testing/6.2-summary.md、perf.md、scripts/perf/
+- 诚实记录：
+  - edit-latency 首版直接往 XmlElement 插字符串报错（应插到段内 XmlText），修正后跑通
+  - 6.4 兼容性仅 Edge(Chromium) 全流程实测，Safari/Firefox 留人工复核（如实标注"待复核"）
+- 遗留问题：无新增（论文撰写为下一阶段工作）
+
 ## [2026-09-11] 5.9 系统部署完成（第 5 章全部完成）
 
 - 做了什么：
