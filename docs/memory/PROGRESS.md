@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：5.8 笔记导出完成（前端方案：Markdown=tiptap-markdown 序列化、PDF=打印视图，真实产物 PDF/MD 入库 docs/assets）。第 5 章功能模块全部完成，下一步：5.9 系统部署（Docker 镜像/Compose/一键启动）+ DDL 附录导出，然后第 6 章测试整编。
+> 当前状态：5.9 系统部署完成（NAS 上构建 amd64 镜像 + docker run 部署前后端，端到端 10 项验证全过；附录 A DDL / 附录 B Compose / README 就绪）。**第 5 章全部完成**。下一步：第 6 章测试整编（各模块测试表已有，需汇总 6.2.7 + 性能测试 6.3），然后论文撰写。
 
 ## 状态图例
 
@@ -58,9 +58,9 @@
 - ✅ 5.8.3 界面展示与核心代码（截图 5.8.3-export-menu.png；论文可引用：utils/export.ts、PrintPage.tsx）
 
 ### 5.9 系统部署实现
-- ⬜ 5.9.1 Docker镜像构建
-- ⬜ 5.9.2 Docker Compose服务编排
-- ⬜ 5.9.3 部署脚本与一键启动
+- ✅ 5.9.1 Docker镜像构建（NAS 本机构建原生 amd64：wangyan-server 330MB / wangyan-web 70.7MB；vite manualChunks 分包修掉 1.3MB 单块；用例 DEP-01~03）
+- ✅ 5.9.2 Docker Compose服务编排（compose 四服务 + 健康检查 + restart 策略，docs/appendix-compose.yml 即附录 B；生产 NAS 无 compose 插件故用 docker run，论文如实说明；用例 DEP-06~09 即编排产物验证）
+- ✅ 5.9.3 部署脚本与一键启动（nas-app-setup.sh docker run 部署存档；compose 一键启动见 README；端到端 DEP-04~09 全过 + 部署页截图）
 
 ## 待讨论 / 阻塞
 
@@ -75,3 +75,4 @@
 - 5.6 笔记分享：`apps/server/src/modules/share/share.service.ts`（token 解析/Redis 缓存/防枚举 404）、`realtime.service.ts`（访客 share-token WS 鉴权）、`collaboration.persistence.ts`（按笔记互斥锁防播种竞态）、`apps/web/src/pages/SharePage.tsx`（访客公开页）
 - 5.7 版本与回收站：`apps/server/src/modules/notes/versions.service.ts`（三态快照+CRDT 回滚双路径）、`collaboration.persistence.ts` writeState（自动建版）、`recycle-bin/cleanup.service.ts`（定时清理）、`apps/web/src/components/notes/VersionDrawer.tsx`
 - 5.8 笔记导出：`apps/web/src/utils/export.ts`（Markdown 序列化/下载/打印视图入口）、`apps/web/src/pages/PrintPage.tsx`（PDF 打印排版）
+- 5.9 部署：`apps/server/Dockerfile` + `apps/web/Dockerfile` + `apps/web/nginx.conf.template`（envsubst 模板）、`docker-compose.yml`、`nas-app-setup.sh`（部署存档）、`docs/appendix-ddl.sql` / `docs/appendix-compose.yml`

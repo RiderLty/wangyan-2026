@@ -157,3 +157,16 @@
 - 理由：不引入服务端无头浏览器依赖（5.9 Docker 镜像更小、无崩溃风险），排版与分页交给浏览器打印引擎；tiptap-markdown 与编辑器共用同一套 Tiptap schema，导出内容与所见严格一致，避免二次实现序列化器造成偏差。经用户确认。
 - 新增依赖：tiptap-markdown@^0.9（web，Markdown 序列化）、dayjs 已有；服务端零新增
 - 影响论文小节：5.8.1、5.8.2、5.8.3
+
+## D-013：生产部署拓扑（5.9，NAS docker run 单机）
+
+- 日期：2026-09-11
+- 背景：NAS Docker 24.0.9 无 compose 插件（D-005 已知）；Mac 无 Docker 无法本地构建；NAS 为 x86_64。
+- 选项：① Mac 交叉构建 buildx --platform amd64 再导出传输；② 源码上传 NAS 本机构建；③ 注册表推送拉取
+- 决定：**②**——`git archive` 打源码（不含 node_modules/.env）上传 NAS，`docker build` 构建原生 amd64 镜像，`docker run` 部署（与两个数据库容器同方式，部署存档 `nas-app-setup.sh`）。compose 文件保留（论文 5.9.2"一键启动"指标 + 附录 B，在任意有 compose 的机器可用），论文如实写明生产环境用单机 run 方式的原因。
+- 要点：
+  1. nginx 配置模板化：`nginx.conf.template` + nginx 官方镜像 envsubst 机制，BACKEND_HOST 注入（compose=服务名 / NAS=宿主机地址 192.168.3.3），一套模板两种部署
+  2. 前端产物 manualChunks 函数式分包（antd/tiptap/yjs/react）；**裸子串匹配 'react' 会把 antd 内部 reactNode.js 误分进 react 块形成循环 chunk**（部署页运行时崩溃），必须带路径分隔符精确匹配——NAS 真机部署暴露、本地 preview 无法提前发现的问题，正是真机验证价值
+  3. server 容器经 --env-file 注入 .env（POSTGRES_HOST=192.168.3.3 复用高位端口直连本机数据库容器）
+  4. 构建上下文用 git archive（不含 node_modules/.env）——首次部署因改动未提交导致 archive 用了旧配置，教训：上传构建前先 commit
+- 影响论文小节：2.5、5.9.1~5.9.3、附录 A/B

@@ -1,5 +1,26 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-11] 5.9 系统部署完成（第 5 章全部完成）
+
+- 做了什么：
+  - 部署文件：nginx.conf → nginx.conf.template（envsubst 注入 BACKEND_HOST，compose/NAS 双用）；web Dockerfile 用 nginx 官方 templates 机制；compose 四服务修正（高位端口默认、redis requirepass、restart 策略）并复制为 docs/appendix-compose.yml；vite manualChunks 函数式分包（1.3MB 单块 → 5 块）
+  - NAS 构建：git archive 上传源码，NAS 本机 docker build 原生 amd64 两镜像（server 330MB / web 70.7MB）
+  - NAS 部署：.env 上传为 wangyan-2026-app.env（600 权限），docker run 前后端两容器（--restart unless-stopped，参照数据库容器方式），部署命令存档 nas-app-setup.sh
+  - 端到端验证 10 项全过（DEP-01~10）：直连/代理健康、网页、登录全链路、经 nginx WebSocket、部署页截图（无控制台错误）
+  - 附录：docs/appendix-ddl.sql（生产库 pg_dump schema + 4 视图，视图 SQL 真库试建验证）
+  - README 重写：架构图更新为全容器拓扑 + 两种启动方式
+- 为什么：对应大纲 5.9.1~5.9.3 + 附录 A/B；用户指定不用 compose 部署（NAS 无插件），参照数据库容器方式
+- 新增依赖：@nestjs/schedule（上一条已记，本次无新增）；本次无新增运行时依赖
+- 产出素材：docs/assets/5.9.3-nas-deployed-login.png；docs/testing/5.9-deploy-tests.md（DEP-01~10）；appendix-ddl.sql / appendix-compose.yml
+- 诚实记录（排障两次，均有真实价值）：
+  - 第一轮 web 容器崩溃循环：git archive 只导出已提交文件，nginx 模板化未提交就上传构建 → 旧配置上线。教训：上传构建前先 commit（已记 D-013 要点 4）
+  - 分包裸子串 'react' 匹配把 antd 内部 reactNode.js 分进 react 块形成循环 chunk → 部署页运行时崩溃（React undefined）。本地 vite preview 复现并验证修复后重新部署——真机部署暴露了本地从未触发的问题
+  - 设计稿 13 表中 attachments 未建（大纲无上传功能），DDL 附录已注释说明
+- 遗留问题：
+  - [ ] 第 6 章测试整编：6.2.7 汇总表 + 6.3 性能测试（接口响应时间/WS 并发/编辑延迟）待做
+  - [ ] wangyan-server 镜像运行时层含全量 node_modules（含 dev 依赖），镜像 330MB 偏大；功能无影响，优化列为 7.3
+  - [ ] NAS 构建目录 /mnt/user/storage/Projects/wangyan-2026-build 保留（下次构建复用），清理命令见 nas-app-setup.sh 头注释
+
 ## [2026-09-11] 5.8 笔记导出完成（第 5 章功能模块全部完成）
 
 - 做了什么：
