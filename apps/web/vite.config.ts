@@ -10,7 +10,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // 依赖分包（论文 5.9.1）：antd / 编辑器 / 协作三大块拆开，避免单 chunk 过大。
-        // 用函数式按 node_modules 路径分包：y-protocols 等包无 "." 导出，对象式写法无法解析
+        // 注意：必须用带路径分隔符的精确匹配——裸子串（如 'react'）会把 antd 内部的
+        // reactNode.js 等文件误分进 react 块，形成 react↔antd 循环 chunk 导致初始化崩溃
         manualChunks(id: string) {
           if (!id.includes('node_modules')) return undefined;
           if (id.includes('antd') || id.includes('@ant-design') || id.includes('dayjs') || id.includes('/rc-')) {
@@ -22,7 +23,13 @@ export default defineConfig({
           if (id.includes('yjs') || id.includes('y-protocols') || id.includes('y-websocket') || id.includes('lib0')) {
             return 'yjs';
           }
-          if (id.includes('react') || id.includes('scheduler')) {
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react-router') ||
+            id.includes('/react-is/') ||
+            id.includes('/scheduler/')
+          ) {
             return 'react';
           }
           return undefined;
