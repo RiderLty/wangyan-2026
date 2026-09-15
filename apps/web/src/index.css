@@ -12,8 +12,36 @@ body {
 /* ---------- 工作台三栏布局（论文 5.3.5 界面） ---------- */
 .side-panel {
   padding: 12px !important;
-  overflow-y: auto;
+  overflow: hidden auto;
   border-right: 1px solid #f0f0f0;
+}
+
+/* 侧栏完全收起（collapsedWidth=0）时：清零内边距、隐藏内容溢出与残留边框 */
+.ant-layout-sider-collapsed.side-panel {
+  padding: 0 !important;
+  border-right: none;
+}
+
+/* 顶栏侧栏开关按钮（5.3.5）：深色顶栏上用白色图标 + 悬停/旋转动效 */
+.side-toggle.ant-btn {
+  color: #fff;
+  transition: background-color 0.2s;
+}
+
+.side-toggle.ant-btn:hover,
+.side-toggle.ant-btn:focus-visible {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+.side-toggle-icon {
+  display: inline-block;
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.side-toggle-icon.is-collapsed {
+  transform: rotate(180deg);
 }
 
 .panel-caption {
@@ -149,8 +177,16 @@ body {
   flex-direction: column;
   height: 100%;
   padding: 16px 32px;
-  max-width: 860px;
+  /* 不设宽度上限：两侧栏为固定列，编辑区自适应填满剩余宽度（响应式） */
   margin: 0 auto;
+}
+
+/* 专注模式（5.3.5 布局优化）：编辑器独占整页，Esc 或编辑器头部按钮退出。
+   仅用 CSS 隐藏兄弟栏，编辑器组件不重挂载，Yjs 协作会话不受影响 */
+.focus-mode .ant-layout-header,
+.focus-mode .side-panel,
+.focus-mode .note-list-content {
+  display: none !important;
 }
 
 .editor-empty {

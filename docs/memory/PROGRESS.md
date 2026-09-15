@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：第 6 章素材整编完成（6.2.7 汇总 121 用例 100% 通过 + 6.3 性能实测：读接口 avg 5.3ms / 200 WS 并发 100% / 编辑延迟 avg 0.8ms，脚本入库可复现）。**编码与测试素材全部就绪**，下一步：论文撰写（按大纲逐章，素材索引见各测试表头部）；git push nas 由用户执行。
+> 当前状态：第 6 章素材整编完成（6.2.7 汇总 121 用例 100% 通过 + 6.3 性能实测：读接口 avg 5.3ms / 200 WS 并发 100% / 编辑延迟 avg 0.8ms，脚本入库可复现）。**编码与测试素材全部就绪**，2026-09-15 完成工作台布局优化（编辑器主体化 + 专注模式，见 CHANGELOG）；下一步：论文撰写（按大纲逐章，素材索引见各测试表头部）；5.3.5 截图需按新版式重截；git push nas 由用户执行。
 
 ## 状态图例
 
@@ -24,7 +24,7 @@
 - ✅ 5.3.2 Markdown实时预览（Tiptap input rules 即时渲染，见 D-008-2；界面见 5.3.2 截图）
 - ✅ 5.3.3 笔记分类与文件夹管理（folders 树 + tags 双维度；用例 NOTE-13~22）
 - ✅ 5.3.4 笔记搜索功能（content_text ILIKE + 通配符转义 + ?q= 深链；用例 NOTE-23~26）
-- ✅ 5.3.5 界面展示与核心代码（截图 5.3.1~5.3.4 四张；论文可引用：notes.service.ts、prosemirror.util.ts、NoteEditorPanel.tsx、HomePage.tsx）
+- ✅ 5.3.5 界面展示与核心代码（截图 5.3.1~5.3.4 四张；论文可引用：notes.service.ts、prosemirror.util.ts、NoteEditorPanel.tsx、HomePage.tsx）※2026-09-15 布局优化：编辑器主体化（中栏 216px/编辑区 1000px）+ 专注模式（编辑器独占整页，Esc 退出），截图待按新版式重截
 
 ### 5.4 实时协作编辑模块实现
 - ✅ 5.4.1 WebSocket服务端实现（y-websocket setupWSConnection 挂 Nest HTTP server，/ws/:noteId，握手 JWT+归属校验；用例 COLLAB-01~04）

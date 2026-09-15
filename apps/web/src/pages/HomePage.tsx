@@ -12,6 +12,7 @@ import {
 } from 'antd';
 import {
   LogoutOutlined,
+  MenuFoldOutlined,
   PlusOutlined,
   TagOutlined,
   TeamOutlined,
@@ -66,7 +67,8 @@ const { Header, Sider, Content } = Layout;
 
 /**
  * 笔记管理工作台（论文 5.3 个人空间 + 5.5 团队空间）
- * 三栏布局：文件夹树/标签/团队/搜索 | 笔记列表 | Tiptap 编辑器
+ * 三栏布局：文件夹树/标签/团队/搜索 | 笔记列表 | Tiptap 编辑器（主体）
+ * 专注模式：隐藏两侧栏与顶栏，编辑器独占整页（Esc 或按钮退出）
  */
 export default function HomePage() {
   const { user, logout } = useAuth();
@@ -122,6 +124,18 @@ export default function HomePage() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [versionDrawerOpen, setVersionDrawerOpen] = useState(false);
   const [recycleOpen, setRecycleOpen] = useState(false);
+  // 专注模式（5.3.5 布局优化）：编辑器独占整页；Esc 或编辑器头部按钮退出
+  const [focusMode, setFocusMode] = useState(false);
+  // 左栏收起/展开：顶栏左侧按钮控制（收起时编辑区自适应占满）
+  const [siderCollapsed, setSiderCollapsed] = useState(false);
+  useEffect(() => {
+    if (!focusMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFocusMode(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [focusMode]);
 
   // ---------- 团队数据刷新 ----------
   const refreshTeams = useCallback(async () => {
@@ -253,7 +267,7 @@ export default function HomePage() {
     }
     try {
       await deleteNote(id);
-      message.success('已移入回收站（5.7 提供恢复界面）');
+      message.success('已移入回收站，30 天内可在回收站恢复');
     } catch {
       message.error('删除失败：仅笔记创建者或团队管理员可删除');
     }
@@ -371,7 +385,7 @@ export default function HomePage() {
         : (folders.find((f) => f.id === folderFilter)?.name ?? '笔记');
 
   return (
-    <Layout style={{ height: '100vh' }}>
+    <Layout style={{ height: '100vh' }} className={focusMode ? 'workbench focus-mode' : 'workbench'}>
       <Header
         style={{
           display: 'flex',
@@ -380,9 +394,23 @@ export default function HomePage() {
           paddingInline: 24,
         }}
       >
-        <Typography.Title level={4} style={{ color: '#fff', margin: 0 }}>
-          在线Markdown笔记编辑与管理平台
-        </Typography.Title>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Button
+            type="text"
+            ghost
+            className="side-toggle"
+            title={siderCollapsed ? '显示侧栏' : '收起侧栏'}
+            onClick={() => setSiderCollapsed((v) => !v)}
+            icon={
+              <MenuFoldOutlined
+                className={`side-toggle-icon${siderCollapsed ? ' is-collapsed' : ''}`}
+              />
+            }
+          />
+          <Typography.Title level={4} style={{ color: '#fff', margin: 0 }}>
+            在线Markdown笔记编辑与管理平台
+          </Typography.Title>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Avatar style={{ backgroundColor: '#1677ff' }}>
             {user?.username?.charAt(0)?.toUpperCase()}
@@ -395,8 +423,15 @@ export default function HomePage() {
       </Header>
 
       <Layout>
-        {/* 左栏：搜索 + 文件夹树 + 标签（5.3.3 / 5.3.4） */}
-        <Sider width={260} theme="light" className="side-panel">
+        {/* 左栏：搜索 + 文件夹树 + 标签（5.3.3 / 5.3.4）——顶栏按钮收起/展开（collapsedWidth=0 完全收回） */}
+        <Sider
+          width={240}
+          collapsedWidth={0}
+          collapsed={siderCollapsed}
+          trigger={null}
+          theme="light"
+          className="side-panel"
+        >
           <Input.Search
             placeholder="搜索笔记标题与正文…"
             allowClear
@@ -550,8 +585,18 @@ export default function HomePage() {
           )}
         </Sider>
 
-        {/* 中栏：笔记列表（5.3.1） */}
-        <Content style={{ width: 260, borderInline: '1px solid #f0f0f0', overflow: 'hidden' }}>
+        {/* 中栏：笔记列表（5.3.1）——固定列（Content 默认 flex:auto 会伸展抢宽度，必须显式关闭） */}
+        <Content
+          className="note-list-content"
+          style={{
+            width: 240,
+            flex: 'none',
+            // 侧栏收起后列表顶到最左，左边框会变成孤立的"白线"，条件化去掉
+            borderInlineStart: siderCollapsed ? 'none' : '1px solid #f0f0f0',
+            borderInlineEnd: '1px solid #f0f0f0',
+            overflow: 'hidden',
+          }}
+        >
           <NoteListPanel
             notes={notes}
             activeId={activeNote?.id ?? null}
@@ -574,6 +619,8 @@ export default function HomePage() {
             editable={editorAccess.editable}
             canManageVisibility={editorAccess.canManageVisibility}
             canShare={editorAccess.canShare}
+            focusMode={focusMode}
+            onToggleFocus={() => setFocusMode((v) => !v)}
             onShare={() => setShareModalOpen(true)}
             onOpenVersions={() => setVersionDrawerOpen(true)}
             onVisibilityChange={(visibility) => {

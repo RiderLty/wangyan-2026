@@ -33,7 +33,7 @@ export default function NoteListPanel({
   return (
     <div className="note-list-panel">
       <div className="panel-caption">
-        <Typography.Text strong ellipsis style={{ maxWidth: 150 }}>
+        <Typography.Text strong ellipsis style={{ maxWidth: 120 }}>
           {contextTitle}
         </Typography.Text>
         <Button type="text" size="small" icon={<FileAddOutlined />} onClick={onCreate}>

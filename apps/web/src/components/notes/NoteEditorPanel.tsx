@@ -25,6 +25,8 @@ import {
   DownloadOutlined,
   FileMarkdownOutlined,
   FilePdfOutlined,
+  ExpandOutlined,
+  CompressOutlined,
 } from '@ant-design/icons';
 import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
@@ -135,6 +137,9 @@ export interface NoteEditorPanelProps {
   canManageVisibility: boolean;
   /** 5.6：可分享 = 笔记 owner / 团队 owner+admin（服务端同样校验） */
   canShare: boolean;
+  /** 专注模式（5.3.5 布局优化）：编辑器独占整页，Esc 也可退出 */
+  focusMode: boolean;
+  onToggleFocus: () => void;
   onShare: () => void;
   /** 5.7：版本历史入口（任意可见成员可查看，回滚在服务端校验） */
   onOpenVersions: () => void;
@@ -152,6 +157,8 @@ export default function NoteEditorPanel({
   editable,
   canManageVisibility,
   canShare,
+  focusMode,
+  onToggleFocus,
   onShare,
   onOpenVersions,
   onVisibilityChange,
@@ -252,6 +259,8 @@ export default function NoteEditorPanel({
       editable={editable}
       canManageVisibility={canManageVisibility}
       canShare={canShare}
+      focusMode={focusMode}
+      onToggleFocus={onToggleFocus}
       onShare={onShare}
       onOpenVersions={onOpenVersions}
       onVisibilityChange={onVisibilityChange}
@@ -278,6 +287,8 @@ function EditorBody({
   editable,
   canManageVisibility,
   canShare,
+  focusMode,
+  onToggleFocus,
   onShare,
   onOpenVersions,
   onVisibilityChange,
@@ -299,6 +310,9 @@ function EditorBody({
   editable: boolean;
   canManageVisibility: boolean;
   canShare: boolean;
+  /** 专注模式（5.3.5 布局优化）：编辑器独占整页，Esc 也可退出 */
+  focusMode: boolean;
+  onToggleFocus: () => void;
   onShare: () => void;
   onOpenVersions: () => void;
   onVisibilityChange: (visibility: 'private' | 'team_read' | 'team_edit') => void;
@@ -404,6 +418,14 @@ function EditorBody({
         </Dropdown>
         <CollabStatus connected={connected} onlineUsers={onlineUsers} />
         <SaveStatus status={saveStatus} />
+        {/* 专注模式（5.3.5 布局优化）：隐藏两侧栏与顶栏，编辑器独占整页 */}
+        <Tooltip title={focusMode ? '退出专注模式（Esc）' : '专注模式（编辑器独占整页）'}>
+          <Button
+            size="small"
+            icon={focusMode ? <CompressOutlined /> : <ExpandOutlined />}
+            onClick={onToggleFocus}
+          />
+        </Tooltip>
       </div>
 
       {/* 标签行（个人笔记专属：标签按 D-007 归个人所有） */}

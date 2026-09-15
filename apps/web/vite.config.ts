@@ -39,6 +39,8 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // 监听 0.0.0.0：局域网设备（手机/平板）可直接访问 dev 服务器实时预览
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:13000',
