@@ -1,5 +1,17 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-15] 论文素材批产：NAS 重部署 + 21 张前端截图 + 数据库/后端/ER 图
+
+- 做了什么：
+  - **修复两个截图过程中暴露的真实缺陷**：① 协作增量 compaction 误删种子帧→残留孤儿帧回放空白且防误清锁死（d3758b5，compaction 改为清空全部帧+bindState 快照自愈兜底+flushBuffer 可等待消除删除竞态）；② 协作光标样式类名错配——样式写的是 y-prosemirror 的 ProseMirror-yjs-cursor，而 Tiptap CollaborationCursor 实际渲染 collaboration-cursor__caret/__label，姓名标签裸块渲染成整行色块（380811e）
+  - **NAS 重部署两轮**（DEP-R5~8 已记入 5.9-deploy-tests.md），存量坏数据自愈验证通过
+  - **截图流水线** scripts/screenshots/：setup-data.mjs（幂等造演示数据：3 账号/笔记/文件夹/标签/版本/回收站/团队/邀请/分享链接）、shoot.mjs（puppeteer-core + Edge 无头，21 张界面截图 @2x，多用户双 context、访客无 token 场景）、terminal-shots.mjs（psql 真实输出/docker ps/服务日志/perf 脚本 → 终端风格渲染 7 张）、diagram-shots.mjs（mermaid 内联离线渲染：4.3.1 ER 图、4.3.9 关系图）
+  - **产出素材 30 张**：docs/assets/ 下 5.2.x~5.9.3 界面截图 21 张（新界面：冻结工具栏、专注模式、多光标行内标签、含图/表快照的版本预览）+ 4.3-db-tables/4.3-db-notes-ddl/4.4-yjs-frames/5.9-docker-ps/5.4-server-logs/6.3-perf-api 终端图 7 张 + 4.3.1-er-diagram/4.3.9-db-relations 2 张
+- 为什么：论文第 5 章需要最终版式截图；第 4 章需要 ER/关系图；数据库与后端运行佐证素材此前缺失
+- 新增依赖：puppeteer-core@25.11（devDep，无头截图用本机 Edge 不下载浏览器）、mermaid（devDep，ER 图离线渲染）；工具链 brew install libpq（psql 客户端，未入 package.json）
+- 诚实表述：终端风格截图的窗口是样式渲染、命令与输出均为真实执行结果（脚本头部注明）；设计稿 4 视图真实库中不存在（DEP-10 试建后删除，业务走基表），未伪造视图查询图
+- 遗留问题：① 论文图 3-1 用例图、4-1 架构图、4-2 功能结构图、4-5 同步流程图仍待绘制（可用 diagram-shots.mjs 同管线生成，问用户）；② 演示账号 chenmo/suqing/wangyuan@wangyan.test 保留在库中；③ thesis.md 中 5.7.1 版本抽屉、5.4.3 光标等占位可替换为新图；④ 5.5.x 三张截图为修复前版本但内容无误（tnDeploy 种子帧幸存路径），如需统一可重拍
+
 ## [2026-09-15] 修复版本预览空白（缺扩展渲染面）
 
 - 做了什么：`apps/web/src/components/notes/VersionDrawer.tsx` 的 VersionPreview 编辑器从裸 `StarterKit` 改为 `StarterKit.configure({history:false}) + markdownContentExtensions()`（与 ReadableView 同组）；`utils/editor-extensions.ts` 注释"四渲染面"修正为"五渲染面"

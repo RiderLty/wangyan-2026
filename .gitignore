@@ -14,3 +14,6 @@ dist/
 .idea/
 .vscode/
 .DS_Store
+
+# 截图脚本产出的登录态（含 JWT，勿提交）
+scripts/screenshots/state.json
