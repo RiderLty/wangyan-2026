@@ -17,3 +17,5 @@ dist/
 
 # 截图脚本产出的登录态（含 JWT，勿提交）
 scripts/screenshots/state.json
+
+优秀论文参考（勿抄袭）.pdf
