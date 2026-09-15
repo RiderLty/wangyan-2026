@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：**编码阶段结束**——第 5 章全部 ✅、第 6 章素材整编完成、系统已部署 NAS 并验证（DEP-R1~4）。2026-09-15 增量：工作台布局优化（专注模式/侧栏收起/编辑区自适应）+ 编辑器语法补全（图片/表格/链接/任务列表）+ GitHub 白色主题。**下一步：论文撰写，入口见 docs/memory/THESIS-HANDOFF.md（素材索引 + 诚实表述要点）**；写论文前先完成：NOTE-27~29 人工复核、5.3.5 截图按新版式重截。
+> 当前状态：**论文全文初稿已产出**——`docs/thesis/thesis.md`（约 1.1 万字，严格按冻结大纲，摘要+7 章+文献+致谢+附录占位）。待办：① 第 3/4 章 6 张图用户绘制（占位处已写画图底稿）；② 5.3.5 截图按新版式重截（图 5-9）；③ NOTE-27~29 人工复核；④ 用户审改全文 → 转 Word（附录 A/B/C 从 docs/ 三文件粘贴）。编码阶段历史状态见下。
 
 ## 状态图例
 
@@ -24,7 +24,7 @@
 - ✅ 5.3.2 Markdown实时预览（Tiptap input rules 即时渲染，见 D-008-2；界面见 5.3.2 截图）※2026-09-15 增量：图片/表格语法补全（extension-image + table 系列，四渲染面统一注册，NOTE-27~29 待人工复核）
 - ✅ 5.3.3 笔记分类与文件夹管理（folders 树 + tags 双维度；用例 NOTE-13~22）
 - ✅ 5.3.4 笔记搜索功能（content_text ILIKE + 通配符转义 + ?q= 深链；用例 NOTE-23~26）
-- ✅ 5.3.5 界面展示与核心代码（截图 5.3.1~5.3.4 四张；论文可引用：notes.service.ts、prosemirror.util.ts、NoteEditorPanel.tsx、HomePage.tsx）※2026-09-15 布局优化：编辑器主体化（中栏 216px/编辑区 1000px）+ 专注模式（编辑器独占整页，Esc 退出），截图待按新版式重截
+- ✅ 5.3.5 界面展示与核心代码（截图 5.3.1~5.3.4 四张；论文可引用：notes.service.ts、prosemirror.util.ts、NoteEditorPanel.tsx、HomePage.tsx）※2026-09-15 布局优化：编辑器主体化（中栏 216px/编辑区 1000px）+ 专注模式（编辑器独占整页，Esc 退出）+ 顶部区域冻结（标题栏/标签/工具栏固定，正文内滚），截图待按新版式重截
 
 ### 5.4 实时协作编辑模块实现
 - ✅ 5.4.1 WebSocket服务端实现（y-websocket setupWSConnection 挂 Nest HTTP server，/ws/:noteId，握手 JWT+归属校验；用例 COLLAB-01~04）
@@ -50,7 +50,7 @@
 - ✅ 5.7.2 版本回滚与恢复（热文档=CRDT 清空重建实时生效，冷文档=回写快照作废帧；回滚前自动快照；用例 VER-04/05/07/08）
 - ✅ 5.7.3 回收站与软删除（列表含剩余天数/恢复放回原文件夹/彻底删除级联；用例 BIN-01~04）
 - ✅ 5.7.4 定时清理机制（@nestjs/schedule 每小时+启动扫描：到期回收彻底清除、过期邀请置 expired；用例 CLN-01~03）
-- ✅ 5.7.5 界面展示与核心代码（截图 5.7.1/5.7.3；论文可引用：versions.service.ts（CRDT 回滚双路径）、collaboration.persistence.ts（自动建版）、cleanup.service.ts、VersionDrawer.tsx）
+- ✅ 5.7.5 界面展示与核心代码（截图 5.7.1/5.7.3；论文可引用：versions.service.ts（CRDT 回滚双路径）、collaboration.persistence.ts（自动建版）、cleanup.service.ts、VersionDrawer.tsx）※2026-09-15 修复版本预览空白（预览面漏注册图片/表格扩展）
 
 ### 5.8 笔记导出功能实现
 - ✅ 5.8.1 导出为PDF（前端打印视图 /print/:noteId + 自动调起系统打印，用户指定前端方案 D-012；真实产物 docs/assets/5.8.1-export.pdf；用例 EXP-03/04）

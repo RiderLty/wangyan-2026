@@ -1,5 +1,32 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-15] 修复版本预览空白（缺扩展渲染面）
+
+- 做了什么：`apps/web/src/components/notes/VersionDrawer.tsx` 的 VersionPreview 编辑器从裸 `StarterKit` 改为 `StarterKit.configure({history:false}) + markdownContentExtensions()`（与 ReadableView 同组）；`utils/editor-extensions.ts` 注释"四渲染面"修正为"五渲染面"
+- 为什么：用户反馈版本回滚无法预览。根因：09-15 编辑器语法补全会话把图片/表格节点写进了 JSONB 快照，但版本预览这个渲染面漏注册对应扩展（当时只统一了编辑器/只读视图/分享页/打印页四处），快照含 image/table 节点时 ProseMirror Node.fromJSON 抛"Unknown node type"、预览空白。全量 grep useEditor 确认其余四处均已注册，仅此一处遗漏
+- 教训：新增 schema 节点时必须排查**所有** Tiptap 实例（本次以 grep useEditor 全量核对为准，不能只记"四个渲染面"）
+- 新增依赖：无
+- 产出素材：无（缺陷修复；VER-01~03 用例复验建议：插入图片/表格 → 保存版本 → 打开版本抽屉预览）
+- 遗留问题：NOTE-27~29 人工复核时顺带覆盖本修复场景
+
+## [2026-09-15] 编辑器顶部区域冻结（标题栏 + 工具栏不随滚动消失）
+
+- 做了什么：`apps/web/src/index.css` 两处修改——① `.editor-content` 增加 `min-height: 0; overflow-y: auto`，滚动从外层 Content（HomePage.tsx:613 `overflow:'auto'`）收进编辑器正文内部；② 删除 `.editor-toolbar` 上失效的 `position: sticky`（被固定高度父容器限制，从未生效），顶部由布局天然固定
+- 为什么：用户反馈长文编辑时标题栏（标题/导出/分享按钮）与 H1/H2/B 工具栏被滚出视野。根因：滚动发生在编辑面板整体的滚动容器上，且 sticky 的包含块是 height:100% 的 editor-panel，无法吸附。改为"外层固定 + 正文内滚"的经典编辑器布局
+- 行为变化：`.editor-meta`（创建于/更新于）现在常驻面板底部不再随内容滚动；ReadableView（团队只读）同步获得相同冻结效果；专注模式布局不受影响
+- 新增依赖：无
+- 产出素材：无（界面行为修复；docs/assets 截图为旧版式，本就待重截，重截时以本版为准）
+- 遗留问题：无
+
+## [2026-09-15] 论文全文初稿撰写（约 1.1 万字）
+
+- 做了什么：新建 `docs/thesis/thesis.md`——论文全文 Markdown 初稿（单文件，经用户确认：单 md + 一次性写完）。结构严格按冻结大纲：摘要/Abstract、第 1–7 章全部三级小节、参考文献 15 条（真实文献，含 CRDT/OT 原始论文）、致谢、附录 A/B/C。正文约 4.4 万字符（含 Markdown 记号，中文正文约 1.1 万字）
+- 写作依据：范例 PDF（国开本科体例：平实叙述、每节图表支撑）＋ THESIS-HANDOFF 素材索引（DECISIONS/数据库设计稿/api.md/测试表/perf.md）；诚实表述要点全部落实——4.1.3 按"模块化设计"表述不写微服务、5.3.2 写"初版核心语法+迭代增强"、6.2.2 按 26 例口径（NOTE-27~29 未计入 121 例）、5.9.3 如实写"compose 一键启动方案 + NAS 生产 docker run"并存、6.4.1 Edge 全过 + 其余浏览器标注待人工复核
+- 图的处理：第 3/4 章架构图/ER 图/用例图/流程图留【待插图】占位（含画图要点文字底稿，画图要点源自 docs/diagrams/ 与 DECISIONS），第 5 章 22 处插图占位均指向 docs/assets/ 真实截图并标注"建议按新版式重截"处（5.3.5）
+- 新增依赖：无（纯文档工作）
+- 产出素材：docs/thesis/thesis.md
+- 遗留问题：① 第 3/4 章 6 张图需用户绘制（底稿已在占位处）；② 5.3.5 截图按新版式重截后替换图 5-9；③ 附录 A/B/C 转 Word 时从 docs/ 三个文件粘贴全文；④ 参考文献[5] RFC 7519 与正文对应关系请用户核对学校格式要求；⑤ NOTE-27~29 人工复核后可在 5.3.2 补一句确认
+
 ## [2026-09-15] 论文撰写交接（编码阶段收尾）
 
 - 做了什么：新建 `docs/memory/THESIS-HANDOFF.md`——论文撰写入口索引（章→素材映射表、诚实表述要点、环境事实、开工建议）；PROGRESS 当前状态改为"编码阶段结束/下一步论文撰写"
