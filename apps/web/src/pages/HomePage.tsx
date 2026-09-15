@@ -422,7 +422,8 @@ export default function HomePage() {
         </div>
       </Header>
 
-      <Layout>
+      {/* 内容区统一纯白：Antd Layout 默认底色 #f0f2f5 会与 GitHub 白色主题形成色差 */}
+      <Layout style={{ background: '#fff' }}>
         {/* 左栏：搜索 + 文件夹树 + 标签（5.3.3 / 5.3.4）——顶栏按钮收起/展开（collapsedWidth=0 完全收回） */}
         <Sider
           width={240}

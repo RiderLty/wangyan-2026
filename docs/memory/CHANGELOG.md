@@ -11,7 +11,7 @@
   - 测试素材：docs/testing/5.3-notes-tests.md 追加 NOTE-27~29（诚实标注"待人工复核"）
   - 补充（同日）：标准 Markdown 语法输入支持——图片输入规则 extension-image 自带 + 自定义兜底规则（URL 含中文等更宽松）；表格官方无 input rule，自定义 MarkdownTableSyntax（输入表头行回车 → 输入 | --- | 分隔行回车 → 两行转表格，光标入表头首格）；注册 Markdown 扩展开启 transformPasted/CopiedText（粘贴 Markdown 文本解析为节点、复制导出为 Markdown）；此前 Markdown 扩展仅导出时临时使用，实时编辑器未注册，粘贴 Markdown 不解析
   - 补充（同日）：语法二次补全（GFM）——新增 Link（StarterKit 不含链接！autolink 自动识别裸 URL + 自定义 [text](url) 输入规则）、TaskList/TaskItem（- [ ] 勾选列表，task-item 自带输入规则）；刻意不加：数学公式/脚注/Mermaid/代码高亮（论文大纲外，体积大）
-  - 补充（同日）：渲染样式统一为 GitHub 白色主题——github-markdown-css 官方样式包 light 版（.markdown-body 作用域，四渲染面 ProseMirror 挂 class），删除 index.css 中冲突的手写排版规则（p/h1-h3/列表/引用/代码/表格/图片）；保留 ProseMirror 行为样式（outline/占位符/选中单元格高亮/任务列表结构）；打印页保留 14px 字号覆写
+  - 补充（同日）：渲染样式统一为 GitHub 白色主题——github-markdown-css 官方样式包 light 版（.markdown-body 作用域，四渲染面 ProseMirror 挂 class），删除 index.css 中冲突的手写排版规则（p/h1-h3/列表/引用/代码/表格/图片）；保留 ProseMirror 行为样式（outline/占位符/选中单元格高亮/任务列表结构）；打印页保留 14px 字号覆写；内容区底色统一纯白（Antd Layout 默认 #f0f2f5 与 GitHub 白色主题有色差）
   - 排障（同日）：装包后 Vite 报 504 Outdated Optimize Dep——预构建缓存过期，清 node_modules/.vite + vite --force 重启解决
 
 - 做了什么（布局部分，已随 35628d5 提交）：
