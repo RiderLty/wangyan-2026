@@ -14,6 +14,7 @@ import {
   Typography,
 } from 'antd';
 import { HistoryOutlined, SaveOutlined } from '@ant-design/icons';
+import { markdownContentExtensions } from '../../utils/editor-extensions';
 import {
   getVersion,
   listVersions,
@@ -183,10 +184,11 @@ export default function VersionDrawer({
   );
 }
 
-/** 版本只读预览（REST 快照渲染） */
+/** 版本只读预览（REST 快照渲染）：扩展组必须与其余渲染面同组注册，
+ *  否则快照中的图片/表格等节点会在本面缺 schema，Node.fromJSON 直接抛错、预览空白 */
 function VersionPreview({ content }: { content: Record<string, unknown> }) {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit.configure({ history: false }), ...markdownContentExtensions()],
     content: content as never,
     editable: false,
   });

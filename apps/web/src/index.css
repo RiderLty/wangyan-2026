@@ -273,13 +273,11 @@ body {
   border-bottom: 1px solid #f0f0f0;
 }
 
+/* 顶部区域（标题栏/标签行/工具栏）冻结：滚动发生在 .editor-content 内部，
+   header 与 toolbar 在滚动区之外，天然固定，无需 sticky */
 .editor-toolbar {
   padding-block: 8px;
   border-bottom: 1px solid #f0f0f0;
-  position: sticky;
-  top: 0;
-  background: #fff;
-  z-index: 10;
 }
 
 .editor-toolbar-readonly {
@@ -293,6 +291,10 @@ body {
 
 .editor-content {
   flex: 1;
+  /* min-height:0 允许 flex 子项收缩到容器内，长文滚动发生在编辑区内部，
+     顶部标题栏与工具栏保持冻结（对应 HomePage 编辑区 Content 不再滚动） */
+  min-height: 0;
+  overflow-y: auto;
   padding-block: 16px;
 }
 

@@ -17,8 +17,8 @@ import { Markdown } from 'tiptap-markdown';
  * （tiptap-markdown 自带这两种节点的序列化器）。
  *
  * 本模块统一提供三层 Markdown 支持：
- * 1. schema 节点：Image / Table 系列（编辑器/只读视图/分享页/打印页四渲染面必须同组注册，
- *    否则 JSONB 快照里的节点会在缺扩展的渲染面被丢弃）
+ * 1. schema 节点：Image / Table 系列（编辑器/只读视图/分享页/打印页/版本预览五个渲染面必须同组注册，
+ *    否则 JSONB 快照里的节点会在缺扩展的渲染面被丢弃——版本预览曾因此漏注册，预览空白）
  * 2. 粘贴/复制转换：Markdown 扩展（transformPasted/CopiedText）——粘贴 Markdown 文本
  *    （整段表格、图片语法）解析为文档节点；复制出来的是 Markdown 文本
  * 3. 输入规则：图片语法由 extension-image 自带 input rule；
