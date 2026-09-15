@@ -341,6 +341,8 @@ function EditorBody({
         user: { name: username, color: colorFor(username) },
       }),
     ],
+    // GitHub 官方 Markdown 渲染样式（github-markdown-light.css 以 .markdown-body 为作用域）
+    editorProps: { attributes: { class: 'markdown-body' } },
     editable,
   });
 
@@ -653,6 +655,7 @@ function ReadableView({ note }: { note: NoteDetail }) {
   const editor = useEditor({
     extensions: [StarterKit.configure({ history: false }), ...markdownContentExtensions()],
     content: note.content as never,
+    editorProps: { attributes: { class: 'markdown-body' } },
     editable: false,
   });
   return (

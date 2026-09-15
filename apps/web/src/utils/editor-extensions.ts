@@ -1,9 +1,12 @@
-import { Extension, nodeInputRule } from '@tiptap/core';
+import { Extension, InputRule, nodeInputRule } from '@tiptap/core';
 import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
 import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
+import TaskItem from '@tiptap/extension-task-item';
+import TaskList from '@tiptap/extension-task-list';
 import { Markdown } from 'tiptap-markdown';
 
 /**
@@ -106,6 +109,11 @@ const MarkdownTableSyntax = Extension.create({
 export function markdownContentExtensions() {
   return [
     Image.configure({ inline: false, allowBase64: true }),
+    // StarterKit 不含链接（Markdown 最核心语法之一）；autolink 自动识别裸 URL
+    Link.configure({ openOnClick: false, autolink: true }),
+    // GFM 任务列表：- [ ] / - [x]（task-item 自带输入规则）
+    TaskList,
+    TaskItem.configure({ nested: true }),
     // resizable 关闭：协作场景下列宽属 CRDT 属性同步，演示版保持简单
     Table.configure({ resizable: false }),
     TableRow,
@@ -127,6 +135,30 @@ export function markdownContentExtensions() {
             find: /!\[([^\]]*)\]\(([^)]+)\)$/,
             type: this.editor.schema.nodes.image,
             getAttributes: (match) => ({ src: match[2].trim(), alt: match[1] || null }),
+          }),
+        ];
+      },
+    }),
+    // 链接语法输入规则：[text](url) —— 用 text + link mark 替换整个匹配（link 扩展不自带此规则）
+    Extension.create({
+      name: 'markdownLinkSyntax',
+      addInputRules() {
+        return [
+          new InputRule({
+            find: /\[([^\]]+)\]\(([^)]+)\)$/,
+            handler: ({ range, match, chain }) => {
+              const [, text, url] = match;
+              chain()
+                .insertContentAt({ from: range.from, to: range.to }, [
+                  {
+                    type: 'text',
+                    text,
+                    marks: [{ type: 'link', attrs: { href: url.trim() } }],
+                  },
+                ])
+                .run();
+              return null;
+            },
           }),
         ];
       },

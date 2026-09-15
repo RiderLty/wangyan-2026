@@ -46,6 +46,8 @@ function PrintableNote({ note }: { note: NoteDetail }) {
   const editor = useEditor({
     extensions: [StarterKit, ...markdownContentExtensions()],
     content: note.content as never,
+    // GitHub 官方 Markdown 渲染样式
+    editorProps: { attributes: { class: 'markdown-body' } },
     editable: false,
   });
 

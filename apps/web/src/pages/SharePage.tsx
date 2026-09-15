@@ -120,6 +120,8 @@ function SharedDoc({
             ]
           : []),
       ],
+      // GitHub 官方 Markdown 渲染样式
+      editorProps: { attributes: { class: 'markdown-body' } },
       content: session ? undefined : (content as never),
       editable,
     },
