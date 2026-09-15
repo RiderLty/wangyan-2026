@@ -8,6 +8,7 @@ import * as Y from 'yjs';
 import { Alert, Avatar, Button, Result, Spin, Tag, Typography } from 'antd';
 import { useParams } from 'react-router-dom';
 import { shareContent, resolveShare, type ShareMeta } from '../api/share';
+import { markdownContentExtensions } from '../utils/editor-extensions';
 
 /**
  * 公开分享页（论文 5.6.2 链接访问权限控制 / 3.2.4 访客角色）
@@ -105,6 +106,7 @@ function SharedDoc({
       extensions: [
         // 协作模式下历史交给 Yjs UndoManager；只读快照用默认 ProseMirror history
         StarterKit.configure(...(editable ? [{ history: false }] as const : [])),
+        ...markdownContentExtensions(),
         ...(session
           ? [
               Collaboration.configure({ document: session.ydoc }),

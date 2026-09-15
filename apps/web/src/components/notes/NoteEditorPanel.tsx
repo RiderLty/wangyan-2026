@@ -6,7 +6,7 @@ import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import { WebsocketProvider } from 'y-websocket';
 import * as Y from 'yjs';
-import { Button, Divider, Dropdown, Empty, Input, Select, Space, Tag, Tooltip, Typography, Avatar } from 'antd';
+import { Button, Divider, Dropdown, Empty, Input, Modal, Select, Space, Tag, Tooltip, Typography, Avatar } from 'antd';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -27,10 +27,14 @@ import {
   FilePdfOutlined,
   ExpandOutlined,
   CompressOutlined,
+  TableOutlined,
+  PictureOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons';
 import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
 import { exportMarkdown, openPrintView } from '../../utils/export';
+import { markdownContentExtensions } from '../../utils/editor-extensions';
 import { useAuth } from '../../auth/AuthContext';
 
 /**
@@ -321,10 +325,13 @@ function EditorBody({
   onAttachTag: (tagId: string) => void;
   onDetachTag: (tagId: string) => void;
 }) {
+  // 图片插入弹窗（5.3.2 图片语法支持：URL 方式，与 Markdown ![]() 对应）
+  const [imgModal, setImgModal] = useState<{ open: boolean; url: string } | null>(null);
   const editor = useEditor({
     extensions: [
       // 历史撤销交给 Yjs UndoManager（协作下 ProseMirror history 不可用）
       StarterKit.configure({ history: false }),
+      ...markdownContentExtensions(),
       Placeholder.configure({
         placeholder: '开始写点什么…（输入 # 、- 、> 等Markdown语法试试）',
       }),
@@ -548,6 +555,39 @@ function EditorBody({
               代码
             </Button>
           </Tooltip>
+          {/* 图片/表格（5.3.2：Markdown ![]() 与管道表格的等价按钮） */}
+          <Tooltip title="插入图片（Markdown: ![](url)）">
+            <Button
+              type="text"
+              size="small"
+              style={toolbarBtn}
+              icon={<PictureOutlined />}
+              onClick={() => setImgModal({ open: true, url: '' })}
+            />
+          </Tooltip>
+          <Tooltip title="插入 3×3 表格（Markdown 管道语法）">
+            <Button
+              type={editor.isActive('table') ? 'primary' : 'text'}
+              size="small"
+              style={toolbarBtn}
+              icon={<TableOutlined />}
+              onClick={() =>
+                editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+              }
+            />
+          </Tooltip>
+          {editor.isActive('table') && (
+            <Tooltip title="删除当前表格">
+              <Button
+                type="text"
+                size="small"
+                danger
+                style={toolbarBtn}
+                icon={<DeleteOutlined />}
+                onClick={() => editor.chain().focus().deleteTable().run()}
+              />
+            </Tooltip>
+          )}
           <Tooltip title="撤销">
             <Button
               type="text"
@@ -578,6 +618,32 @@ function EditorBody({
         创建于 {new Date(note.created_at).toLocaleString('zh-CN')} · 更新于{' '}
         {new Date(note.updated_at).toLocaleString('zh-CN')}
       </Typography.Paragraph>
+
+      {/* 插入图片弹窗：URL 方式（与 Markdown ![](url) 等价） */}
+      <Modal
+        open={!!imgModal?.open}
+        title="插入图片"
+        okText="插入"
+        cancelText="取消"
+        onOk={() => {
+          const url = imgModal?.url.trim();
+          if (url) editor.chain().focus().setImage({ src: url }).run();
+          setImgModal(null);
+        }}
+        onCancel={() => setImgModal(null)}
+        destroyOnClose
+      >
+        <Input
+          placeholder="图片 URL（https://… 或相对路径）"
+          value={imgModal?.url}
+          onChange={(e) => setImgModal((m) => (m ? { ...m, url: e.target.value } : m))}
+          onPressEnter={() => {
+            const url = imgModal?.url.trim();
+            if (url) editor.chain().focus().setImage({ src: url }).run();
+            setImgModal(null);
+          }}
+        />
+      </Modal>
     </div>
   );
 }
@@ -585,7 +651,7 @@ function EditorBody({
 /** 团队只读视图（论文 4.5.2 team_read）：REST 快照渲染，无协作会话 */
 function ReadableView({ note }: { note: NoteDetail }) {
   const editor = useEditor({
-    extensions: [StarterKit.configure({ history: false })],
+    extensions: [StarterKit.configure({ history: false }), ...markdownContentExtensions()],
     content: note.content as never,
     editable: false,
   });

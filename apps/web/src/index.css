@@ -373,6 +373,53 @@ body {
   margin-block: 1em;
 }
 
+/* ---------- 图片与表格（5.3.2 Markdown 语法支持的渲染样式） ---------- */
+.editor-content .ProseMirror img,
+.share-content .ProseMirror img,
+.print-content .ProseMirror img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.editor-content .ProseMirror table,
+.share-content .ProseMirror table,
+.print-content .ProseMirror table {
+  border-collapse: collapse;
+  margin-block: 0.8em;
+  width: 100%;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.editor-content .ProseMirror td,
+.editor-content .ProseMirror th,
+.share-content .ProseMirror td,
+.share-content .ProseMirror th,
+.print-content .ProseMirror td,
+.print-content .ProseMirror th {
+  border: 1px solid #d9d9d9;
+  padding: 6px 10px;
+  vertical-align: top;
+  position: relative;
+}
+
+.editor-content .ProseMirror th,
+.share-content .ProseMirror th,
+.print-content .ProseMirror th {
+  background: #fafafa;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* 编辑态：表格选中单元格的高亮（Tiptap 默认列/行选择样式） */
+.editor-content .ProseMirror .selectedCell:after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 119, 255, 0.12);
+  pointer-events: none;
+}
+
 /* Placeholder 扩展（空文档提示） */
 .editor-content .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);

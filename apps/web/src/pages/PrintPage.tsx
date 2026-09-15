@@ -5,6 +5,7 @@ import { Spin } from 'antd';
 import { useParams } from 'react-router-dom';
 import { getNote } from '../api/notes';
 import type { NoteDetail } from '../api/notes';
+import { markdownContentExtensions } from '../utils/editor-extensions';
 
 /**
  * PDF 打印视图（论文 5.8.1 导出为 PDF）
@@ -43,7 +44,7 @@ export default function PrintPage() {
 
 function PrintableNote({ note }: { note: NoteDetail }) {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, ...markdownContentExtensions()],
     content: note.content as never,
     editable: false,
   });

@@ -1,9 +1,17 @@
 # 变更流水（CHANGELOG）
 
-## [2026-09-15] 5.3.5 工作台布局优化（编辑器主体化 + 专注模式）
+## [2026-09-15] 编辑器 Markdown 语法补全（图片 + 表格）+ 工作台布局优化
 
-- 做了什么：
-  - 三栏比例调整：左栏 Sider 260→240，中栏笔记列表 260→216（NoteListPanel 标题 maxWidth 170→150、上下文标题 150→120），编辑区内容上限 860→1000px——编辑器成为界面主体
+- 做了什么（编辑器部分）：
+  - 根因：Tiptap 插件化架构，StarterKit 只含核心节点（标题/加粗/列表/引用/代码块），图片/表格需独立扩展；tiptap-markdown 自带这两种节点的序列化器，注册即通
+  - 新增 @tiptap/extension-image、@tiptap/extension-table、extension-table-row、extension-table-cell、extension-table-header（均 ^2.8.0 与现有 Tiptap 对齐）
+  - 新建 utils/editor-extensions.ts 统一导出 markdownContentExtensions()，四个渲染面（编辑器 EditorBody / 只读 ReadableView / 分享页 SharePage / 打印页 PrintPage）注册同一组扩展，避免 JSONB 快照节点被缺扩展的面丢弃
+  - 工具栏新增：插入图片（URL 弹窗，与 ![](url) 等价）、插入 3×3 表格、表格内显示删除表格按钮；服务端确认无需改动（yjs-convert.ts 为 schema-free 通用映射，节点类型直通）
+  - CSS：表格边框/表头底色/选中单元格高亮、图片 max-width:100%，三渲染面共用
+  - 测试素材：docs/testing/5.3-notes-tests.md 追加 NOTE-27~29（诚实标注"待人工复核"）
+
+- 做了什么（布局部分，已随 35628d5 提交）：
+  - 三栏比例调整（注：Content flex:auto 抢宽度问题当日已修，最终形态为左/中栏均 240px 固定、编辑区自适应填满，860→1000→移除上限三步演进见下方"补充"条目）
   - 新增"专注模式"：HomePage 增 focusMode 状态 + Esc 退出监听；编辑器头部（NoteEditorPanel EditorBody）加展开/收起按钮；激活时根 Layout 挂 `.focus-mode` 类，CSS 隐藏顶栏/左栏/中栏，编辑器独占整页
   - 涉及文件：HomePage.tsx、NoteEditorPanel.tsx、NoteListPanel.tsx、index.css
   - 补充（同日）：vite.config.ts 的 server 加 `host: true` 固化 0.0.0.0 监听——局域网设备（手机）可直接访问 dev 服务器实时预览；原因：系统已部署 NAS，日常开发在 Mac 直连 NAS 数据，用户需要多端预览新版式
@@ -14,11 +22,12 @@
   - 补充（同日）：侧栏收起后最左"白线"修复——实为中栏列表的 borderInlineStart，改为随收起状态条件化显示；侧栏自身 12px 内边距在收起态同步清零（否则残留 24px 白边）
   - 补充（同日）：删除笔记提示语去掉内部小节引用"（5.7 提供恢复界面）"（论文编号不该出现在用户界面），改为"已移入回收站，30 天内可在回收站恢复"；已 grep 全前端确认其余"5.x"均为代码注释标注，无同类泄漏
 - 为什么：用户反馈中栏占比过大、编辑器应为主体，且需要编辑器全页切换；对应大纲 5.3.5 界面展示
+- 新增依赖（编辑器部分）：@tiptap/extension-image + table 系列 ×4（^2.8.0）——StarterKit 不含图片/表格节点，官方扩展补齐 Markdown 语法支持；与现有 Tiptap 2.8.0 版本对齐，无功能重叠
 - 方案要点：专注模式用 CSS 类切换而非浏览器 Fullscreen API——后者依赖浏览器授权、演示环境行为不一致；CSS 方案 Tiptap 实例不重挂载、Yjs 协作会话不中断（与 D-007 协作架构兼容）
-- 新增依赖：无
 - 产出素材：无新截图（见遗留问题）
 - 遗留问题：
   - [ ] 布局调整后 5.3.5 界面截图需重截（旧截图仍是 860px/260px 版式），专注模式效果图建议一并补一张
+  - [ ] 图片/表格界面与协作、持久化链路人工复核（NOTE-27~29 标注待复核）
   - [ ] NAS 部署镜像未更新（本次改动仅本地验证 build 通过，未走部署流程）
 
 ## [2026-09-11] 第 6 章测试整编（6.2.7 汇总 + 6.3 性能实测）
