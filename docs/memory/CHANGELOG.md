@@ -9,6 +9,8 @@
   - 工具栏新增：插入图片（URL 弹窗，与 ![](url) 等价）、插入 3×3 表格、表格内显示删除表格按钮；服务端确认无需改动（yjs-convert.ts 为 schema-free 通用映射，节点类型直通）
   - CSS：表格边框/表头底色/选中单元格高亮、图片 max-width:100%，三渲染面共用
   - 测试素材：docs/testing/5.3-notes-tests.md 追加 NOTE-27~29（诚实标注"待人工复核"）
+  - 补充（同日）：标准 Markdown 语法输入支持——图片输入规则 extension-image 自带 + 自定义兜底规则（URL 含中文等更宽松）；表格官方无 input rule，自定义 MarkdownTableSyntax（输入表头行回车 → 输入 | --- | 分隔行回车 → 两行转表格，光标入表头首格）；注册 Markdown 扩展开启 transformPasted/CopiedText（粘贴 Markdown 文本解析为节点、复制导出为 Markdown）；此前 Markdown 扩展仅导出时临时使用，实时编辑器未注册，粘贴 Markdown 不解析
+  - 排障（同日）：装包后 Vite 报 504 Outdated Optimize Dep——预构建缓存过期，清 node_modules/.vite + vite --force 重启解决
 
 - 做了什么（布局部分，已随 35628d5 提交）：
   - 三栏比例调整（注：Content flex:auto 抢宽度问题当日已修，最终形态为左/中栏均 240px 固定、编辑区自适应填满，860→1000→移除上限三步演进见下方"补充"条目）
@@ -22,7 +24,7 @@
   - 补充（同日）：侧栏收起后最左"白线"修复——实为中栏列表的 borderInlineStart，改为随收起状态条件化显示；侧栏自身 12px 内边距在收起态同步清零（否则残留 24px 白边）
   - 补充（同日）：删除笔记提示语去掉内部小节引用"（5.7 提供恢复界面）"（论文编号不该出现在用户界面），改为"已移入回收站，30 天内可在回收站恢复"；已 grep 全前端确认其余"5.x"均为代码注释标注，无同类泄漏
 - 为什么：用户反馈中栏占比过大、编辑器应为主体，且需要编辑器全页切换；对应大纲 5.3.5 界面展示
-- 新增依赖（编辑器部分）：@tiptap/extension-image + table 系列 ×4（^2.8.0）——StarterKit 不含图片/表格节点，官方扩展补齐 Markdown 语法支持；与现有 Tiptap 2.8.0 版本对齐，无功能重叠
+- 新增依赖（编辑器部分）：@tiptap/extension-image + table 系列 ×4（^2.8.0）——StarterKit 不含图片/表格节点，官方扩展补齐 Markdown 语法支持；@tiptap/core（^2.8.0，显式声明——pnpm 严格模式下自定义 input rule 需直接 import，此前为传递依赖）；均与现有 Tiptap 2.8.0 版本对齐，无功能重叠
 - 方案要点：专注模式用 CSS 类切换而非浏览器 Fullscreen API——后者依赖浏览器授权、演示环境行为不一致；CSS 方案 Tiptap 实例不重挂载、Yjs 协作会话不中断（与 D-007 协作架构兼容）
 - 产出素材：无新截图（见遗留问题）
 - 遗留问题：
