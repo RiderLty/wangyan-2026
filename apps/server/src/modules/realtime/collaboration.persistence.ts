@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, LessThanOrEqual, Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import * as Y from 'yjs';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 import { Note } from '../notes/note.entity';
@@ -16,17 +16,16 @@ import { pmJsonToYFragment } from './yjs-convert';
  * notes.content 是合并后的快照（供列表/搜索/导出/版本）。
  *
  * - bindState（打开文档）：回放库中全部增量；若无增量则从 content 快照播种
- *   （5.3 时代的旧笔记无缝升级为协作文档），并把种子存为第一帧增量
+ *   （5.3 时代的旧笔记无缝升级为协作文档），并把种子存为第一帧增量；
+ *   回放后文档为空而快照非空时视为增量不完备，以快照为准重新播种（自愈）
  * - 期间每帧新增量缓冲 2s 合并入库（Y.mergeUpdates，避免逐键写行）
  * - writeState（末个连接断开）：Yjs 文档状态合并回写 content + content_text，
- *   并清理本次会话前已合并的增量行（compaction，控制日志膨胀）
+ *   并清空全部增量帧（compaction）——快照已包含完整状态，下一会话从快照
+ *   重新播种自包含种子帧，保证回放永远完备（增量帧脱离其基础状态无法独立解析）
  */
 @Injectable()
 export class CollaborationPersistence {
   private readonly logger = new Logger(CollaborationPersistence.name);
-
-  /** docName(noteId) → 该文档回放过的最大增量 id（writeState 时据此清理） */
-  private readonly replayedMaxId = new Map<string, string | null>();
   /** docName → 待入库的增量缓冲 */
   private readonly pendingUpdates = new Map<string, Uint8Array[]>();
   private readonly flushTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -73,7 +72,6 @@ export class CollaborationPersistence {
       where: { note_id: noteId },
       order: { id: 'ASC' },
     });
-    this.replayedMaxId.set(noteId, rows.length ? rows[rows.length - 1].id : null);
     this.logger.log(
       `[协作] bindState ${noteId}: 回放 ${rows.length} 帧(${rows.map((r) => r.update.length).join(',')}B)`,
     );
@@ -81,6 +79,26 @@ export class CollaborationPersistence {
     if (rows.length) {
       // 常规路径：按自增顺序回放增量
       for (const row of rows) Y.applyUpdate(ydoc, new Uint8Array(row.update));
+
+      // 回放完备性兜底：若残留增量帧缺失其基础状态（如历史 compaction 后的孤儿帧），
+      // 回放得到空文档且快照非空——以快照为准重新播种，并重建自包含帧（自愈）
+      const fragment = ydoc.getXmlFragment('default');
+      if (fragment.length === 0) {
+        const note = await this.notesRepo.findOne({
+          where: { id: noteId, deleted_at: IsNull() },
+          select: ['id', 'content'],
+        });
+        const storedBlocks = (note?.content as { content?: unknown[] })?.content?.length ?? 0;
+        if (note && storedBlocks > 0) {
+          this.logger.warn(
+            `[协作] bindState ${noteId}: 增量回放得到空文档而快照非空，改由快照重新播种`,
+          );
+          pmJsonToYFragment(note.content, fragment);
+          const seed = Y.encodeStateAsUpdate(ydoc);
+          await this.updatesRepo.delete({ note_id: noteId });
+          await this.updatesRepo.insert({ note_id: noteId, update: Buffer.from(seed) });
+        }
+      }
     } else {
       // 首次协作：从 notes.content 快照播种（5.3 旧笔记升级），种子存为第一帧
       const note = await this.notesRepo.findOne({
@@ -115,7 +133,7 @@ export class CollaborationPersistence {
   }
 
   private async doWriteState(noteId: string, ydoc: Y.Doc): Promise<void> {
-    this.flushBuffer(noteId);
+    await this.flushBuffer(noteId);
 
     // Yjs 文档 → ProseMirror JSON 快照（y-prosemirror 官方 schema-free 转换）
     const fragment = ydoc.getXmlFragment('default');
@@ -130,6 +148,7 @@ export class CollaborationPersistence {
     // 场景：客户端在同步完成前断开（或异常空连接），其空文档若直接合并
     // 会把正文清空——CRDT 语义上"空"也是一种合法状态，但为防误清，
     // 约定"文档空且库中快照非空"时跳过回写（真正清空笔记属 5.7 回收站范畴）。
+    // 此时同样清空增量帧：快照是事实基准，下一会话从快照重新播种。
     const isEmptyDoc = fragment.length === 0;
     if (isEmptyDoc) {
       const storedBlocks = (stored?.content as { content?: unknown[] })?.content?.length ?? 0;
@@ -137,6 +156,7 @@ export class CollaborationPersistence {
         this.logger.warn(
           `[协作] 笔记 ${noteId} 会话文档为空且库中快照非空，跳过回写（防误清保护）`,
         );
+        await this.updatesRepo.delete({ note_id: noteId });
         return;
       }
     }
@@ -175,19 +195,17 @@ export class CollaborationPersistence {
 
     await this.notesRepo.update({ id: noteId }, { content: json, content_text: newText });
 
-    // compaction：清理回放前已合并的增量行；播种首帧保留（它代表当前快照起点）
-    const maxId = this.replayedMaxId.get(noteId) ?? null;
-    if (maxId) {
-      await this.updatesRepo.delete({ note_id: noteId, id: LessThanOrEqual(maxId) });
-    }
-    this.replayedMaxId.delete(noteId);
-    this.logger.log(`[协作] 笔记 ${noteId} 快照已合并回写，增量压缩完成`);
+    // compaction：清空全部增量帧。快照已包含完整状态，任何残留帧都会脱离其
+    // 基础状态而无法独立解析（回放得到空文档）；下一会话 bindState 无帧时
+    // 从快照播种自包含种子帧，保证回放永远完备。
+    await this.updatesRepo.delete({ note_id: noteId });
+    this.logger.log(`[协作] 笔记 ${noteId} 快照已合并回写，增量帧已压缩`);
   }
 
   /** 连接尚在但服务即将关闭等场景：立即落盘缓冲 */
   async flushAll(): Promise<void> {
     for (const noteId of [...this.pendingUpdates.keys()]) {
-      this.flushBuffer(noteId);
+      await this.flushBuffer(noteId);
     }
   }
 
@@ -203,18 +221,20 @@ export class CollaborationPersistence {
     }
   }
 
-  private flushBuffer(noteId: string): void {
+  private flushBuffer(noteId: string): Promise<void> {
     const timer = this.flushTimers.get(noteId);
     if (timer) clearTimeout(timer);
     this.flushTimers.delete(noteId);
 
     const buffer = this.pendingUpdates.get(noteId);
-    if (!buffer?.length) return;
+    if (!buffer?.length) return Promise.resolve();
     this.pendingUpdates.delete(noteId);
     // 多帧合并为一行：CRDT 增量可无序拼接（Y.mergeUpdates 语义）
     const merged = buffer.length === 1 ? buffer[0] : Y.mergeUpdates(buffer);
-    void this.updatesRepo
+    // 返回 Promise：writeState 需等待入库完成后再做 compaction，避免删除与插入竞态
+    return this.updatesRepo
       .insert({ note_id: noteId, update: Buffer.from(merged) })
+      .then(() => undefined)
       .catch((err) => this.logger.error(`[协作] 增量入库失败 ${noteId}: ${err}`));
   }
 }
