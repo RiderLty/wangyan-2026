@@ -19,3 +19,6 @@ dist/
 scripts/screenshots/state.json
 
 优秀论文参考（勿抄袭）.pdf
+
+# NAS 部署存档（含密码，仅本地保留，禁止提交）
+nas-db-setup.sh
