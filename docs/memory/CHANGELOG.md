@@ -1,5 +1,14 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-16] 项目上传 GitHub（公开仓库）+ 历史脱敏
+
+- 做了什么：① git filter-repo 将 nas-db-setup.sh（含 NAS postgres/redis 真实密码）从**全部提交历史**中抹除，重写后全历史 grep 验证无密码残留；本地文件保留（加警告头 + .gitignore）；② NAS 裸仓库 force push 同步重写后历史（部署流程不受影响，git archive 照常）；③ gh repo create 公开仓库 https://github.com/RiderLty/wangyan-2026 并推送 main（远程名 github，origin 仍为 NAS 裸仓库）
+- 为什么：用户要求上传 GitHub；公开前必须脱敏——密码可登录局域网可达的活数据库
+- 安全清单（推送前核对）：.env / state.json / nas-db-setup.sh / 范例PDF 均未入库；.env.example 仅占位符；历史中密码字符串仅存在于 nas-db-setup.sh 一处（已抹除）
+- 新增依赖：无（工具：brew git-filter-repo；重写前已做 /tmp/wangyan-backup-0916.bundle 全量备份）
+- 产出素材：GitHub 公开仓库
+- 遗留问题：无
+
 ## [2026-09-15] 论文素材批产：NAS 重部署 + 21 张前端截图 + 数据库/后端/ER 图
 
 - 做了什么：
