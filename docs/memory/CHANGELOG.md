@@ -1,5 +1,13 @@
 # 变更流水（CHANGELOG）
 
+## [2026-09-17] 论文初稿（thesis-draft.md）——按学校初稿要求裁剪
+
+- 做了什么：新建 docs/thesis/thesis-draft.md（4.2 万字符，完整版 thesis.md 不动）。进度呈现为"刚过 1/3"（经用户确认）：第 1-4 章原样（含 ER/关系图等 5 张图），第 5 章保留 5.1-5.2 完整实现（含 3 张截图）并新增表 5-1 实现进度计划，5.3 起各小节标题保留、正文标待实现（37 处）；第 6 章 6.1 测试环境+表 6-2 测试计划（121 例分模块计划），6.2-6.4 标注待补充；第 7 章 7.1 改写为阶段小结、7.2 标注待提炼、7.3 展望原样保留；摘要/Abstract 改为进行时表述；附录 A/B/C 保留
+- 为什么：学校现阶段只要求交初稿（经用户确认裁剪深度与推送范围）
+- 诚实表述：初稿头部注释注明"由完整版裁剪生成，完整版见 thesis.md"（转 Word 前删除）
+- 新增依赖：无
+- 产出素材：docs/thesis/thesis-draft.md
+- 遗留问题：无
 ## [2026-09-16] 项目上传 GitHub（公开仓库）+ 历史脱敏
 
 - 做了什么：① git filter-repo 将 nas-db-setup.sh（含 NAS postgres/redis 真实密码）从**全部提交历史**中抹除，重写后全历史 grep 验证无密码残留；本地文件保留（加警告头 + .gitignore）；② NAS 裸仓库 force push 同步重写后历史（部署流程不受影响，git archive 照常）；③ gh repo create 公开仓库 https://github.com/RiderLty/wangyan-2026 并推送 main（远程名 github，origin 仍为 NAS 裸仓库）
