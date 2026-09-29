@@ -1,8 +1,8 @@
 论文插图说明
 ============
 
-这 4 张是论文里仍缺的示意图（与 doc 中【待插图】占位一一对应），全部为白底 PNG（@2x 高清），
-插入 Word 后建议宽度设为 14-15cm，图题在图下方居中。
+这 4 张是论文里仍缺的示意图（与 doc 中【待插图】占位一一对应），全部为白底 PNG（@2x 高清）。
+尺寸已按 A4 版式设计（宽高比适配正文宽度约 15cm），插入 Word 后建议宽度设为 14-15cm，图题在图下方居中。
 
 文件名                →  插入位置
 ----------------------------------------
@@ -11,6 +11,8 @@
 图4-2 系统功能结构图.png   →  4.2.1 系统功能结构图（【待插图 图 4-2】处）
 图4-7 Yjs文档同步流程图.png →  4.4.2 Yjs文档同步机制（正文"数据流如图 4-7 所示"处；
                               若该处占位文字已删除，直接在段落下方插入即可）
+                              ※ 此图为纵向时序图，建议整页放置或缩放至高度 18cm 以内
 
-重新生成：node scripts/screenshots/thesis-figures.mjs
-（改图内容改 scripts/screenshots/thesis-figures.mjs 里的 mermaid 源码后重跑）
+重新生成：
+- 三张 A4 版式图：node scripts/screenshots/thesis-figures-a4.mjs（手工 SVG 排版，改内容直接编辑脚本里的 SVG 源码）
+- 图4-7 时序图：node scripts/screenshots/thesis-figures.mjs（mermaid 源码在脚本内）
