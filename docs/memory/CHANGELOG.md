@@ -1,5 +1,13 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-07] v2.0 调研报告与 AI Agent 开发计划（docs/v2-survey-and-ai-plan.md）
+
+- 做了什么：应"导师反馈创新点不足"，完成 12 个竞品调研（商业 5：腾讯文档人机双写/WPS/飞书/Notion/石墨；开源 9+3：AFFiNE/AppFlowy/思源/Outline/HedgeDoc/Trilium/Logseq/Khoj/AnythingLLM/Docmost/BookStack/Reor），产出 docs/v2-survey-and-ai-plan.md：功能矩阵对比 + 创新点论证 I1~I6 + 答辩 Q&A 口径 + v2.0 四层开发计划（L0 网关/L1 编辑器 AI 走 Yjs/L2 秘书/L3 混合检索/L4 Agent 工具调用过 RBAC）+ 大纲联动方案。方向决策记 D-014
+- 为什么：导师认为 v1 缺创新点；调研结论——开源界"协作+权限+Agent+私有化"组合空白（Trilium 的 Agent 是单用户、Outline 无 Agent 写操作、AnythingLLM 非笔记系统），为 v2.0 立足点
+- 新增依赖：无（调研文档，未动代码）
+- 产出素材：docs/v2-survey-and-ai-plan.md（引用来源均带链接，可直接改写进论文 1.2）
+- 遗留问题：① LLM 接口三能力（stream/tool_calls/embeddings）待用户 curl 实测；② NAS pgvector 镜像可用性待查；③ 导师确认范围后大纲解冻（拟 3.3.8/5.10/6.2.8/7.2）；④ 确认前不动代码
+
 ## [2026-09-20] 论文精简至 1.5 万字内（终稿）+ docx 导出
 
 - 做了什么：docs/thesis/thesis.md 全文精简——Word 口径字数 26,405 → **14,988**（md 自测）/ docx 提取 14,670，落入用户要求的 12000–15000 区间。全部 24 张图、全部小节标题、诚实表述要点（4.1.3 模块化设计、5.3.2 迭代表述、5.9.3 双部署方式并存、6.4 复核口径）与 121 例/性能数据均保留；压缩手段：2/3 章叙述密度、4.3 表格合并精简（users/team_members/versions 表改为文字概述，保留 notes/share_links/recycle_bin 精简表）、5 章每模块压缩为 1-2 段、6.2 摘选表减至 2 行/表、附录 C 六组改精华段、全文句式去冗余（共 5 批约 70 处替换，脚本逐条校验命中）

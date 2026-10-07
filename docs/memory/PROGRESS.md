@@ -64,6 +64,7 @@
 
 ## 待讨论 / 阻塞
 
+- [ ] **v2.0 AI 方向已定（D-014）**：docs/v2-survey-and-ai-plan.md（竞品矩阵+创新点论证+开发计划）。阻塞：LLM 接口 stream/tool_calls/embeddings 实测、NAS pgvector、导师确认范围+大纲解冻——确认前不动代码
 - [ ] 第 6 章性能数据已实测（perf.md）；6.4 兼容性表留 Safari/Firefox 人工复核项，答辩前建议用户用常用浏览器过一遍
 - [ ] 论文撰写阶段的图（架构/ER/流程）文字底稿在 docs/diagrams/，需用户画图
 
