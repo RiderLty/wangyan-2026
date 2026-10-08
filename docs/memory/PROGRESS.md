@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：**项目已上传 GitHub 公开仓库**（https://github.com/RiderLty/wangyan-2026，历史已脱敏：nas-db-setup.sh 密码文件从全部历史抹除，NAS origin 已 force 同步）。论文素材 30 张已产出（见 09-15 条目）。剩余：① 图 3-1 用例图、4-1 架构、4-2 功能结构、4-5 同步流程待画（管线可生成，先问用户）；② 5.5.x 三张为修复前版本可选重拍；③ NOTE-27~29 人工复核；④ thesis.md 插图占位替换 + 用户审改转 Word。
+> 当前状态：**v2.0 AI 增强进行中（D-014~016）**——M1 已完成（LLM 网关 + 编辑器 AI 五动作，构建/冒烟通过，AI-01/02/19 用例闭合），待用户提供 DeepSeek+百炼 Key 后执行 AI-03~18；后续 M2 Agent 工具调用（L4）→ M3 摘要批处理（L2）→ M4 混合检索（L3，需换 pgvector 镜像）。v1 论文素材 30 张已产出、thesis.md 终稿 1.5 万字已完成。
 
 ## 状态图例
 
@@ -61,6 +61,15 @@
 - ✅ 5.9.1 Docker镜像构建（NAS 本机构建原生 amd64：wangyan-server 330MB / wangyan-web 70.7MB；vite manualChunks 分包修掉 1.3MB 单块；用例 DEP-01~03）
 - ✅ 5.9.2 Docker Compose服务编排（compose 四服务 + 健康检查 + restart 策略，docs/appendix-compose.yml 即附录 B；生产 NAS 无 compose 插件故用 docker run，论文如实说明；用例 DEP-06~09 即编排产物验证）
 - ✅ 5.9.3 部署脚本与一键启动（nas-app-setup.sh docker run 部署存档；compose 一键启动见 README；端到端 DEP-04~09 全过 + 部署页截图）
+
+## v2.0 AI 增强进度（大纲解冻后并入主账本，拟 5.10 节）
+
+- ✅ L0 LLM 网关（llm-gateway.service.ts：SSE/tool_calls 聚合/双通道/重试；论文可引用）——M1
+- ✅ L1 编辑器 AI（/api/ai/editor/actions SSE + EditorAiMenu.tsx 流式写入走 Yjs，D-016）——M1
+- ⬜ L4 Agent（tool-registry + agent loop + 对话面板，工具过 RBAC）——M2
+- ⬜ L2 摘要/标签/批量整理（队列任务）——M3
+- ⬜ L3 混合检索（pgvector 迁移 + embeddings 通道）——M4
+- ⬜ AI-03~18 用例执行（待 Key）、5.10 节截图与论文素材
 
 ## 待讨论 / 阻塞
 

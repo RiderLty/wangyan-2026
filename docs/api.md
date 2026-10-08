@@ -237,3 +237,27 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 - 打开文档：按自增序回放 `yjs_updates`；无帧则从 `notes.content` 快照播种并存种子帧
 - 末个连接断开：Yjs 文档合并回写 `notes.content` + `content_text`，并压缩（compaction）已合并增量行；
   "会话文档为空且库中快照非空"时跳过回写（防误清保护）
+
+## 六、AI 智能辅助接口（v2.0 新增，论文 5.10）
+
+> 服务端全托管（D-015）：模型端点/Key 均来自服务端 `.env`，本组接口鉴权方式与其他 REST 接口一致（Bearer JWT）。
+> 服务端未配置 `AI_API_KEY` 时，所有 AI 接口统一返回 503，前端以提示条引导联系管理员。
+
+### POST /ai/editor/actions —— 编辑器 AI（论文 5.10.2，SSE 流式）
+
+| 项 | 说明 |
+|---|---|
+| 权限 | 登录；带 `note_id` 的写入类动作复用笔记级四级访问矩阵（team_read 拒绝，与人工编辑同权） |
+| Body | `{ "action": "continue\|polish\|summarize\|translate\|custom", "note_id?": "<uuid>", "text?": "<选区/前文 ≤20000 字>", "instruction?": "<自定义指令 ≤2000 字>" }` |
+| 响应 | `Content-Type: text/event-stream`。事件帧：`event: delta` + `{"text":"…"}` 正文增量；`event: done` + `{"usage":{…}}` token 用量；`event: error` + `{"message":"…"}`；终止帧 `data: [DONE]` |
+| SSE 实现说明 | 采用 POST + SSE（指令/选区需 body 传递，EventSource 仅支持 GET）；响应头带 `X-Accel-Buffering: no` 关闭 nginx 反代缓冲 |
+| 400/403 | 字段校验失败 / 缺少操作文本 / custom 指令为空 / 团队只读笔记（403） |
+| 503 | 服务端未配置 AI（AI_API_KEY 缺失） |
+
+流式约定：`reasoning_content`（思考模型思维链）在服务端剥离，不进入编辑器正文；流式期间由服务端记录 usage（含 `prompt_cache_hit_tokens` / `reasoning_tokens`）到日志，M2 起入 `ai_messages` 表。
+
+### 预留接口（后续里程碑实现，此处占位备忘）
+
+- `POST /ai/agent/chat`（L4 Agent 对话，Function Calling 工具集 + RBAC 收敛）
+- `GET /ai/conversations`、`GET /ai/conversations/:id/messages`（会话历史，M2 落表后启用）
+- `POST /notes/:id/embeddings/reindex`（L3 混合检索重建向量，pgvector 迁移后启用）

@@ -36,6 +36,7 @@ import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
 import { exportMarkdown, openPrintView } from '../../utils/export';
 import { markdownContentExtensions } from '../../utils/editor-extensions';
 import { useAuth } from '../../auth/AuthContext';
+import EditorAiMenu from './EditorAiMenu';
 
 /**
  * Tiptap 协作编辑器面板（论文 5.4.2 Yjs前端集成 / 5.4.3 多用户光标同步）
@@ -567,6 +568,8 @@ function EditorBody({
               onClick={() => setImgModal({ open: true, url: '' })}
             />
           </Tooltip>
+          {/* 编辑器 AI（v2.0 论文 5.10.2：续写/润色/摘要/翻译/自定义，流式写入走 Yjs 协作链路） */}
+          <EditorAiMenu editor={editor} noteId={note.id} />
           <Tooltip title="插入 3×3 表格（Markdown 管道语法）">
             <Button
               type={editor.isActive('table') ? 'primary' : 'text'}

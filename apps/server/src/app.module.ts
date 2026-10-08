@@ -11,6 +11,7 @@ import { RealtimeModule } from './modules/realtime/realtime.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { ShareModule } from './modules/share/share.module';
 import { RecycleBinModule } from './modules/recycle-bin/recycle-bin.module';
+import { AiModule } from './modules/ai/ai.module';
 
 /**
  * 根模块：聚合各业务模块（论文 4.1.3 模块化设计）
@@ -51,6 +52,8 @@ import { RecycleBinModule } from './modules/recycle-bin/recycle-bin.module';
     TeamsModule,
     ShareModule,
     RecycleBinModule,
+    // AI 智能辅助（v2.0 论文 5.10：网关 + 编辑器 AI，L4 Agent 后续里程碑）
+    AiModule,
   ],
   controllers: [HealthController],
 })

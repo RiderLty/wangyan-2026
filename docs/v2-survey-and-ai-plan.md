@@ -222,10 +222,13 @@
 
 ### 6.2 前置确认清单（启动前必须完成）
 
-1. LLM 接口能力三问：是否支持 `stream:true`（L1 体验）、`tools/tool_calls`（L4 依赖）、`/v1/embeddings`（L3 依赖）——curl 实测。
+1. LLM 接口能力三问——**2026-10-08 已确认（选定 DeepSeek API 为默认提供方）**：
+   - ✅ `stream:true` 流式：支持（chat completions 以 `text/event-stream` 返回 chunk 序列）
+   - ✅ `tools/tool_calls`：支持（仅 function 类型；流式下分片到达，首个 chunk 携带 id/function，后续 chunk 只带参数增量，需网关聚合）
+   - ❌ `/v1/embeddings`：**官方 API 不提供** → L3 改为双通道架构（见 6.3.2），embeddings 通道未配置时 L3 功能整体隐藏，不阻塞 L1/L4
 2. NAS PostgreSQL 镜像是否带 pgvector；不带则换 `pgvector/pgvector` 镜像（部署章节顺势补"向量数据库选型"素材）。
 3. 导师确认：v2.0 范围 + 论文大纲解冻（见 6.7）。
-4. 模型与密钥安全：Key 只存服务端 `.env`，前端永不接触；对话记录脱敏策略。
+4. ~~模型与密钥安全~~ **已定（2026-10-08）**：AI 能力由服务器直接提供、用户零配置——Key/端点/模型全部只存服务端 `.env`，前端永不接触模型接口，设置页仅只读展示 AI 状态与用量。默认提供方 DeepSeek（`AI_BASE_URL=https://api.deepseek.com/v1`，默认模型 `deepseek-flash`，确切模型名以用户 DeepSeek 开放平台控制台模型清单为准）。
 
 ### 6.3 技术方案
 
@@ -250,9 +253,13 @@ apps/server/src/modules/ai/
     └── ai-batch.service.ts         # L2 批量任务（@nestjs/schedule 或 Bull 队列）
 ```
 
-#### 6.3.2 LLM 网关要点
+#### 6.3.2 LLM 网关要点（默认 DeepSeek，双通道架构）
 
-- 统一 `OPENAI_BASE_URL / OPENAI_API_KEY / OPENAI_MODEL` 配置，兼容任意 OpenAI 格式服务；`llm-gateway` 是全系统唯一出网口，前端永不直连模型。
+- **服务端全托管、用户零配置**：`AI_BASE_URL / AI_API_KEY / AI_MODEL` 等全部只存服务端 `.env`，全系统 AI（编辑器辅助/RAG 问答/Agent）共用唯一出网口 `llm-gateway`，前端永不直连模型；设置页仅只读展示状态与用量。
+- **双通道配置**（因 DeepSeek 无 embeddings 端点，对话与向量分开）：
+  - 对话通道：`AI_BASE_URL`（默认 `https://api.deepseek.com/v1`）+ `AI_MODEL`（默认 `deepseek-flash`）+ 可选 `AI_MODEL_FAST`（编辑器续写用低延迟档，避免思考模型首 token 慢）；
+  - 向量通道（可选）：`AI_EMBEDDINGS_BASE_URL / AI_EMBEDDINGS_MODEL`（任意 OpenAI 兼容 embeddings 服务，如硅基流动 bge-m3 / 本地 vLLM），**未配置则 L3 功能整体隐藏**，L1/L2/L4 不受影响。
+- **DeepSeek 特有处理**：① `reasoning_content`（思维链）不进正文——L1 只透传最终答案流，L4 侧边栏折叠展示思考过程；② tool_calls 流式分片由网关聚合为完整调用再交 agent loop；③ usage 的 `prompt_cache_hit_tokens` / `reasoning_tokens` 入库，审计页展示缓存命中率；④ 401 直报、429 指数退避、AbortController 支持用户 Esc 中断。
 - SSE 转发：`chat.completions stream:true` → Nest SSE（`@Sse()`）→ 前端。
 - 用量与审计：每次调用记录 model/tokens/耗时/关联用户，入 `ai_messages`（答辩可展示用量看板，又是工作量）。
 

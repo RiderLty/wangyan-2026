@@ -180,3 +180,24 @@
 - 理由：商业产品（腾讯人机双写 2026-06 等）验证趋势；开源界"协作+权限+Agent+私有化"组合空白（Trilium 单用户、Outline 无 Agent 写操作、AnythingLLM 非笔记系统）；L4 复用现有四级权限矩阵边际成本低而论文价值最高。
 - 启动前置：① 接口三能力实测（stream/tool_calls/embeddings）；② NAS pgvector 可用性；③ 导师确认范围 + 大纲解冻（拟加 5.10 节，见计划 6.7 节）。未确认前不动代码。
 - 影响论文小节：1.1/1.2（趋势佐证）、3.3.8、5.10、6.2.8、7.2（换血）
+
+## D-015：AI 提供方定为 DeepSeek API，服务端全托管零配置
+
+- 日期：2026-10-08
+- 背景：v2.0 方案（D-014）获用户批准。用户要求：AI 能力由服务器直接提供，用户不填写任何配置；默认 DeepSeek API、默认模型 deepseek-flash。
+- 调研结论（官方 API 文档核实）：✅ 支持 stream:true 与 tools/tool_calls（仅 function 类型，流式分片到达需网关聚合）；❌ 不提供 /v1/embeddings → L3 改双通道架构。
+- 决定：
+  1. L0 网关配置全部只存服务端 .env（AI_BASE_URL 默认 https://api.deepseek.com/v1、AI_API_KEY、AI_MODEL 默认 deepseek-flash、可选 AI_MODEL_FAST 低延迟档），前端零配置，设置页只读展示状态/用量；
+  2. 对话与 embeddings 双通道分离（AI_EMBEDDINGS_BASE_URL/MODEL 可选，指向任意 OpenAI 兼容 embeddings 服务），未配置则 L3 功能整体隐藏，不阻塞 L1/L2/L4；
+  3. DeepSeek 特有处理：reasoning_content 剥离不进正文（L4 折叠展示思考过程）、tool_calls 流式分片网关聚合、prompt_cache_hit_tokens/reasoning_tokens 入库审计。
+- 理由：服务端托管避免密钥下发与多配置复杂度，契合私有化定位（AI 调用链路可控可审计）；双通道让"无 embeddings"只影响 L3 而非全局；模型名以用户 DeepSeek 控制台实际清单为准。
+- 影响论文小节：5.10.1（网关）、2.x 可补"大模型 API 接入"选型段
+
+## D-016：L1 编辑器 AI 的写入路径——前端经 Tiptap 命令写入 Yjs（服务端不做 Yjs 写端）
+
+- 日期：2026-10-08
+- 背景：v2.0 计划 6.3.3 原设想"服务端以 Yjs 客户端身份把 token 写入文档"，实现前权衡：服务端直写需在 realtime 模块内存文档上做并发写 + 冷文档播种 + 逐 token 更新风暴，复杂度高且与 writeState 回写机制耦合。
+- 选项：① 服务端 Yjs 写端 ② 前端流式经 ProseMirror 事务写入（编辑器本身 Yjs 驱动）③ 绕过编辑器直接改 JSONB（放弃：会绕过 CRDT 与协作链路）
+- 决定：**②**。SSE 流到浏览器后，AI 文本逐段经 tr.insertText/tr.split 写入本地 Tiptap 文档；由于编辑器由 Collaboration 扩展驱动，这些事务与人工键入完全同路（CRDT 增量同步、UndoManager 可撤销）。流式期间本地 setEditable(false) 防位置漂移，Esc/停止中断。
+- 理由：以最小复杂度实现"AI 输出走 CRDT 协作链路"的论文表述（5.10.2）；多端可见、可撤销、无服务端写端；代价是流式期间本端锁定与 delta 位置理论漂移（演示规模可接受，M2 复核）。
+- 影响论文小节：5.10.2、4.4.4（冲突解决策略的 AI 协作者扩展）

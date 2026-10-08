@@ -1,5 +1,24 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-08] M1 编码：LLM 网关 + 编辑器 AI（v2.0 L0/L1）
+
+- 做了什么：
+  - **server 新增 `ai` 模块**：`llm/llm-gateway.service.ts`（OpenAI 兼容网关：SSE 解析、tool_calls 流式分片聚合、reasoning_content 独立事件、429 退避重试、双通道对话/embeddings 分离、DeepSeek 特有 usage 字段）；`editor/editor-ai.controller.ts`（POST+SSE 编辑器 AI 接口 /api/ai/editor/actions，五动作 continue/polish/summarize/translate/custom，服务端提示词集中定义，权限复用 getAccessLevel——team_read 拒绝写入类动作）；`llm/llm.types.ts`；ai.module 注册进 app.module，NotesModule 增导出 NotesService
+  - **web**：`api/ai.ts`（fetch 流式 SSE 客户端）；`components/notes/EditorAiMenu.tsx`（工具栏 AI 菜单：流式写入经 tr.insertText/tr.split 走 Yjs 协作链路（D-016），Esc/停止中断，流式期间本地锁定，自定义指令弹窗）；NoteEditorPanel 工具栏接入
+  - **配置**：.env.example 增 AI_* 六项（对话 DeepSeek 默认 deepseek-flash、向量通道百炼 qwen3.7-text-embedding 规划）；docs/api.md 增第六节 AI 接口；docs/testing/ai-tests.md 新建（AI-01~20，其中 401/503/未配置降级三条冒烟已过，其余待 Key）
+  - **验证**：server/web 构建全过；真机冒烟：启动日志网关状态正确、401/502→503 拦截分支、登录后带 token 请求走通到"未配置"提示
+- 为什么：用户批准 v2.0 方案并敲定 DeepSeek+百炼（D-015），指令"先编写代码"；论文 5.10.1/5.10.2 支撑
+- 新增依赖：无（fetch 为 Node22/Web 内置，SSE 手工解析未引库）
+- 产出素材：docs/api.md 第六节、docs/testing/ai-tests.md
+- 遗留问题：① AI-03~18 需真实 Key 执行（用户暂不提供）；② 流式输出为纯文本（Markdown 语法字面显示），M2 评估"完成后 markdown 重插升级"（有协作者在线时不升级，防位置漂移）；③ L4 Agent（M2）、L2 批处理（M3）、L3 pgvector（M4）未动；④ 大纲解冻（5.10 节）仍待导师确认
+
+## [2026-10-08] v2.0 方案获批，AI 提供方定为 DeepSeek（D-015）
+
+- 做了什么：核实 DeepSeek API 能力（官方文档：✅ stream/tool_calls、❌ 无 /v1/embeddings，模型 deepseek-flash 真实存在）；v2-survey-and-ai-plan.md 6.2/6.3.2 更新为已确认状态——L0 网关定为服务端全托管零配置（.env 单一配置，前端只读展示），对话/embeddings 双通道分离（L3 未配 embeddings 则隐藏），DeepSeek 特有处理四条（reasoning_content 剥离、tool_calls 分片聚合、缓存命中入库、可中断）
+- 为什么：用户批准 v2.0 方案，要求 AI 由服务器直接提供、用户零配置，默认 DeepSeek/deepseek-flash
+- 新增依赖：无（设计阶段，未动代码）
+- 遗留问题：① 用户到 DeepSeek 开放平台控制台确认 deepseek-flash 确切模型名与是否有低延迟档；② embeddings 通道选型待定（硅基流动/本地 vLLM/暂缓 L3）；③ NAS pgvector 镜像待查；④ 导师确认范围后大纲解冻
+
 ## [2026-10-07] v2.0 调研报告与 AI Agent 开发计划（docs/v2-survey-and-ai-plan.md）
 
 - 做了什么：应"导师反馈创新点不足"，完成 12 个竞品调研（商业 5：腾讯文档人机双写/WPS/飞书/Notion/石墨；开源 9+3：AFFiNE/AppFlowy/思源/Outline/HedgeDoc/Trilium/Logseq/Khoj/AnythingLLM/Docmost/BookStack/Reor），产出 docs/v2-survey-and-ai-plan.md：功能矩阵对比 + 创新点论证 I1~I6 + 答辩 Q&A 口径 + v2.0 四层开发计划（L0 网关/L1 编辑器 AI 走 Yjs/L2 秘书/L3 混合检索/L4 Agent 工具调用过 RBAC）+ 大纲联动方案。方向决策记 D-014
