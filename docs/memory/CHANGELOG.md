@@ -394,3 +394,10 @@
 - 新增依赖：无（尚未初始化代码）
 - 产出素材：无
 - 遗留问题：编辑器（D-001）、ORM（D-002）、monorepo（D-003）三项选型待定，初始化脚手架前需先定。
+
+## [2026-10-08] M1 实测闭合：双通道 Key 配置 + 全链路 SSE 验证通过
+
+- 做了什么：用户提供 DeepSeek/百炼 Key 写入本机 .env（已确认 .gitignore 覆盖，不入库）；curl 直测两上游（deepseek-flash 连通且为思考型模型、qwen3.7-text-embedding 返回 1024 维）；起 server 全链路实测 /ai/editor/actions continue——187 事件帧/正文 348 字/usage 完整（reasoning_tokens=483 正确剥离、prompt_cache 字段透传）。ai-tests.md 回填 AI-03/04/19/20
+- 为什么：验证 M1 网关真实行为；确认 deepseek-flash 思考模型特性（首 token 延迟较高，AI_MODEL_FAST 建议后续配置低延迟档）
+- 新增依赖：无
+- 遗留问题：① 界面级用例 AI-07~18 待浏览器人工执行；② 排查中发现旧冒烟进程残留占用 13000（pkill 只杀 npx 包装进程不杀 node 子进程，教训：用 lsof -ti :端口 定向 kill）；③ Key 已出现在聊天记录，建议答辩后轮换
