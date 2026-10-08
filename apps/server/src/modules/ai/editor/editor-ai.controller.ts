@@ -130,7 +130,9 @@ export class EditorAiController {
       for await (const ev of this.gateway.streamChat(messages, {
         model,
         temperature: dto.action === 'polish' ? 0.4 : 0.7,
-        maxTokens: 2048,
+        // 思考模型的 reasoning_tokens 计入 max_tokens 预算：给足量，
+        // 否则思维链耗尽预算导致正文零输出（2026-10-08 UI 实测踩坑）
+        maxTokens: 8192,
       })) {
         if (ev.type === 'delta') {
           chars += ev.text.length;

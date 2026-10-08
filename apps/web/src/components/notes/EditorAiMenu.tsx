@@ -8,26 +8,34 @@ import { streamEditorAi, type EditorAiAction, type EditorAiPayload } from '../..
 /**
  * 编辑器 AI 菜单（论文 5.10.2 编辑器 AI 与 CRDT 集成，v2.0 计划 L1）
  *
- * AI 输出逐段经 ProseMirror 事务写入本地编辑器——编辑器由 Yjs Collaboration 驱动，
- * 这些事务与人工键入完全同路：作为 CRDT 增量同步到所有协作端、
- * 纳入 Yjs UndoManager 可撤销。AI 因此成为与人类用户共享同一冲突解决链路的"协作者"。
+ * 写入策略（2026-10-08 实测后定型，D-016 补充）：
+ * 流式增量**缓冲不落盘**（工具栏"停止（N 字）"实时计数），完成后把整段
+ * Markdown 一次性经 tiptap-markdown 解析为 ProseMirror 节点插入。
+ * 原因：逐 delta 纯文本插入会打碎 Markdown 结构（表格管道符/代码块被撕裂），
+ * 且数百次微事务造成位置漂移；整块解析插入=单一 CRDT 事务，
+ * 协作端原子可见、可整体撤销，Markdown 语义（表格/代码块/标题）完整保留。
  *
- * 流式期间本地编辑临时锁定（避免本地输入导致流式插入位置漂移），
- * 结束/中断后恢复；Esc 或点击"停止"可中断。
+ * 流式期间本地编辑锁定（防插入锚点漂移）；Esc/停止中断后插入已生成的部分。
  */
 
 type StreamState =
   | { phase: 'idle' }
   | { phase: 'running'; abort: AbortController; action: EditorAiAction };
 
+/** 插入锚点：start 时记录，完成后应用（数字位置可能在流期间漂移，故带兜底） */
+type Anchor =
+  | { mode: 'insert'; pos?: number }
+  | { mode: 'replace'; from: number; to: number }
+  | { mode: 'doc-end' };
+
 export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteId: string }) {
   const [stream, setStream] = useState<StreamState>({ phase: 'idle' });
   const [customOpen, setCustomOpen] = useState(false);
   const [instruction, setInstruction] = useState('');
-  // 流式插入的位置游标：每次 dispatch 后按插入量推进
-  const posRef = useRef(0);
-  // 首个非空增量到达前跳过开头的换行（避免在正文前留下空段）
-  const startedRef = useRef(false);
+  const [chars, setChars] = useState(0);
+  const bufRef = useRef('');
+  const anchorRef = useRef<Anchor>({ mode: 'doc-end' });
+  const appliedRef = useRef(false);
 
   useEffect(() => {
     if (stream.phase !== 'running') return;
@@ -39,63 +47,38 @@ export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stream.phase]);
 
-  /** 定位插入起点：返回事务起始与初始光标位置（均在文本块内部） */
-  function locate(apply: 'insert' | 'replace-selection' | 'doc-end') {
-    const { state } = editor;
-    const { from, to, empty } = state.selection;
-    const tr = state.tr;
-    let pos: number;
-    if (apply === 'replace-selection' && !empty) {
-      tr.delete(from, to);
-      pos = from;
-    } else if (apply === 'doc-end') {
-      const last = state.doc.lastChild;
-      if (state.doc.content.size === 0) {
-        pos = 0;
-      } else if (last?.type.name === 'paragraph' && last.content.size === 0) {
-        // 文档以空段落结尾：直接用它承接 AI 文本
-        pos = state.doc.content.size - 1;
-      } else if (last?.type.name === 'paragraph') {
-        // 在最后一段末尾拆分出新的空段落承接（split 后新段起始位 = size-1+1）
-        tr.split(state.doc.content.size - 1);
-        pos = state.doc.content.size;
-      } else {
-        // 末尾不是段落（表格/代码块等）：补一个空段落
-        tr.insert(state.doc.content.size, state.schema.nodes.paragraph.create());
-        pos = state.doc.content.size + 1;
-      }
-    } else {
-      pos = to;
-    }
-    return { tr, pos };
-  }
-
-  /** 流式写入：delta 里的 \n 视为段落边界（split 出新段继续写） */
-  function writeDelta(text: string) {
-    // 首个增量到达前跳过开头换行，避免正文前留空段
-    if (!startedRef.current) {
-      text = text.replace(/^\n+/, '');
-      if (!text) return;
-      startedRef.current = true;
-    }
-    let pos = posRef.current;
-    const parts = text.split('\n');
-    parts.forEach((seg, i) => {
-      if (i > 0) {
-        // 段落边界：在当前位置拆分出新的空段（split 后写入位后移 1）
-        editor.view.dispatch(editor.view.state.tr.split(pos));
-        pos += 1;
-      }
-      if (seg) {
-        editor.view.dispatch(editor.view.state.tr.insertText(seg, pos));
-        pos += seg.length;
-      }
-    });
-    posRef.current = pos;
-  }
-
   function stop() {
     if (stream.phase === 'running') stream.abort.abort();
+  }
+
+  function finish() {
+    editor.setEditable(true);
+    setStream({ phase: 'idle' });
+  }
+
+  /** 把缓冲的 Markdown 整块解析插入（单一事务；幂等） */
+  function applyBuffer() {
+    if (appliedRef.current) return;
+    appliedRef.current = true;
+    const md = bufRef.current.trim();
+    if (!md) return;
+    try {
+      const anchor = anchorRef.current;
+      if (anchor.mode === 'replace') {
+        editor.chain().deleteRange({ from: anchor.from, to: anchor.to }).insertContentAt(anchor.from, md).run();
+      } else if (anchor.mode === 'doc-end') {
+        editor.chain().insertContentAt(editor.state.doc.content.size, md).run();
+      } else {
+        try {
+          editor.chain().insertContentAt(anchor.pos ?? editor.state.selection.to, md).run();
+        } catch {
+          // 锚点漂移兜底：退化为当前光标处
+          editor.chain().insertContentAt(editor.state.selection.to, md).run();
+        }
+      }
+    } catch {
+      message.warning('AI 内容插入失败，已保留在剪贴板式缓冲（可重试）');
+    }
   }
 
   function run(action: EditorAiAction, apply: 'insert' | 'replace-selection' | 'doc-end', instructionText?: string) {
@@ -103,7 +86,7 @@ export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteI
     const { from, to, empty } = state.selection;
     const selected = empty ? '' : state.doc.textBetween(from, to, '\n');
 
-    // 组装请求载荷：与大纲 4.6 的权限模型对齐——AI 写入走与人工编辑同权校验
+    // 组装请求载荷：与 4.5 权限模型对齐——AI 写入走与人工编辑同权校验
     const payload: EditorAiPayload = { action, note_id: noteId };
     if (action === 'continue') {
       // 续写上下文：光标前文（截取尾部 1500 字，防止超长）
@@ -116,12 +99,16 @@ export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteI
     }
     if (instructionText) payload.instruction = instructionText;
 
-    // 确定插入起点并锁定本地编辑
-    const { tr, pos } = locate(apply);
-    tr.setMeta('addToHistory', true);
-    editor.view.dispatch(tr);
-    posRef.current = pos;
-    startedRef.current = false;
+    // 记录插入锚点并锁定本地编辑
+    anchorRef.current =
+      apply === 'replace-selection' && !empty
+        ? { mode: 'replace', from, to }
+        : apply === 'doc-end'
+          ? { mode: 'doc-end' }
+          : { mode: 'insert', pos: to };
+    appliedRef.current = false;
+    bufRef.current = '';
+    setChars(0);
     editor.setEditable(false);
 
     const abort = new AbortController();
@@ -130,29 +117,24 @@ export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteI
       payload,
       {
         onDelta: (t) => {
-          try {
-            writeDelta(t);
-          } catch {
-            // 位置漂移等异常：终止流并提示，已写入部分保留（可撤销）
-            abort.abort();
-            message.warning('AI 写入位置异常已停止，已写入内容可撤销（Ctrl+Z）');
-          }
+          bufRef.current += t;
+          setChars(bufRef.current.length);
         },
         onDone: () => {
-          editor.setEditable(true);
-          setStream({ phase: 'idle' });
+          applyBuffer();
+          finish();
         },
         onError: (msg) => {
-          editor.setEditable(true);
-          setStream({ phase: 'idle' });
+          applyBuffer();
+          finish();
           message.error(msg);
         },
       },
       abort.signal,
     ).then(() => {
-      // 中断路径（AbortError 直接 resolve）：恢复编辑状态
-      editor.setEditable(true);
-      setStream((s) => (s.phase === 'running' && s.abort === abort ? { phase: 'idle' } : s));
+      // 中断路径（Esc/停止）：插入已生成的部分，恢复编辑
+      applyBuffer();
+      finish();
     });
   }
 
@@ -170,7 +152,7 @@ export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteI
   return (
     <>
       {running ? (
-        <Tooltip title="AI 正在写入，点击停止（Esc）">
+        <Tooltip title="AI 生成中，点击停止（Esc）。停止后已生成内容会插入文档">
           <Button
             type="text"
             size="small"
@@ -179,7 +161,7 @@ export default function EditorAiMenu({ editor, noteId }: { editor: Editor; noteI
             icon={<LoadingOutlined />}
             onClick={stop}
           >
-            停止
+            停止{chars > 0 ? `（${chars} 字）` : ''}
           </Button>
         </Tooltip>
       ) : (

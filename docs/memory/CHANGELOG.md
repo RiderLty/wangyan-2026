@@ -1,5 +1,22 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-08] M1 复检闭合：接口 12 条 + UI 自动化 4 条，修复两缺陷（D-017）
+
+- 做了什么：
+  - **接口层全量复检（对用户运行中的 dev server）**：五动作（continue/polish/translate/summarize/custom）各产出真实内容；校验分支（缺文本 403/空指令 403/不存在笔记 404）；RBAC 分支（team_read 润色 403 拒绝、摘要放行、team_edit 放行）——12/12 通过
+  - **UI 层自动化**（scripts/screenshots/ai-ui-check.mjs，puppeteer 双 context）：AI-07 续写 +574 字、AI-15 双端字数一致（574=574）、AI-17 流中停止按钮在场、AI-18 Markdown 渲染正确；截图 2 张入 docs/v2/assets/（用户新规：论文已定稿，v2 素材独立存放于 docs/v2/，禁碰 docs/thesis 与 docs/assets，已写入持久记忆）
+  - **缺陷修复①**：editor-ai.controller maxTokens 2048→8192——思考模型 reasoning_tokens 计入预算，上下文一长思维链耗尽预算导致正文零输出（表现为"流 10 秒零写入"）
+  - **缺陷修复②（D-017）**：EditorAiMenu 写入策略从"逐 delta 纯文本插入"改为"流式缓冲计数 + 完成后整段 Markdown 解析插入（单一 CRDT 事务）"——旧方案实测打碎表格/代码块并位置漂移抛错；tiptap-markdown 负责表格/行内代码正确渲染
+  - 测试脚本健壮化：antd 菜单须真实鼠标点击（DOM .click() 不触发）、末段先 scrollIntoView、临时笔记自动建删防演示库污染
+- 产出素材：docs/v2/assets/5.10.2-ai-menu.png、5.10.2-ai-collab.png、docs/v2/v2-materials.md（v2 素材索引与论文新小节编号对照）
+- 新增依赖：无
+- 遗留问题：① 演示笔记「部署手册（团队协作）」含此前中止输出的残留垃圾（可版本回滚清理，暂留）；② AI-08~14 界面用例留人工复核；③ AI_MODEL_FAST 未配置（deepseek-flash 思考期 4~10s，编辑器首字慢）
+## [2026-10-08] M1 实测闭合：双通道 Key 配置 + 全链路 SSE 验证通过
+
+- 做了什么：用户提供 DeepSeek/百炼 Key 写入本机 .env（已确认 .gitignore 覆盖，不入库）；curl 直测两上游（deepseek-flash 连通且为思考型模型、qwen3.7-text-embedding 返回 1024 维）；起 server 全链路实测 /ai/editor/actions continue——187 事件帧/正文 348 字/usage 完整（reasoning_tokens=483 正确剥离、prompt_cache 字段透传）。ai-tests.md 回填 AI-03/04/19/20
+- 为什么：验证 M1 网关真实行为；确认 deepseek-flash 思考模型特性（首 token 延迟较高，AI_MODEL_FAST 建议后续配置低延迟档）
+- 新增依赖：无
+- 遗留问题：① 界面级用例 AI-07~18 待浏览器人工执行；② 排查中发现旧冒烟进程残留占用 13000（pkill 只杀 npx 包装进程不杀 node 子进程，教训：用 lsof -ti :端口 定向 kill）；③ Key 已出现在聊天记录，建议答辩后轮换
 ## [2026-10-08] M1 编码：LLM 网关 + 编辑器 AI（v2.0 L0/L1）
 
 - 做了什么：
@@ -394,10 +411,3 @@
 - 新增依赖：无（尚未初始化代码）
 - 产出素材：无
 - 遗留问题：编辑器（D-001）、ORM（D-002）、monorepo（D-003）三项选型待定，初始化脚手架前需先定。
-
-## [2026-10-08] M1 实测闭合：双通道 Key 配置 + 全链路 SSE 验证通过
-
-- 做了什么：用户提供 DeepSeek/百炼 Key 写入本机 .env（已确认 .gitignore 覆盖，不入库）；curl 直测两上游（deepseek-flash 连通且为思考型模型、qwen3.7-text-embedding 返回 1024 维）；起 server 全链路实测 /ai/editor/actions continue——187 事件帧/正文 348 字/usage 完整（reasoning_tokens=483 正确剥离、prompt_cache 字段透传）。ai-tests.md 回填 AI-03/04/19/20
-- 为什么：验证 M1 网关真实行为；确认 deepseek-flash 思考模型特性（首 token 延迟较高，AI_MODEL_FAST 建议后续配置低延迟档）
-- 新增依赖：无
-- 遗留问题：① 界面级用例 AI-07~18 待浏览器人工执行；② 排查中发现旧冒烟进程残留占用 13000（pkill 只杀 npx 包装进程不杀 node 子进程，教训：用 lsof -ti :端口 定向 kill）；③ Key 已出现在聊天记录，建议答辩后轮换
