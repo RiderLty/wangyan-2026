@@ -1,5 +1,18 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-09] M3 编码+验证：L2 智能整理 + 会话历史 + 审计（D-019）
+
+- 做了什么：
+  - **note_ai_meta 表**：AI 派生数据独立存储（summary/suggested_tags/model），不碰 v1 notes 实体
+  - **organize.service**：单篇整理（LLM 结构化输出 {summary, tags[]} + 容错解析）、标签一键采纳（同名复用否则新建，幂等挂载，复用 5.3.3 标签体系与 RBAC）、批量整理（进程内顺序队列 ≤20 篇/轮 + 进度轮询，不加 Bull 依赖，D-019）
+  - **organize.controller**：meta/organize/apply-tags/batch/batch-status + conversations（列表/消息回放，tool 结果并回 assistant.tools）+ audit（最近 50 条工具调用）
+  - **web**：OrganizeModal（摘要卡/勾选标签一键采纳/批量进度）、AiAuditModal（审计表格）、抽屉增强——打开时自动恢复最近会话（服务端回放），extra 增"整理/审计"入口；ai.ts 增 aiApi REST 组
+  - **验证**：E2E 全绿——①单篇整理摘要 60+ 字 + 4 标签建议 ②采纳 3 个转正（标签库可见）③历史回放含工具步骤 ④审计 4 行 ⑤批量 5 篇 9s 全成；UI 截图 5.10.4-ai-organize.png（organize-ui-check.mjs，踩坑：antd v5 无 ant-modal-open 类，改等标题文本）
+- 为什么：v2.0 计划 M3 范围；论文 5.10.4/审计呈现支撑
+- 新增依赖：无
+- 产出素材：docs/v2/assets/5.10.4-ai-organize.png、ORG-01~06 用例、api.md 第六组扩全、v2-materials 索引更新
+- 遗留问题：① 抽屉回答仍为纯文本渲染；② 自动触发的"保存后摘要"未做（D-019 决策改为显式，论文按此表述）；③ 5.10.4 小节编号待大纲解冻定；④ M4（L3 pgvector）是最后一个里程碑
+
 ## [2026-10-09] M2 编码+验证：L4 Agent（工具注册表 + agent loop + 对话抽屉）
 
 - 做了什么：

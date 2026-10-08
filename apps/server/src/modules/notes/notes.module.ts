@@ -24,7 +24,7 @@ import { VersionsService } from './versions.service';
   ],
   controllers: [NotesController, FoldersController, TagsController, VersionsController],
   providers: [NotesService, FoldersService, TagsService, VersionsService],
-  // getAccessLevel 供 ai 模块复用（AI 写入与人工编辑同权校验，v2.0 5.10）
-  exports: [VersionsService, NotesService],
+  // getAccessLevel 供 ai 模块复用（AI 写入与人工编辑同权校验，v2.0 5.10）；TagsService 供标签建议采纳
+  exports: [VersionsService, NotesService, TagsService],
 })
 export class NotesModule {}

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Drawer, Input, Tag, Tooltip, Typography } from 'antd';
-import { RobotOutlined, SendOutlined, CloseOutlined } from '@ant-design/icons';
-import { streamAgentChat } from '../../api/ai';
+import { Button, Drawer, Input, Space, Tag, Tooltip, Typography } from 'antd';
+import { RobotOutlined, SendOutlined, CloseOutlined, FormOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { aiApi, streamAgentChat, type HistoryMessage } from '../../api/ai';
+import OrganizeModal from './OrganizeModal';
+import AiAuditModal from './AiAuditModal';
 
 /**
  * AI 助手对话抽屉（论文 5.10.3，v2.0 计划 L4）——对话式 Agent 驱动系统操作。
@@ -46,23 +48,55 @@ function argSummary(args: string): string {
 export default function AiAssistantDrawer({
   open,
   noteId,
+  noteTitle,
   onClose,
+  onTagsApplied,
 }: {
   open: boolean;
   noteId: string;
+  noteTitle?: string;
   onClose: () => void;
+  /** 标签采纳后通知父级刷新标签列表（编辑器标签行） */
+  onTagsApplied?: () => void;
 }) {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [organizeOpen, setOrganizeOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
   const convRef = useRef<string | undefined>(undefined);
   const abortRef = useRef<AbortController | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const restoredRef = useRef<string>('');
 
   // 关闭时中断进行中的流
   useEffect(() => {
     if (!open && abortRef.current) abortRef.current.abort();
   }, [open]);
+
+  // 打开时恢复最近会话（服务端 ai_conversations/ai_messages 回放，M3）
+  useEffect(() => {
+    if (!open || restoredRef.current === noteId) return;
+    restoredRef.current = noteId;
+    void (async () => {
+      try {
+        const convs = await aiApi.conversations(noteId);
+        const latest = (convs.data as { id: string }[])[0];
+        if (!latest) return;
+        const msgs = await aiApi.conversationMessages(latest.id);
+        convRef.current = latest.id;
+        setMessages(
+          (msgs.data as HistoryMessage[]).map((m) => ({
+            role: m.role,
+            content: m.content ?? '',
+            tools: m.tools?.map((t) => ({ name: t.name, args: t.args, ok: t.ok, summary: t.summary })),
+          })),
+        );
+      } catch {
+        /* 历史恢复失败静默（新会话兜底） */
+      }
+    })();
+  }, [open, noteId]);
 
   // 新消息自动滚底
   useEffect(() => {
@@ -125,9 +159,17 @@ export default function AiAssistantDrawer({
         </span>
       }
       extra={
-        <Tooltip title="清空对话（新建会话）">
-          <Button size="small" type="text" icon={<CloseOutlined />} onClick={() => { convRef.current = undefined; setMessages([]); }} />
-        </Tooltip>
+        <Space size={2}>
+          <Tooltip title="整理本笔记（摘要卡 + 标签建议）">
+            <Button size="small" type="text" icon={<FormOutlined />} onClick={() => setOrganizeOpen(true)} />
+          </Tooltip>
+          <Tooltip title="工具调用审计">
+            <Button size="small" type="text" icon={<FileSearchOutlined />} onClick={() => setAuditOpen(true)} />
+          </Tooltip>
+          <Tooltip title="清空对话（新建会话）">
+            <Button size="small" type="text" icon={<CloseOutlined />} onClick={() => { convRef.current = undefined; setMessages([]); }} />
+          </Tooltip>
+        </Space>
       }
       destroyOnClose
     >
@@ -205,6 +247,15 @@ export default function AiAssistantDrawer({
           </div>
         </div>
       </div>
+      {/* AI 整理（L2 摘要卡/标签建议/批量整理）与工具调用审计 */}
+      <OrganizeModal
+        open={organizeOpen}
+        noteId={noteId}
+        noteTitle={noteTitle ?? ''}
+        onClose={() => setOrganizeOpen(false)}
+        onTagsApplied={onTagsApplied}
+      />
+      <AiAuditModal open={auditOpen} onClose={() => setAuditOpen(false)} />
     </Drawer>
   );
 }

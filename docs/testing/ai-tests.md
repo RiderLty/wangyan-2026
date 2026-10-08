@@ -48,3 +48,14 @@
 | AGENT-04 | 会话多轮 | 同会话续问 | 第二条消息不带 conversation_id 上下文重发 | 服务端按 conversation 续接历史 | ✅ meta 返回同一 conversation_id（api/ai.ts onMeta 回传） | ✅ |
 | AGENT-05 | 抽屉 UI + 工具链路条 | pnpm dev | 编辑器头部 AI 按钮 → 抽屉发指令 | 工具 Tag（搜索笔记 ✓）与回答先后出现 | ✅ 无头浏览器实测，截图 docs/v2/assets/5.10.3-ai-agent-drawer.png | ✅ |
 | AGENT-06 | 步数上限防失控 | —— | 构造需超 6 步工具调用的任务 | 到达 MAX_STEPS 后给出终止说明，不无限循环 | 代码保障（agent.service MAX_STEPS=6），极端场景人工验证 | 🟨 |
+
+## 五、AI 整理 / 历史 / 审计（L2，M3）
+
+| 编号 | 用例 | 前置条件 | 操作步骤 | 预期 | 实际 | 结论 |
+|---|---|---|---|---|---|---|
+| ORG-01 | 单篇整理 | 打开有正文的笔记 | POST /ai/notes/:id/organize | 201 返回 summary + suggested_tags | ✅ 摘要 60+ 字、4 个标签建议 | ✅ |
+| ORG-02 | 标签一键采纳 | 已有建议标签 | POST apply-tags（前 3 个） | 同名复用否则新建，挂载幂等 | ✅ 标签库出现"容器运维"等且笔记挂载成功 | ✅ |
+| ORG-03 | 会话历史回放 | 存在含工具调用的会话 | GET conversations + messages | tool 结果并回 assistant.tools | ✅ search_notes(ok=true) 步骤完整还原 | ✅ |
+| ORG-04 | 审计查询 | 存在工具调用 | GET /ai/audit | 按时间倒序 50 条内 | ✅ 4 条含时间/工具/参数/ok | ✅ |
+| ORG-05 | 批量整理 | 有缺元数据的个人笔记 | POST batch + 轮询 status | 顺序执行至完成，进度可见 | ✅ 5 篇 9s 全部成功（5/5） | ✅ |
+| ORG-06 | 整理弹窗 UI | pnpm dev | 抽屉"整理本笔记"入口 | 摘要卡/勾选标签/批量入口可见 | ✅ 无头浏览器实测，截图 docs/v2/assets/5.10.4-ai-organize.png | ✅ |

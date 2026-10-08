@@ -1,3 +1,4 @@
+import { api } from './client';
 import { TOKEN_KEY } from './client';
 
 /**
@@ -72,6 +73,43 @@ export async function streamAgentChat(
   if (!res) return;
   await consumeSse(res, dispatch);
 }
+
+// ---- L2 智能整理 / 会话历史 / 审计（REST，M3）----
+
+/** AI 元数据（摘要卡 + 标签建议） */
+export interface NoteAiMeta {
+  note_id: string;
+  summary: string | null;
+  suggested_tags: string[] | null;
+  organized_at?: string;
+}
+
+export interface BatchStatus {
+  running: boolean;
+  total: number;
+  done: number;
+  failed: number;
+}
+
+/** 会话历史消息（tool 结果已并回 assistant 的 tools 步骤） */
+export interface HistoryMessage {
+  role: 'user' | 'assistant';
+  content: string | null;
+  created_at: string;
+  tools?: { name: string; args: string; ok: boolean; summary: string }[];
+}
+
+export const aiApi = {
+  getMeta: (noteId: string) => api.get<NoteAiMeta>(`/ai/notes/${noteId}/meta`),
+  organize: (noteId: string) => api.post<NoteAiMeta>(`/ai/notes/${noteId}/organize`),
+  applyTags: (noteId: string, tags: string[]) => api.post<{ attached: string[] }>(`/ai/notes/${noteId}/apply-tags`, { tags }),
+  startBatch: () => api.post<BatchStatus>('/ai/organize/batch'),
+  batchStatus: () => api.get<BatchStatus | null>('/ai/organize/batch/status'),
+  conversations: (noteId?: string) => api.get('/ai/conversations', { params: noteId ? { note_id: noteId } : {} }),
+  conversationMessages: (id: string) => api.get<HistoryMessage[]>(`/ai/conversations/${id}/messages`),
+  audit: () =>
+    api.get<{ time: string; name: string; args: string; ok: boolean; result: string }[]>('/ai/audit'),
+};
 
 /** 通用 SSE 帧消费：返回是否正常终止（[DONE]），错误经 onEvent('error', …) 上抛 */
 async function consumeSse(

@@ -635,7 +635,7 @@ function EditorBody({
       </Typography.Paragraph>
 
       {/* AI 助手对话抽屉（v2.0 5.10.3） */}
-      <AiAssistantDrawer open={assistantOpen} noteId={note.id} onClose={() => setAssistantOpen(false)} />
+      <AiAssistantDrawer open={assistantOpen} noteId={note.id} noteTitle={note.title} onClose={() => setAssistantOpen(false)} />
 
       {/* 插入图片弹窗：URL 方式（与 Markdown ![](url) 等价） */}
       <Modal

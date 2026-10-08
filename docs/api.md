@@ -267,7 +267,19 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 | 审计 | 全部消息（含 tool_calls 与工具结果）落 `ai_messages` 表；单轮工具调用上限 6 步 |
 | 503 | 服务端未配置 AI（AI_API_KEY 缺失） |
 
+### AI 整理 / 会话历史 / 审计（M3 已实现）
+
+| 接口 | 说明 |
+|---|---|
+| `GET /ai/notes/:id/meta` | 摘要卡 + 标签建议（note_ai_meta，可空对象） |
+| `POST /ai/notes/:id/organize` | 生成/刷新摘要与标签建议（LLM 结构化输出 `{summary, tags[]}`，解析容错） |
+| `POST /ai/notes/:id/apply-tags` | Body `{ "tags": ["≤20字", …≤8 个] }`；建议标签转正——同名复用否则新建，挂载幂等（复用 5.3.3 标签体系 + RBAC） |
+| `POST /ai/organize/batch` | 启动存量批量整理：后台顺序处理缺元数据的个人笔记（≤20 篇/轮），进程内队列不加 Bull 依赖（D-019） |
+| `GET /ai/organize/batch/status` | 批量进度 `{running,total,done,failed}`（前端 2s 轮询） |
+| `GET /ai/conversations?note_id=` | 会话列表（updated_at 倒序 ≤20） |
+| `GET /ai/conversations/:id/messages` | 消息回放：tool 结果按 tool_call_id 并回 assistant 的 tools 步骤 |
+| `GET /ai/audit` | 当前用户最近 50 条工具调用审计（时间/工具/参数/结果 ok） |
+
 ### 预留接口（后续里程碑实现，此处占位备忘）
 
-- `GET /ai/conversations`、`GET /ai/conversations/:id/messages`（会话历史回放，表已建待开接口）
 - `POST /notes/:id/embeddings/reindex`（L3 混合检索重建向量，pgvector 迁移后启用）

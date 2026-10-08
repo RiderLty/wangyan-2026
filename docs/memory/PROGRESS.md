@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：**v2.0 AI 增强进行中（D-014~018）**——M1 已复检闭合；**M2（L4 Agent）已完成并 E2E 验证**（三场景：检索+分享链/创作结构/RBAC 越权拒绝，抽屉 UI+截图）；剩 M3（L2 摘要批处理+审计页）→ M4（L3 混合检索，需换 pgvector 镜像）。**新规：论文 Word 已定稿，v2 素材独立存 docs/v2/，禁碰 docs/thesis 与 docs/assets。** v1 thesis.md 终稿已完成。
+> 当前状态：**v2.0 AI 增强进行中（D-014~019）**——M1 已复检闭合；M2（L4 Agent）与 **M3（L2 整理+历史+审计）已完成并 E2E 验证**（AGENT-01~06 / ORG-01~06 全过）；仅剩 **M4（L3 混合检索，pgvector）**，需 NAS 换 postgres 镜像。**新规：论文 Word 已定稿，v2 素材独立存 docs/v2/，禁碰 docs/thesis 与 docs/assets。** v1 thesis.md 终稿已完成。
 
 ## 状态图例
 
@@ -67,7 +67,7 @@
 - ✅ L0 LLM 网关（llm-gateway.service.ts：SSE/tool_calls 聚合/双通道/重试；论文可引用）——M1
 - ✅ L1 编辑器 AI（/api/ai/editor/actions SSE + EditorAiMenu.tsx 缓冲+整块解析插入走 Yjs，D-016/D-017）——M1，UI 自动化验证通过
 - ✅ L4 Agent（agent.service 循环 + tools.ts 工具×RBAC + AiAssistantDrawer 抽屉 + 会话审计表，D-018）——M2，E2E 三场景验证
-- ⬜ M3：L2 摘要/标签/批量整理 + 审计查看页 + 会话历史接口
+- ✅ M3：L2 智能整理（摘要卡/标签建议/批量队列 D-019）+ 会话历史回放 + 审计接口与弹窗——E2E ORG-01~06 全过
 - ⬜ L3 混合检索（pgvector 迁移 + embeddings 通道）——M4
 - ⬜ AI-03~18 用例执行（待 Key）、5.10 节截图与论文素材
 
