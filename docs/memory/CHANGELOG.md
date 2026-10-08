@@ -1,5 +1,19 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-09] M2 编码+验证：L4 Agent（工具注册表 + agent loop + 对话抽屉）
+
+- 做了什么：
+  - **会话持久化**：ai_conversations / ai_messages 两表（role=user/assistant/tool、tool_calls jsonb、tokens）——审计数据源
+  - **agent/tools.ts 工具注册表**：search_notes（个人+团队可见笔记联合查询）/ get_note / create_note / update_note / create_share_link，全部以当前用户身份执行、复用 getAccessLevel/assertCanShare；刻意不含破坏性操作（D-018）
+  - **agent.service.ts**：MAX_STEPS=6 的工具调用循环（生成→tool_calls→以用户身份执行→结果回填→继续），事件流 meta/delta/tool_call/tool_result/done；越权错误回填模型让其改道；步数上限防失控
+  - **agent/agent.controller.ts**：POST /api/ai/agent/chat（SSE）；**markdown-to-prosemirror.ts**：服务端 Markdown→PM 转换器（标题/列表/引用/代码块/管道表格/行内标记，嵌套列表平铺为已知限制）
+  - **web**：AiAssistantDrawer.tsx 对话抽屉（气泡+工具链路条 Tag+多轮 conversation_id 续接）、api/ai.ts 增 streamAgentChat（SSE 解析重构为 consumeSse/openAiStream 公共层）、编辑器头部 AI 助手按钮
+  - **验证**：E2E 三场景全过——①检索→分享链接工具链 ②create_note 结构校验（bulletList/bold 落库）③RBAC 越权 create_share_link ok=false 回填模型如实说明；抽屉 UI 无头浏览器验证 + 截图 5.10.3-ai-agent-drawer.png；api.md 第六节替换为实际接口；ai-tests.md 增 AGENT-01~06
+- 为什么：v2.0 压轴创新点（AI 作为第四类权限主体纳入 RBAC，D-014）；论文 5.10.3 支撑
+- 新增依赖：无
+- 产出素材：docs/v2/assets/5.10.3-ai-agent-drawer.png、docs/v2/v2-materials.md 索引更新、AGENT-01~06
+- 遗留问题：① 抽屉回答为纯文本渲染（Markdown 字面显示）——升级为渲染面待 M3；② 会话历史回放接口（GET conversations）未开；③ 审计查看页待 M3；④ 中文回答已收紧提示词（偶发英文开头）待观察
+
 ## [2026-10-08] M1 复检闭合：接口 12 条 + UI 自动化 4 条，修复两缺陷（D-017）
 
 - 做了什么：

@@ -37,3 +37,14 @@
 |---|---|---|---|---|---|---|
 | AI-19 | 向量通道未配置降级 | 未配置 AI_EMBEDDINGS_* | 启动 server | 日志打印"L3 降级隐藏"，其余 AI 功能不受影响 | ✅（冒烟：日志正确） | ✅ |
 | AI-20 | embeddings 连通 | 配置百炼 qwen3.7-text-embedding | 调网关 embed() | 返回 1024 维向量，顺序与输入一致 | ✅ 经网关 embed() 实测：3 条/1024 维/287ms；语义合理性验证——同类文本余弦 0.528 vs 无关 0.195，区分度充分 | ✅ |
+
+## 四、AI Agent（L4，M2）
+
+| 编号 | 用例 | 前置条件 | 操作步骤 | 预期 | 实际 | 结论 |
+|---|---|---|---|---|---|---|
+| AGENT-01 | 多步工具链：检索→分享链接 | 登录任意账号 | 指令"搜包含'缓存'的笔记，给第一篇创建 7 天只读分享链接" | 依次调用 search_notes → create_share_link，回答含链接路径 | ✅ 工具链完整，回答含 /share/<token> 路径 | ✅ |
+| AGENT-02 | 创作链：Markdown 结构 | 同上 | 指令"写一篇《Docker 部署检查清单》，≥5 条无序列表项带加粗小标题" | create_note 成功且库中为 bulletList/bold/heading 节点 | ✅ JSONB 校验 bulletList=true bold=true（服务端 markdown 转换器） | ✅ |
+| AGENT-03 | RBAC 收敛：越权被拒 | suqing（非管理员） | 指令"给团队笔记'周会纪要'创建编辑权限永久分享链接" | create_share_link 返回 ok=false「只有笔记所有者或团队管理员可以分享」，模型如实说明 | ✅ tool_result ok=false 已回填，AI 回答说明权限不足 | ✅ |
+| AGENT-04 | 会话多轮 | 同会话续问 | 第二条消息不带 conversation_id 上下文重发 | 服务端按 conversation 续接历史 | ✅ meta 返回同一 conversation_id（api/ai.ts onMeta 回传） | ✅ |
+| AGENT-05 | 抽屉 UI + 工具链路条 | pnpm dev | 编辑器头部 AI 按钮 → 抽屉发指令 | 工具 Tag（搜索笔记 ✓）与回答先后出现 | ✅ 无头浏览器实测，截图 docs/v2/assets/5.10.3-ai-agent-drawer.png | ✅ |
+| AGENT-06 | 步数上限防失控 | —— | 构造需超 6 步工具调用的任务 | 到达 MAX_STEPS 后给出终止说明，不无限循环 | 代码保障（agent.service MAX_STEPS=6），极端场景人工验证 | 🟨 |

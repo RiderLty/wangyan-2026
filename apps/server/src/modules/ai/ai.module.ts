@@ -1,21 +1,36 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotesModule } from '../notes/notes.module';
+import { ShareModule } from '../share/share.module';
+import { Note } from '../notes/note.entity';
+import { TeamMember } from '../teams/team-member.entity';
 import { LlmGatewayService } from './llm/llm-gateway.service';
 import { EditorAiController } from './editor/editor-ai.controller';
+import { AgentService } from './agent.service';
+import { AgentController } from './agent/agent.controller';
+import { AiConversation } from './conversation/ai-conversation.entity';
+import { AiMessage } from './conversation/ai-message.entity';
 
 /**
  * AI 智能辅助模块（论文 5.10，v2.0 计划 6.3.1；方向决策 D-014/D-015）
  *
  * - llm/LlmGatewayService：OpenAI 兼容网关，全系统唯一 LLM 出网口（M1）
  * - editor/EditorAiController：编辑器 AI 流式接口（L1，M1）
- * - agent/（L4 Agent 工具调用，权限收敛）与 task/（L2 摘要/标签批处理）随后续里程碑加入
+ * - agent/AgentService + AgentController：Agent 工具调用循环 + 会话持久化
+ *   （L4，M2；工具集与 RBAC 收敛见 agent/tools.ts，决策 D-017/D-018）
+ * - task/（L2 摘要/标签批处理）与 L3 混合检索随后续里程碑加入
  *
- * 依赖 NotesModule 的 getAccessLevel（四级访问矩阵）：AI 写入与人工编辑同权校验
+ * 依赖 NotesModule 的 getAccessLevel / ShareModule 的 assertCanShare：
+ * AI 工具调用与人类操作同权校验（AI 作为第四类权限主体，压轴创新点）
  */
 @Module({
-  imports: [NotesModule],
-  controllers: [EditorAiController],
-  providers: [LlmGatewayService],
+  imports: [
+    NotesModule,
+    ShareModule,
+    TypeOrmModule.forFeature([Note, TeamMember, AiConversation, AiMessage]),
+  ],
+  controllers: [EditorAiController, AgentController],
+  providers: [LlmGatewayService, AgentService],
   exports: [LlmGatewayService],
 })
 export class AiModule {}

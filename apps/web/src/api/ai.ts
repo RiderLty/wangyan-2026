@@ -25,49 +25,63 @@ export interface EditorAiHandlers {
   onError: (message: string) => void;
 }
 
-/**
- * 调用编辑器 AI 流式接口。返回的 Promise 在流结束时 resolve；
- * 中断用 AbortSignal（Esc 停止按钮）。
- */
+/** 调用编辑器 AI 流式接口。返回的 Promise 在流结束时 resolve；中断用 AbortSignal（Esc 停止按钮）。 */
 export async function streamEditorAi(
   payload: EditorAiPayload,
   handlers: EditorAiHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
-  let res: Response;
-  try {
-    res = await fetch('/api/ai/editor/actions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY) ?? ''}`,
-      },
-      body: JSON.stringify(payload),
-      signal,
-    });
-  } catch (err) {
-    if ((err as Error).name === 'AbortError') return;
-    handlers.onError('网络错误，无法连接 AI 服务');
-    return;
-  }
+  const dispatch = (event: string, data: Record<string, unknown>) => {
+    if (event === 'delta') handlers.onDelta(data.text as string);
+    else if (event === 'error') handlers.onError(data.message as string);
+    else if (event === 'done') handlers.onDone();
+  };
+  const res = await openAiStream('/api/ai/editor/actions', payload, dispatch, signal);
+  if (!res) return;
+  await consumeSse(res, dispatch);
+}
 
-  if (!res.ok) {
-    // 建流前的错误（权限/参数/未配置）是常规 JSON 响应
-    let message = `AI 服务错误（${res.status}）`;
-    try {
-      const data = (await res.json()) as { message?: string | string[] };
-      if (data.message) message = Array.isArray(data.message) ? data.message.join('；') : data.message;
-    } catch {
-      /* 保留默认文案 */
-    }
-    handlers.onError(message);
-    return;
-  }
+// ---- L4 Agent 对话（论文 5.10.3）----
+
+export interface AgentHandlers {
+  /** 会话保障：新建会话时返回新 conversation_id，后续轮次带回 */
+  onMeta: (conversationId: string) => void;
+  onDelta: (text: string) => void;
+  onToolCall: (name: string, args: string) => void;
+  onToolResult: (name: string, ok: boolean, summary: string) => void;
+  onDone: () => void;
+  onError: (message: string) => void;
+}
+
+/** 调用 Agent 对话流式接口（工具调用以当前用户身份执行并受 RBAC 约束） */
+export async function streamAgentChat(
+  payload: { conversation_id?: string; note_id?: string; message: string },
+  handlers: AgentHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  const dispatch = (event: string, data: Record<string, unknown>) => {
+    if (event === 'meta') handlers.onMeta(data.conversation_id as string);
+    else if (event === 'delta') handlers.onDelta(data.text as string);
+    else if (event === 'tool_call') handlers.onToolCall(data.name as string, (data.args as string) ?? '');
+    else if (event === 'tool_result')
+      handlers.onToolResult(data.name as string, data.ok as boolean, (data.summary as string) ?? '');
+    else if (event === 'done') handlers.onDone();
+    else if (event === 'error') handlers.onError(data.message as string);
+  };
+  const res = await openAiStream('/api/ai/agent/chat', payload, dispatch, signal);
+  if (!res) return;
+  await consumeSse(res, dispatch);
+}
+
+/** 通用 SSE 帧消费：返回是否正常终止（[DONE]），错误经 onEvent('error', …) 上抛 */
+async function consumeSse(
+  res: Response,
+  onEvent: (event: string, data: Record<string, unknown>) => void,
+): Promise<void> {
   if (!res.body) {
-    handlers.onError('AI 服务未返回数据流');
+    onEvent('error', { message: 'AI 服务未返回数据流' });
     return;
   }
-
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
@@ -77,7 +91,6 @@ export async function streamEditorAi(
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      // SSE 以空行分帧
       const frames = buffer.split('\n\n');
       buffer = frames.pop() ?? '';
       for (const frame of frames) {
@@ -89,7 +102,6 @@ export async function streamEditorAi(
         }
         if (data === '[DONE]') {
           sawDone = true;
-          handlers.onDone();
           return;
         }
         let parsed: unknown;
@@ -98,20 +110,49 @@ export async function streamEditorAi(
         } catch {
           continue;
         }
-        if (event === 'delta') handlers.onDelta((parsed as { text: string }).text);
-        else if (event === 'error') handlers.onError((parsed as { message: string }).message);
-        else if (event === 'done') {
-          sawDone = true;
-          handlers.onDone();
-          return;
-        }
+        onEvent(event, parsed as Record<string, unknown>);
       }
     }
-    if (!sawDone) handlers.onError('AI 响应流意外中断');
+    if (!sawDone) onEvent('error', { message: 'AI 响应流意外中断' });
   } catch (err) {
-    if ((err as Error).name === 'AbortError') return; // 用户主动停止
-    handlers.onError('AI 响应流读取失败');
+    if ((err as Error).name !== 'AbortError') onEvent('error', { message: 'AI 响应流读取失败' });
   } finally {
     reader.releaseLock();
   }
+}
+
+/** 建流的公共前置：POST + 错误响应解析；失败时调用 onEvent('error') */
+async function openAiStream(
+  path: string,
+  body: unknown,
+  onEvent: (event: string, data: Record<string, unknown>) => void,
+  signal?: AbortSignal,
+): Promise<Response | null> {
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem(TOKEN_KEY) ?? ''}`,
+      },
+      body: JSON.stringify(body),
+      signal,
+    });
+  } catch (err) {
+    if ((err as Error).name !== 'AbortError') onEvent('error', { message: '网络错误，无法连接 AI 服务' });
+    return null;
+  }
+  if (!res.ok) {
+    let message = `AI 服务错误（${res.status}）`;
+    try {
+      const data = (await res.json()) as { message?: string | string[] };
+      if (data.message) message = Array.isArray(data.message) ? data.message.join('；') : data.message;
+    } catch {
+      /* 保留默认文案 */
+    }
+    onEvent('error', { message });
+    return null;
+  }
+  return res;
 }

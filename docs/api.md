@@ -256,8 +256,18 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 
 流式约定：`reasoning_content`（思考模型思维链）在服务端剥离，不进入编辑器正文；流式期间由服务端记录 usage（含 `prompt_cache_hit_tokens` / `reasoning_tokens`）到日志，M2 起入 `ai_messages` 表。
 
+### POST /ai/agent/chat —— AI 助手对话（论文 5.10.3，SSE 流式，M2 已实现）
+
+| 项 | 说明 |
+|---|---|
+| 权限 | 登录；**工具调用以当前用户身份执行，逐次过 RBAC**（getAccessLevel/assertCanShare 复用，越权返回错误结果回填模型） |
+| Body | `{ "message": "≤4000 字", "conversation_id?": "<uuid 多轮回传>", "note_id?": "<uuid 编辑器内发起时的归属记录>" }` |
+| 响应 | `text/event-stream`。事件帧：`event: meta` + `{"conversation_id":"…"}`；`event: delta` + `{"text":"…"}` 回答增量；`event: tool_call` + `{"name":"search_notes","args":"{…}"}`；`event: tool_result` + `{"name","ok","summary"}`；`event: done`；`event: error`；终止帧 `data: [DONE]` |
+| 工具集（M2） | `search_notes` / `get_note` / `create_note` / `update_note` / `create_share_link`——刻意不含破坏性操作（删除/停用链接需二次确认机制，见 DECISIONS D-018） |
+| 审计 | 全部消息（含 tool_calls 与工具结果）落 `ai_messages` 表；单轮工具调用上限 6 步 |
+| 503 | 服务端未配置 AI（AI_API_KEY 缺失） |
+
 ### 预留接口（后续里程碑实现，此处占位备忘）
 
-- `POST /ai/agent/chat`（L4 Agent 对话，Function Calling 工具集 + RBAC 收敛）
-- `GET /ai/conversations`、`GET /ai/conversations/:id/messages`（会话历史，M2 落表后启用）
+- `GET /ai/conversations`、`GET /ai/conversations/:id/messages`（会话历史回放，表已建待开接口）
 - `POST /notes/:id/embeddings/reindex`（L3 混合检索重建向量，pgvector 迁移后启用）

@@ -30,6 +30,7 @@ import {
   TableOutlined,
   PictureOutlined,
   DeleteOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import { TOKEN_KEY } from '../../api/client';
 import type { NoteDetail, NoteTagInfo, TagInfo } from '../../api/notes';
@@ -37,6 +38,7 @@ import { exportMarkdown, openPrintView } from '../../utils/export';
 import { markdownContentExtensions } from '../../utils/editor-extensions';
 import { useAuth } from '../../auth/AuthContext';
 import EditorAiMenu from './EditorAiMenu';
+import AiAssistantDrawer from './AiAssistantDrawer';
 
 /**
  * Tiptap 协作编辑器面板（论文 5.4.2 Yjs前端集成 / 5.4.3 多用户光标同步）
@@ -328,6 +330,8 @@ function EditorBody({
 }) {
   // 图片插入弹窗（5.3.2 图片语法支持：URL 方式，与 Markdown ![]() 对应）
   const [imgModal, setImgModal] = useState<{ open: boolean; url: string } | null>(null);
+  // AI 助手对话抽屉（v2.0 论文 5.10.3：对话式 Agent，工具调用过 RBAC）
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const editor = useEditor({
     extensions: [
       // 历史撤销交给 Yjs UndoManager（协作下 ProseMirror history 不可用）
@@ -388,6 +392,12 @@ function EditorBody({
         {note.team_id && !canManageVisibility && (
           <Tag>{note.visibility === 'team_read' ? '团队只读' : note.visibility === 'team_edit' ? '团队可编辑' : '私有'}</Tag>
         )}
+        {/* AI 助手（v2.0 5.10.3：对话式 Agent，可搜索/撰写/整理笔记并生成分享链接） */}
+        <Tooltip title="AI 助手（对话式操作笔记系统）">
+          <Button size="small" icon={<RobotOutlined />} onClick={() => setAssistantOpen(true)}>
+            AI
+          </Button>
+        </Tooltip>
         {/* 分享入口（5.6.1，仅 owner/团队管理员可见） */}
         {canShare && (
           <Tooltip title="生成分享链接">
@@ -623,6 +633,9 @@ function EditorBody({
         创建于 {new Date(note.created_at).toLocaleString('zh-CN')} · 更新于{' '}
         {new Date(note.updated_at).toLocaleString('zh-CN')}
       </Typography.Paragraph>
+
+      {/* AI 助手对话抽屉（v2.0 5.10.3） */}
+      <AiAssistantDrawer open={assistantOpen} noteId={note.id} onClose={() => setAssistantOpen(false)} />
 
       {/* 插入图片弹窗：URL 方式（与 Markdown ![](url) 等价） */}
       <Modal
