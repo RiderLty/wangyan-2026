@@ -1,5 +1,18 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-09] M4 编码+验证+上生产：L3 混合检索（D-020）——v2.0 全部完成
+
+- 做了什么：
+  - **基础设施**：NAS postgres 换 pgvector/pgvector:pg16（pg_dump 备份先行并抽查可恢复性；数据基线 117/6/34/36/9 逐项核对一致；原镜像保留可回滚）；CREATE EXTENSION vector + v2.0 四表建齐（docs/v2/v2-ddl.sql 为建表口径）
+  - **search.service**：切片向量化（~500 字/重叠 50/≤8 片→1024 维百炼通道，raw SQL + ::vector 交互）、混合检索（关键词 ILIKE ∪ 向量 cosine → **RRF k=60** 融合）、RAG 问答（[n] 出处、无依据如实说明）
+  - **安全修复**：E2E 大指数笔记暴露检索 SQL 越权泄漏（团队笔记只判 visibility 未校验成员资格）→ 三处谓词补 team_members 校验，与 getAccessLevel 严格同口径（D-020 反面教材素材）
+  - **web**：SmartSearchModal（混合/语义 Tag+RRF 分+片段+"问 AI"）、HomePage 左栏入口
+  - **验证**：E2E——重索引 6 篇 10 片 1024 维、关键词"缓存"4 条混合命中、**零字面重叠语义查询命中"资源限制"片段**、RAG 带 [2] 出处且诚实说明片段截断；UI 截图 5.10.4-ai-search.png；生产冒烟（reindex/语义/RAG 经 nginx）全通；**DEP-R15~16 记录**
+- 为什么：v2.0 最后一块（L3）；论文 5.10.4 混合检索架构 + 6.3 检索对比实验支撑
+- 新增依赖：无
+- **事故与修复**：git add -A 误将 thesis-draft.docx 与含姓名的初稿 .doc 推上公开 GitHub → 已 git rm --cached + .gitignore（7a7fc33），本地文件完好；**历史提交仍可追溯，是否 force push 重写历史交用户决定**
+- 遗留问题：无功能遗留；v2.0 四层 AI 能力（网关/编辑器 AI/Agent/整理/混合检索）全部上生产
+
 ## [2026-10-09] v2.0 上生产：NAS 全量重部署（DEP-R9~14）
 
 - 做了什么：裸仓库 archive 提取 v2.0 HEAD（b8adc4c）→ NAS 重建两镜像 → 重建容器（restart 策略保留，DB/Redis 不动）→ app.env 追加 AI_* 六项（DeepSeek/百炼 Key，仅存 NAS 内网 chmod 600）→ 健康检查全过 → 生产 AI 冒烟（经 nginx 反代 summarize 104 帧、摘要正确；容器日志网关双通道确认）。5.9-deploy-tests.md 记 DEP-R9~14
