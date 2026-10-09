@@ -14,12 +14,14 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   PlusOutlined,
+  RobotOutlined,
   TagOutlined,
   TeamOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import SmartSearchModal from '../components/notes/SmartSearchModal';
 import FolderTreePanel, { type FolderFilter } from '../components/notes/FolderTreePanel';
 import NoteListPanel from '../components/notes/NoteListPanel';
 import NoteEditorPanel from '../components/notes/NoteEditorPanel';
@@ -128,6 +130,8 @@ export default function HomePage() {
   const [focusMode, setFocusMode] = useState(false);
   // 左栏收起/展开：顶栏左侧按钮控制（收起时编辑区自适应占满）
   const [siderCollapsed, setSiderCollapsed] = useState(false);
+  // AI 智能搜索弹窗（v2.0 5.10 L3）
+  const [smartSearchOpen, setSmartSearchOpen] = useState(false);
   useEffect(() => {
     if (!focusMode) return;
     const onKey = (e: KeyboardEvent) => {
@@ -439,8 +443,17 @@ export default function HomePage() {
             enterButton
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            style={{ marginBottom: 12 }}
+            style={{ marginBottom: 8 }}
           />
+          {/* AI 智能搜索（v2.0 5.10 L3：关键词+语义混合检索 + RAG 问答） */}
+          <Button
+            size="small"
+            icon={<RobotOutlined />}
+            onClick={() => setSmartSearchOpen(true)}
+            style={{ marginBottom: 12, width: '100%' }}
+          >
+            AI 智能搜索
+          </Button>
           <FolderTreePanel
             folders={folders}
             selected={selectedTeamId ? '' : folderFilter}
@@ -732,6 +745,9 @@ export default function HomePage() {
         onClose={() => setRecycleOpen(false)}
         onChanged={() => void refreshNotes()}
       />
+
+      {/* AI 智能搜索弹窗（v2.0 5.10 L3：混合检索 + RAG 问答） */}
+      <SmartSearchModal open={smartSearchOpen} onClose={() => setSmartSearchOpen(false)} />
 
       {/* 分享链接管理弹窗（5.6） */}
       {activeNote && (

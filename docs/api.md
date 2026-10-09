@@ -280,6 +280,15 @@ JWT 载荷：`{ sub: <user_id>, username, jti: <uuid>, iat, exp }`，HS256，有
 | `GET /ai/conversations/:id/messages` | 消息回放：tool 结果按 tool_call_id 并回 assistant 的 tools 步骤 |
 | `GET /ai/audit` | 当前用户最近 50 条工具调用审计（时间/工具/参数/结果 ok） |
 
-### 预留接口（后续里程碑实现，此处占位备忘）
+### AI 智能搜索（L3 混合检索，M4 已实现）
 
-- `POST /notes/:id/embeddings/reindex`（L3 混合检索重建向量，pgvector 迁移后启用）
+| 接口 | 说明 |
+|---|---|
+| `POST /ai/search/reindex` | Body `{ "note_id" }`；正文切片（~500 字/片、重叠 50、≤8 片）→ 向量化（1024 维）→ 覆盖写 note_embeddings |
+| `POST /ai/search/reindex-all` | 全量补齐（可见范围且有正文、缺向量的笔记，≤20 篇/轮） |
+| `GET /ai/search?q=` | **混合检索**：关键词 ILIKE ∪ 向量余弦 topK → RRF（k=60）融合；返回 `{matched: 关键词\|语义\|混合, score, snippet}`；检索范围与 Agent 工具同口径（个人 + 所在团队可读笔记，**SQL 校验成员资格**） |
+| `POST /ai/search/ask` | Body `{ "question" }`；RAG 问答：混合检索 top 片段喂 LLM，回答带 [n] 出处标注，无依据如实说明 |
+
+### 预留接口
+
+- 无（v2.0 四层 AI 能力 L0~L3 已全部落地）

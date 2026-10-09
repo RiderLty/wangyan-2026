@@ -99,6 +99,18 @@ export interface HistoryMessage {
   tools?: { name: string; args: string; ok: boolean; summary: string }[];
 }
 
+// ---- L3 混合检索 / RAG 问答（M4）----
+
+/** 混合检索命中项（关键词/语义/混合 + RRF 融合分） */
+export interface HybridHit {
+  id: string;
+  title: string;
+  updated_at: string;
+  matched: '关键词' | '语义' | '混合';
+  score: number;
+  snippet?: string;
+}
+
 export const aiApi = {
   getMeta: (noteId: string) => api.get<NoteAiMeta>(`/ai/notes/${noteId}/meta`),
   organize: (noteId: string) => api.post<NoteAiMeta>(`/ai/notes/${noteId}/organize`),
@@ -109,6 +121,11 @@ export const aiApi = {
   conversationMessages: (id: string) => api.get<HistoryMessage[]>(`/ai/conversations/${id}/messages`),
   audit: () =>
     api.get<{ time: string; name: string; args: string; ok: boolean; result: string }[]>('/ai/audit'),
+  reindexNote: (noteId: string) => api.post<{ chunks: number }>('/ai/search/reindex', { note_id: noteId }),
+  reindexAll: () => api.post<{ reindexed: number; failed: number }>('/ai/search/reindex-all'),
+  search: (q: string) => api.get<HybridHit[]>('/ai/search', { params: { q } }),
+  ask: (question: string) =>
+    api.post<{ answer: string; sources: { id: string; title: string; snippet: string }[] }>('/ai/search/ask', { question }),
 };
 
 /** 通用 SSE 帧消费：返回是否正常终止（[DONE]），错误经 onEvent('error', …) 上抛 */

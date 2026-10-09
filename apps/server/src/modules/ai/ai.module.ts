@@ -13,6 +13,8 @@ import { AiMessage } from './conversation/ai-message.entity';
 import { NoteAiMeta } from './organize/note-ai-meta.entity';
 import { OrganizeService } from './organize/organize.service';
 import { OrganizeController } from './organize/organize.controller';
+import { SearchService } from './search/search.service';
+import { SearchController } from './search/search.controller';
 
 /**
  * AI 智能辅助模块（论文 5.10，v2.0 计划 6.3.1；方向决策 D-014/D-015）
@@ -22,7 +24,7 @@ import { OrganizeController } from './organize/organize.controller';
  * - agent/AgentService + AgentController：Agent 工具调用循环 + 会话持久化
  *   （L4，M2；工具集与 RBAC 收敛见 agent/tools.ts，决策 D-017/D-018）
  * - organize/：L2 智能整理（摘要卡/标签建议/批量整理）+ 会话历史 + 审计（M3）
- * - L3 混合检索（pgvector）随后续里程碑加入
+ * - search/：L3 混合检索（pgvector 向量 + 关键词 RRF 融合）与 RAG 问答（M4）
  *
  * 依赖 NotesModule 的 getAccessLevel / TagsService 与 ShareModule 的 assertCanShare：
  * AI 操作与人类操作同权校验（AI 作为第四类权限主体，压轴创新点）
@@ -33,8 +35,8 @@ import { OrganizeController } from './organize/organize.controller';
     ShareModule,
     TypeOrmModule.forFeature([Note, TeamMember, AiConversation, AiMessage, NoteAiMeta]),
   ],
-  controllers: [EditorAiController, AgentController, OrganizeController],
-  providers: [LlmGatewayService, AgentService, OrganizeService],
+  controllers: [EditorAiController, AgentController, OrganizeController, SearchController],
+  providers: [LlmGatewayService, AgentService, OrganizeService, SearchService],
   exports: [LlmGatewayService],
 })
 export class AiModule {}
