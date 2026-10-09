@@ -1,5 +1,13 @@
 # 变更流水（CHANGELOG）
 
+## [2026-10-09] v2.0 上生产：NAS 全量重部署（DEP-R9~14）
+
+- 做了什么：裸仓库 archive 提取 v2.0 HEAD（b8adc4c）→ NAS 重建两镜像 → 重建容器（restart 策略保留，DB/Redis 不动）→ app.env 追加 AI_* 六项（DeepSeek/百炼 Key，仅存 NAS 内网 chmod 600）→ 健康检查全过 → 生产 AI 冒烟（经 nginx 反代 summarize 104 帧、摘要正确；容器日志网关双通道确认）。5.9-deploy-tests.md 记 DEP-R9~14
+- 为什么：v2.0 功能此前只在本地，答辩演示环境是 NAS 生产——固化部署是 M4 前置
+- 发现：server 镜像 329MB→529MB，主因 node:22-alpine 基础镜像更新 + corepack 新 pnpm 安装布局漂移（锁文件未变、与代码无关）；论文数字为当时点实测不回改，镜像瘦身列入 7.3 展望
+- 新增依赖：无
+- 遗留问题：M4 需换 pgvector/pgvector 镜像（唯一动 NAS 基础设施的事，数据卷保留）
+
 ## [2026-10-09] M3 编码+验证：L2 智能整理 + 会话历史 + 审计（D-019）
 
 - 做了什么：

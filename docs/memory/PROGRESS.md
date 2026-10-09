@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：**v2.0 AI 增强进行中（D-014~019）**——M1 已复检闭合；M2（L4 Agent）与 **M3（L2 整理+历史+审计）已完成并 E2E 验证**（AGENT-01~06 / ORG-01~06 全过）；仅剩 **M4（L3 混合检索，pgvector）**，需 NAS 换 postgres 镜像。**新规：论文 Word 已定稿，v2 素材独立存 docs/v2/，禁碰 docs/thesis 与 docs/assets。** v1 thesis.md 终稿已完成。
+> 当前状态：**v2.0 AI 增强进行中（D-014~019）**——M1~M3 已完成并闭合，**已上 NAS 生产**（DEP-R9~14，生产 AI 冒烟通过，演示环境 http://192.168.3.3:18080 即 v2.0）；仅剩 **M4（L3 混合检索，pgvector）**，需 NAS 换 postgres 镜像。**新规：论文 Word 已定稿，v2 素材独立存 docs/v2/，禁碰 docs/thesis 与 docs/assets。** v1 thesis.md 终稿已完成。
 
 ## 状态图例
 
