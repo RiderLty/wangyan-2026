@@ -1,6 +1,6 @@
 # 开发进度账本（PROGRESS）
 
-> 当前状态：**v2.0 AI 增强（D-014~020）全部完成并上生产**——M1 网关/编辑器 AI、M2 Agent 权限收敛、M3 整理+审计、M4 混合检索+RAG，四层能力在生产 http://192.168.3.3:18080 全部可用（DEP-R9~16），postgres 已换 pgvector（备份在 wangyan-backup-20261009.dump）。用例 AI-01~20 / AGENT-01~06 / ORG-01~06 / SRCH-01~05。**待用户决定：① git 历史重写（清除已推公开仓库的论文 Word 稿）；② 答辩后轮换两家 API Key。** **新规：论文 Word 已定稿，v2 素材独立存 docs/v2/，禁碰 docs/thesis 与 docs/assets。**
+> 当前状态：**v2.0 AI 增强（D-014~020）全部完成并上生产**——M1 网关/编辑器 AI、M2 Agent 权限收敛、M3 整理+审计、M4 混合检索+RAG，四层能力在生产 http://192.168.3.3:18080 全部可用（DEP-R9~16），postgres 已换 pgvector（备份在 wangyan-backup-20261009.dump）。用例 AI-01~20 / AGENT-01~06 / ORG-01~06 / SRCH-01~05。**待用户决定：① git 历史重写（清除已推公开仓库的论文 Word 稿）；② 答辩后轮换两家 API Key。** **新规：论文 Word 已定稿，v2 素材独立存 docs/v2/，禁碰 docs/thesis 与 docs/assets。** **2026-10-17：论文写作主线转向 AI——产出 docs/v2/thesis-ai-revision-guide.md。** **2026-10-25：导师意见"缺核心技术论述"——产出 docs/v2/tech-depth-revision-guide.md（算法增补 4.7 + 第 5 章逐节改写 + 体检发现 2.5/3.4 正文缺失），正文粘贴与目录刷新由用户在 Word 完成。**
 
 ## 状态图例
 
@@ -69,13 +69,15 @@
 - ✅ L4 Agent（agent.service 循环 + tools.ts 工具×RBAC + AiAssistantDrawer 抽屉 + 会话审计表，D-018）——M2，E2E 三场景验证
 - ✅ M3：L2 智能整理（摘要卡/标签建议/批量队列 D-019）+ 会话历史回放 + 审计接口与弹窗——E2E ORG-01~06 全过
 - ⬜ L3 混合检索（pgvector 迁移 + embeddings 通道）——M4
-- ⬜ AI-03~18 用例执行（待 Key）、5.10 节截图与论文素材
+- ✅ AI 用例 37/37 全部执行（2026-10-19 补测 AI-05/06/08~14/16 闭合：受控重放验 429 退避、错 Key 401 直报、UI 七条无头实测；临时笔记测后即清）；5.10 节截图与论文素材已齐
+- ✅ 第 6 章定稿：数据全量核对一致 + AI 37/37 实测闭合，指引第七节为粘贴稿（AI 测试=6.2.7、汇总顺延 6.2.8）
+- ✅ 图 4-3 数据库 E-R 图按标准陈氏记法重绘（14 实体 + 19 联系，覆盖 16 张基表；SVG/PNG 与生成脚本 `scripts/diagrams/gen-er-diagram.py` 入库，2026-10-21）
 
 ## 待讨论 / 阻塞
 
 - [ ] **v2.0 AI 方向已定（D-014）**：docs/v2-survey-and-ai-plan.md（竞品矩阵+创新点论证+开发计划）。阻塞：LLM 接口 stream/tool_calls/embeddings 实测、NAS pgvector、导师确认范围+大纲解冻——确认前不动代码
 - [ ] 第 6 章性能数据已实测（perf.md）；6.4 兼容性表留 Safari/Firefox 人工复核项，答辩前建议用户用常用浏览器过一遍
-- [ ] 论文撰写阶段的图（架构/ER/流程）文字底稿在 docs/diagrams/，需用户画图
+- [ ] 论文撰写阶段的图（架构/流程）文字底稿在 docs/diagrams/，需用户画图（数据库 E-R 图已于 2026-10-21 重绘完成）
 
 ## 性能测试脚本（可复现）
 

@@ -27,4 +27,4 @@
 | 5.10.2 编辑器 AI 与 CRDT 集成 | `EditorAiMenu.tsx`（缓冲+整块解析插入，D-017）、本页两张截图、AI-07/15/17/18 |
 | 5.10.3 Agent 工具调用与权限收敛 | `agent.service.ts`（MAX_STEPS 循环）、`agent/tools.ts`（工具×RBAC 收敛规则）、`markdown-to-prosemirror.ts`、`ai_messages` 审计表、抽屉截图、AGENT-01~06 |
 | 5.10.4 智能整理与混合检索 | `organize.service.ts`（D-019）、`note_ai_meta`/`note_embeddings` 表、OrganizeModal 与 SmartSearchModal 截图、ORG-01~06、SRCH-01~05；混合检索架构（RRF 融合）、权限泄漏修复（成员资格校验）|
-| 6.2.8 AI 功能测试 | `docs/testing/ai-tests.md`（AI-01~20 + AGENT-01~06 + ORG-01~06） |
+| 6.2.7 AI 功能测试（汇总顺延为 6.2.8） | `docs/testing/ai-tests.md`（AI-01~20 + AGENT-01~06 + ORG-01~06，37 条 2026-10-19 全部执行通过） |

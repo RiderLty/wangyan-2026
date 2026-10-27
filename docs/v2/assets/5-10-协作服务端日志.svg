@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1126 387" font-family="'SF Mono',Menlo,monospace">
+<rect x="0" y="0" width="100%" height="100%" fill="#101418"/><!--svg-bg-white-->
+<rect x="0" y="0" width="1126" height="36" fill="#DFE1E4"/>
+<circle cx="22" cy="18" r="7" fill="#FF5F57"/>
+<circle cx="46" cy="18" r="7" fill="#FEBC2E"/>
+<circle cx="70" cy="18" r="7" fill="#28C840"/>
+<text x="563.0" y="23" font-size="13" fill="#5B6470" text-anchor="middle">ssh nas — 实时协作服务端日志（论文 5.4.1 持久化）</text>
+<text x="18" y="46" font-size="11.5" fill="#57C46B" font-weight="600" xml:space="preserve">$ ssh root@192.168.3.3 "docker logs wangyan-server | grep '[协作]' | tail -16"</text>
+<text x="18" y="65" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:51:22 PM     LOG [CollaborationPersistence] [协作] bindState 73032a3b-807e-45f5-8d1f-f917ea2446c3: 播种 content blocks=6 seed=1556B</text>
+<text x="18" y="84" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:51:35 PM     LOG [CollaborationPersistence] [协作] 笔记 73032a3b-807e-45f5-8d1f-f917ea2446c3 快照已合并回写，增量帧已压缩</text>
+<text x="18" y="103" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:52:57 PM     LOG [CollaborationPersistence] [协作] bindState ff68609f-9d4c-4f9d-b84b-d0d39d5e18f6: 回放 0 帧(B)</text>
+<text x="18" y="122" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:52:57 PM     LOG [CollaborationPersistence] [协作] bindState ff68609f-9d4c-4f9d-b84b-d0d39d5e18f6: 播种 content blocks=15 seed=6775B</text>
+<text x="18" y="141" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:53:07 PM     LOG [CollaborationPersistence] [协作] 笔记 ff68609f-9d4c-4f9d-b84b-d0d39d5e18f6 快照已合并回写，增量帧已压缩</text>
+<text x="18" y="160" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:55:12 PM     LOG [CollaborationPersistence] [协作] bindState ff68609f-9d4c-4f9d-b84b-d0d39d5e18f6: 回放 0 帧(B)</text>
+<text x="18" y="179" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:55:12 PM     LOG [CollaborationPersistence] [协作] bindState ff68609f-9d4c-4f9d-b84b-d0d39d5e18f6: 播种 content blocks=15 seed=6775B</text>
+<text x="18" y="198" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 1:55:19 PM     LOG [CollaborationPersistence] [协作] 笔记 ff68609f-9d4c-4f9d-b84b-d0d39d5e18f6 快照已合并回写，增量帧已压缩</text>
+<text x="18" y="217" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:10:11 PM     LOG [CollaborationPersistence] [协作] bindState dc83d1ec-e41d-4c6c-84ff-65a18b634482: 回放 0 帧(B)</text>
+<text x="18" y="236" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:10:11 PM     LOG [CollaborationPersistence] [协作] bindState dc83d1ec-e41d-4c6c-84ff-65a18b634482: 播种 content blocks=25 seed=1881B</text>
+<text x="18" y="255" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:10:39 PM     LOG [CollaborationPersistence] [协作] 笔记 dc83d1ec-e41d-4c6c-84ff-65a18b634482 会话结束有变更，已建自动版本</text>
+<text x="18" y="274" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:10:39 PM     LOG [CollaborationPersistence] [协作] 笔记 dc83d1ec-e41d-4c6c-84ff-65a18b634482 快照已合并回写，增量帧已压缩</text>
+<text x="18" y="293" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:11:09 PM     LOG [CollaborationPersistence] [协作] bindState dc83d1ec-e41d-4c6c-84ff-65a18b634482: 回放 0 帧(B)</text>
+<text x="18" y="312" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:11:09 PM     LOG [CollaborationPersistence] [协作] bindState dc83d1ec-e41d-4c6c-84ff-65a18b634482: 播种 content blocks=25 seed=2091B</text>
+<text x="18" y="331" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:11:37 PM     LOG [CollaborationPersistence] [协作] 笔记 dc83d1ec-e41d-4c6c-84ff-65a18b634482 会话结束有变更，已建自动版本</text>
+<text x="18" y="350" font-size="11.5" fill="#E8EAED" xml:space="preserve">[Nest] 1  - 10/18/2026, 2:11:37 PM     LOG [CollaborationPersistence] [协作] 笔记 dc83d1ec-e41d-4c6c-84ff-65a18b634482 快照已合并回写，增量帧已压缩</text>
+</svg>

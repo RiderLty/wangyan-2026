@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 830" font-family="'PingFang SC',Menlo,monospace">
+<rect x="0" y="0" width="100%" height="100%" fill="white"/><!--svg-bg-white-->
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#64748B"/></marker><marker id="aai" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#6366F1"/></marker></defs>
+<text x="500" y="26" font-size="14.5" font-weight="700" fill="#334155" text-anchor="middle">箭头指向被引用的表（外键方向）；紫色为 AI 派生表</text>
+<polyline points="395,80 340,80 340,124 225,124" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="395,190 330,190 330,136 225,136" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="395,210 360,210 360,368 225,368" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="395,320 375,320 375,382 225,382" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="395,446 310,446 310,148 225,148" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="395,470 300,470 300,392 225,392" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="430,439 430,101" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="395,655 290,655 290,160 225,160" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#aai)"/>
+<polyline points="395,668 350,668 350,530 430,530 430,482" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#aai)"/>
+<polyline points="775,80 745,80 745,505 470,505 470,482" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="775,180 745,180" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="775,280 745,280" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="775,380 745,380" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="775,480 745,480" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="775,580 745,580" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="775,680 745,680" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="860,501 860,545 690,545 690,620 225,620" stroke="#64748B" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<polyline points="480,739 480,681" stroke="#6366F1" stroke-width="1.5" fill="none" marker-end="url(#aai)"/>
+<rect x="55.0" y="119.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="140" y="140" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">users</text>
+<rect x="55.0" y="359.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="140" y="380" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">teams</text>
+<rect x="55.0" y="599.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="140" y="620" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">tags</text>
+<rect x="395.0" y="59.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="480" y="80" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">folders</text>
+<rect x="395.0" y="179.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="480" y="200" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">team_members</text>
+<rect x="395.0" y="299.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="480" y="320" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">team_invitations</text>
+<rect x="395.0" y="439.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="480" y="460" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">notes</text>
+<rect x="395.0" y="639.0" width="170" height="42" rx="5" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.7"/><text x="480" y="660" font-size="13.5" font-weight="600" fill="#312E81" text-anchor="middle" dominant-baseline="middle">ai_conversations</text>
+<rect x="395.0" y="739.0" width="170" height="42" rx="5" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.7"/><text x="480" y="760" font-size="13.5" font-weight="600" fill="#312E81" text-anchor="middle" dominant-baseline="middle">ai_messages</text>
+<rect x="775.0" y="59.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="860" y="80" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">note_versions</text>
+<rect x="775.0" y="159.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="860" y="180" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">yjs_updates</text>
+<rect x="775.0" y="259.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="860" y="280" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">recycle_bin</text>
+<rect x="775.0" y="359.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="860" y="380" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">share_links</text>
+<rect x="775.0" y="459.0" width="170" height="42" rx="5" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/><text x="860" y="480" font-size="13.5" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">note_tags</text>
+<rect x="775.0" y="559.0" width="170" height="42" rx="5" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.7"/><text x="860" y="580" font-size="13.5" font-weight="600" fill="#312E81" text-anchor="middle" dominant-baseline="middle">note_ai_meta</text>
+<rect x="775.0" y="659.0" width="170" height="42" rx="5" fill="#EEF2FF" stroke="#6366F1" stroke-width="1.7"/><text x="860" y="680" font-size="13.5" font-weight="600" fill="#312E81" text-anchor="middle" dominant-baseline="middle">note_embeddings</text>
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1266 710" font-family="'SF Mono',Menlo,monospace">
+<rect x="0" y="0" width="100%" height="100%" fill="#101418"/><!--svg-bg-white-->
+<rect x="0" y="0" width="1266" height="36" fill="#DFE1E4"/>
+<circle cx="22" cy="18" r="7" fill="#FF5F57"/>
+<circle cx="46" cy="18" r="7" fill="#FEBC2E"/>
+<circle cx="70" cy="18" r="7" fill="#28C840"/>
+<text x="633.0" y="23" font-size="13" fill="#5B6470" text-anchor="middle">psql — notes 表结构（论文 4.3 笔记表）</text>
+<text x="18" y="46" font-size="11.5" fill="#57C46B" font-weight="600" xml:space="preserve">$ psql -h 192.168.3.3 -p 15432 -U note -d markdown_notes -c "\d+ notes"</text>
+<text x="18" y="65" font-size="11.5" fill="#E8EAED" xml:space="preserve">                                                                  Table "public.notes"</text>
+<text x="18" y="84" font-size="11.5" fill="#E8EAED" xml:space="preserve">    Column    |            Type             | Collation | Nullable |           Default            | Storage  | Compression | Stats target | Description </text>
+<text x="18" y="103" font-size="11.5" fill="#E8EAED" xml:space="preserve">--------------+-----------------------------+-----------+----------+------------------------------+----------+-------------+--------------+-------------</text>
+<text x="18" y="122" font-size="11.5" fill="#E8EAED" xml:space="preserve"> id           | uuid                        |           | not null | gen_random_uuid()            | plain    |             |              | </text>
+<text x="18" y="141" font-size="11.5" fill="#E8EAED" xml:space="preserve"> owner_id     | uuid                        |           | not null |                              | plain    |             |              | </text>
+<text x="18" y="160" font-size="11.5" fill="#E8EAED" xml:space="preserve"> team_id      | uuid                        |           |          |                              | plain    |             |              | </text>
+<text x="18" y="179" font-size="11.5" fill="#E8EAED" xml:space="preserve"> folder_id    | uuid                        |           |          |                              | plain    |             |              | </text>
+<text x="18" y="198" font-size="11.5" fill="#E8EAED" xml:space="preserve"> title        | character varying(200)      |           | not null |                              | extended |             |              | </text>
+<text x="18" y="217" font-size="11.5" fill="#E8EAED" xml:space="preserve"> content      | jsonb                       |           | not null |                              | extended |             |              | </text>
+<text x="18" y="236" font-size="11.5" fill="#E8EAED" xml:space="preserve"> content_text | text                        |           | not null | ''::text                     | extended |             |              | </text>
+<text x="18" y="255" font-size="11.5" fill="#E8EAED" xml:space="preserve"> visibility   | character varying(20)       |           | not null | 'private'::character varying | extended |             |              | </text>
+<text x="18" y="274" font-size="11.5" fill="#E8EAED" xml:space="preserve"> deleted_at   | timestamp with time zone    |           |          |                              | plain    |             |              | </text>
+<text x="18" y="293" font-size="11.5" fill="#E8EAED" xml:space="preserve"> created_at   | timestamp without time zone |           | not null | now()                        | plain    |             |              | </text>
+<text x="18" y="312" font-size="11.5" fill="#E8EAED" xml:space="preserve"> updated_at   | timestamp without time zone |           | not null | now()                        | plain    |             |              | </text>
+<text x="18" y="331" font-size="11.5" fill="#E8EAED" xml:space="preserve">Indexes:</text>
+<text x="18" y="350" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "PK_af6206538ea96c4e77e9f400c3d" PRIMARY KEY, btree (id)</text>
+<text x="18" y="369" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "idx_notes_folder" btree (folder_id)</text>
+<text x="18" y="388" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "idx_notes_owner" btree (owner_id, deleted_at)</text>
+<text x="18" y="407" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "idx_notes_team" btree (team_id, deleted_at)</text>
+<text x="18" y="426" font-size="11.5" fill="#E8EAED" xml:space="preserve">Check constraints:</text>
+<text x="18" y="445" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "chk_notes_team_folder" CHECK (team_id IS NULL OR folder_id IS NULL)</text>
+<text x="18" y="464" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "chk_notes_visibility" CHECK (visibility::text = ANY (ARRAY['private'::character varying, 'team_read'::character varying, 'team_edit'::character varying]::text[]))</text>
+<text x="18" y="483" font-size="11.5" fill="#E8EAED" xml:space="preserve">Foreign-key constraints:</text>
+<text x="18" y="502" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "FK_43ac30e15db95c8e423110c8b1c" FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE RESTRICT</text>
+<text x="18" y="521" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "FK_8aa719f42b3c8b23c2d29f799c0" FOREIGN KEY (folder_id) REFERENCES folders(id) ON DELETE SET NULL</text>
+<text x="18" y="540" font-size="11.5" fill="#E8EAED" xml:space="preserve">    "FK_f9e103f8ae67cb1787063597925" FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE</text>
+<text x="18" y="559" font-size="11.5" fill="#E8EAED" xml:space="preserve">Referenced by:</text>
+<text x="18" y="578" font-size="11.5" fill="#E8EAED" xml:space="preserve">    TABLE "note_tags" CONSTRAINT "FK_6fa35b8ead30ef28cc1ac377b21" FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE</text>
+<text x="18" y="597" font-size="11.5" fill="#E8EAED" xml:space="preserve">    TABLE "note_versions" CONSTRAINT "FK_71f17f1c33f2a4e36cc7cd80005" FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE</text>
+<text x="18" y="616" font-size="11.5" fill="#E8EAED" xml:space="preserve">    TABLE "yjs_updates" CONSTRAINT "FK_836ce6a1dc01d7d729a729d6ba5" FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE</text>
+<text x="18" y="635" font-size="11.5" fill="#E8EAED" xml:space="preserve">    TABLE "recycle_bin" CONSTRAINT "FK_a229cbfc648d279fdf1a28686ac" FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE</text>
+<text x="18" y="654" font-size="11.5" fill="#E8EAED" xml:space="preserve">    TABLE "share_links" CONSTRAINT "FK_d7a99959eb31e2185f3d0c851f5" FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE</text>
+<text x="18" y="673" font-size="11.5" fill="#E8EAED" xml:space="preserve">Access method: heap</text>
+</svg>

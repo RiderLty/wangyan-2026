@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 940" font-family="'PingFang SC','Microsoft YaHei',sans-serif"><rect x="0" y="0" width="100%" height="100%" fill="white"/><!--svg-bg-white-->
+  <defs>
+    <style>
+      .actor-line{stroke:#475569;stroke-width:2.5;fill:none}
+      .assoc{stroke:#64748B;stroke-width:1.8;fill:none}
+      .assoc-ai{stroke:#4F46E5;stroke-width:2;fill:none}
+      .group{fill:#FFFFFF;stroke:#94A3B8;stroke-width:1.6;rx="8"}
+      .ellipse{fill:#F1F5F9;stroke:#475569;stroke-width:1.8}
+      .ellipse-ai{fill:#E0E7FF;stroke:#4F46E5;stroke-width:2}
+      .text{fill:#1E293B;font-size:16px;font-weight:600;text-anchor:middle;dominant-baseline:middle}
+      .sub{fill:#64748B;font-size:13px;text-anchor:middle}
+      .actor-label{fill:#0F172A;font-size:17px;font-weight:600;text-anchor:middle}
+      .ai-label{fill:#312E81;font-size:17px;font-weight:700;text-anchor:middle}
+      .note{fill:#475569;font-size:13px;text-anchor:middle}
+      .band-note{fill:#4B5563;font-size:12.5px;text-anchor:middle}
+    </style>
+  </defs>
+
+  <!-- 系统边界 -->
+  <rect x="270" y="45" width="660" height="865" rx="10" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2"/>
+  <text x="600" y="72" class="text" font-size="18">在线Markdown笔记编辑与管理平台</text>
+
+  <!-- ===== 左侧角色 ===== -->
+  <g>
+    <circle cx="110" cy="130" r="18" fill="none" stroke="#475569" class="actor-line"/>
+    <line x1="110" y1="148" x2="110" y2="195" class="actor-line"/>
+    <line x1="80" y1="165" x2="140" y2="165" class="actor-line"/>
+    <line x1="110" y1="195" x2="88" y2="230" class="actor-line"/>
+    <line x1="110" y1="195" x2="132" y2="230" class="actor-line"/>
+    <text x="110" y="255" class="actor-label">个人用户</text>
+  </g>
+  <g>
+    <circle cx="110" cy="380" r="18" fill="none" stroke="#475569" class="actor-line"/>
+    <line x1="110" y1="398" x2="110" y2="445" class="actor-line"/>
+    <line x1="80" y1="415" x2="140" y2="415" class="actor-line"/>
+    <line x1="110" y1="445" x2="88" y2="480" class="actor-line"/>
+    <line x1="110" y1="445" x2="132" y2="480" class="actor-line"/>
+    <text x="110" y="505" class="actor-label">团队管理员</text>
+  </g>
+  <g>
+    <circle cx="110" cy="620" r="18" fill="none" stroke="#475569" class="actor-line"/>
+    <line x1="110" y1="638" x2="110" y2="685" class="actor-line"/>
+    <line x1="80" y1="655" x2="140" y2="655" class="actor-line"/>
+    <line x1="110" y1="685" x2="88" y2="720" class="actor-line"/>
+    <line x1="110" y1="685" x2="132" y2="720" class="actor-line"/>
+    <text x="110" y="745" class="actor-label">团队成员</text>
+  </g>
+
+  <!-- ===== 右侧角色 ===== -->
+  <g>
+    <circle cx="1070" cy="250" r="18" fill="none" stroke="#475569" class="actor-line"/>
+    <line x1="1070" y1="268" x2="1070" y2="315" class="actor-line"/>
+    <line x1="1040" y1="285" x2="1100" y2="285" class="actor-line"/>
+    <line x1="1070" y1="315" x2="1048" y2="350" class="actor-line"/>
+    <line x1="1070" y1="315" x2="1092" y2="350" class="actor-line"/>
+    <text x="1070" y="375" class="actor-label">访客</text>
+  </g>
+  <g>
+    <circle cx="1070" cy="620" r="20" fill="#E0E7FF" stroke="#4F46E5" stroke-width="2.5"/>
+    <line x1="1070" y1="640" x2="1070" y2="688" stroke="#4F46E5" stroke-width="2.5"/>
+    <line x1="1038" y1="658" x2="1102" y2="658" stroke="#4F46E5" stroke-width="2.5"/>
+    <line x1="1070" y1="688" x2="1046" y2="724" stroke="#4F46E5" stroke-width="2.5"/>
+    <line x1="1070" y1="688" x2="1094" y2="724" stroke="#4F46E5" stroke-width="2.5"/>
+    <text x="1070" y="750" class="ai-label">AI 智能体</text>
+    <text x="1070" y="772" class="note">（第四类操作主体）</text>
+    <text x="1070" y="792" class="note">以对话用户身份执行</text>
+    <text x="1070" y="812" class="note">工具调用经权限矩阵校验</text>
+  </g>
+
+  <!-- ===== 用例分组 ===== -->
+  <!-- G1 用户管理 -->
+  <rect x="320" y="90" width="560" height="112" rx="8" class="group"/>
+  <ellipse cx="600" cy="140" rx="105" ry="26" class="ellipse"/>
+  <text x="600" y="140" class="text">用户管理</text>
+  <text x="600" y="186" class="sub">注册、登录、退出登录、查看个人信息</text>
+
+  <!-- G2 个人笔记管理 -->
+  <rect x="320" y="226" width="560" height="112" rx="8" class="group"/>
+  <ellipse cx="600" cy="276" rx="115" ry="26" class="ellipse"/>
+  <text x="600" y="276" class="text">个人笔记管理</text>
+  <text x="600" y="322" class="sub">创建与编辑、文件夹与标签、搜索、导出、版本与回收站</text>
+
+  <!-- G3 团队协作 -->
+  <rect x="320" y="362" width="560" height="112" rx="8" class="group"/>
+  <ellipse cx="600" cy="412" rx="105" ry="26" class="ellipse"/>
+  <text x="600" y="412" class="text">团队协作</text>
+  <text x="600" y="458" class="sub">创建与解散、邀请与审批、角色管理、团队笔记访问</text>
+
+  <!-- G4 实时协作编辑 -->
+  <rect x="320" y="498" width="270" height="116" rx="8" class="group"/>
+  <ellipse cx="455" cy="548" rx="95" ry="26" class="ellipse"/>
+  <text x="455" y="548" class="text">实时协作编辑</text>
+  <text x="455" y="596" class="sub">连接鉴权、内容同步、光标感知</text>
+
+  <!-- G5 笔记分享 -->
+  <rect x="610" y="498" width="270" height="116" rx="8" class="group"/>
+  <ellipse cx="745" cy="548" rx="95" ry="26" class="ellipse"/>
+  <text x="745" y="548" class="text">笔记分享</text>
+  <text x="745" y="596" class="sub">链接生成、访客访问、有效期管理</text>
+
+  <!-- G6 AI 智能辅助（高亮分区） -->
+  <rect x="320" y="638" width="560" height="252" rx="10" fill="#EEF2FF" stroke="#6366F1" stroke-width="2" stroke-dasharray="7 4"/>
+  <text x="600" y="666" class="text" font-size="16" fill="#312E81">AI 智能辅助</text>
+  <ellipse cx="450" cy="716" rx="92" ry="25" class="ellipse-ai"/>
+  <text x="450" y="716" class="text">编辑器AI辅助</text>
+  <ellipse cx="755" cy="716" rx="92" ry="25" class="ellipse-ai"/>
+  <text x="755" y="716" class="text">AI对话助手</text>
+  <ellipse cx="450" cy="796" rx="85" ry="25" class="ellipse-ai"/>
+  <text x="450" y="796" class="text">智能整理</text>
+  <ellipse cx="755" cy="796" rx="92" ry="25" class="ellipse-ai"/>
+  <text x="755" y="796" class="text">智能检索问答</text>
+  <text x="600" y="866" class="band-note">编辑器AI辅助与智能整理要求对笔记具备编辑权限，检索问答按各自身份的可见范围执行</text>
+
+  <!-- ===== 关联线：个人用户（左侧走廊，互不交叉） ===== -->
+  <line x1="140" y1="150" x2="320" y2="140" class="assoc"/>
+  <line x1="140" y1="165" x2="320" y2="272" class="assoc"/>
+  <line x1="140" y1="180" x2="320" y2="548" class="assoc"/>
+  <line x1="140" y1="192" x2="320" y2="690" class="assoc"/>
+
+  <!-- 关联线：团队管理员 -->
+  <line x1="140" y1="405" x2="320" y2="415" class="assoc"/>
+  <line x1="140" y1="420" x2="320" y2="556" class="assoc"/>
+  <line x1="140" y1="432" x2="320" y2="724" class="assoc"/>
+
+  <!-- 关联线：团队成员 -->
+  <line x1="140" y1="645" x2="320" y2="448" class="assoc"/>
+  <line x1="140" y1="658" x2="320" y2="572" class="assoc"/>
+  <line x1="140" y1="670" x2="320" y2="756" class="assoc"/>
+
+  <!-- ===== 关联线：访客（右侧走廊折线） ===== -->
+  <polyline points="1040,290 950,290 950,540 880,540" class="assoc" fill="none"/>
+  <polyline points="1040,310 962,310 962,576 880,576" class="assoc" fill="none"/>
+
+  <!-- ===== 关联线：AI 智能体 ===== -->
+  <line x1="1040" y1="648" x2="880" y2="740" class="assoc-ai"/>
+  <text x="952" y="708" class="note" fill="#4338CA">工具调用</text>
+</svg>

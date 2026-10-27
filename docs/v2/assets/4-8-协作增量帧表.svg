@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1211 254" font-family="'SF Mono',Menlo,monospace">
+<rect x="0" y="0" width="100%" height="100%" fill="#101418"/><!--svg-bg-white-->
+<rect x="0" y="0" width="1211" height="36" fill="#DFE1E4"/>
+<circle cx="22" cy="18" r="7" fill="#FF5F57"/>
+<circle cx="46" cy="18" r="7" fill="#FEBC2E"/>
+<circle cx="70" cy="18" r="7" fill="#28C840"/>
+<text x="605.5" y="23" font-size="13" fill="#5B6470" text-anchor="middle">psql — 协作增量帧表（论文 4.4.2 增量日志）</text>
+<text x="18" y="46" font-size="12" fill="#57C46B" font-weight="600" xml:space="preserve">$ psql -h 192.168.3.3 -p 15432 -U note -d markdown_notes -c "SELECT id, note_id, length(update) AS bytes, created_at FROM yjs_updates ORDER BY id DESC LIMIT 6;"</text>
+<text x="18" y="65" font-size="12" fill="#E8EAED" xml:space="preserve"> id  |               note_id                | bytes |         created_at         </text>
+<text x="18" y="84" font-size="12" fill="#E8EAED" xml:space="preserve">-----+--------------------------------------+-------+----------------------------</text>
+<text x="18" y="103" font-size="12" fill="#E8EAED" xml:space="preserve"> 210 | 7a23c06f-b17e-47ac-b616-f35ccee753d3 |  2611 | 2026-10-09 00:20:28.919998</text>
+<text x="18" y="122" font-size="12" fill="#E8EAED" xml:space="preserve">  63 | cb9d7599-b2c9-4c56-8b93-40ef15db9750 |   122 | 2026-09-14 00:21:08.338927</text>
+<text x="18" y="141" font-size="12" fill="#E8EAED" xml:space="preserve">  62 | cb9d7599-b2c9-4c56-8b93-40ef15db9750 |   167 | 2026-09-14 00:21:06.328758</text>
+<text x="18" y="160" font-size="12" fill="#E8EAED" xml:space="preserve">  61 | cb9d7599-b2c9-4c56-8b93-40ef15db9750 |   159 | 2026-09-14 00:21:02.683085</text>
+<text x="18" y="179" font-size="12" fill="#E8EAED" xml:space="preserve">  60 | cb9d7599-b2c9-4c56-8b93-40ef15db9750 |   159 | 2026-09-14 00:21:00.647508</text>
+<text x="18" y="198" font-size="12" fill="#E8EAED" xml:space="preserve">  59 | cb9d7599-b2c9-4c56-8b93-40ef15db9750 |   120 | 2026-09-14 00:20:58.582245</text>
+<text x="18" y="217" font-size="12" fill="#E8EAED" xml:space="preserve">(6 rows)</text>
+</svg>

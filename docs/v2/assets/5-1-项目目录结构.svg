@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 669 732" font-family="'SF Mono',Menlo,monospace">
+<rect x="0" y="0" width="100%" height="100%" fill="white"/>
+<text x="26" y="34" font-size="13.5" fill="#1E293B" xml:space="preserve">markdown-notes/</text>
+<text x="26" y="58" font-size="13.5" fill="#1E293B" xml:space="preserve">|-- apps/</text>
+<text x="26" y="82" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |-- server/</text>
+<text x="26" y="106" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |   `-- src/</text>
+<text x="26" y="130" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |-- modules/           8 个业务模块</text>
+<text x="26" y="154" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- auth/          controller / service / entity</text>
+<text x="26" y="178" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- users/</text>
+<text x="26" y="202" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- notes/         笔记、文件夹、标签、版本</text>
+<text x="26" y="226" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- recycle-bin/   回收站与定时清理</text>
+<text x="26" y="250" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- teams/         团队、邀请、成员角色</text>
+<text x="26" y="274" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- share/         分享链接与公开解析</text>
+<text x="26" y="298" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |   |-- realtime/      WebSocket 协作接入</text>
+<text x="26" y="322" font-size="13.5" fill="#4338CA" font-weight="600" xml:space="preserve">|   |       |   `-- ai/            LLM 网关 / 智能体 / 整理 / 检索</text>
+<text x="26" y="346" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |-- common/            基础设施（Redis 等）</text>
+<text x="26" y="370" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       |-- types/</text>
+<text x="26" y="394" font-size="13.5" fill="#1E293B" xml:space="preserve">|   |       `-- main.ts</text>
+<text x="26" y="418" font-size="13.5" fill="#1E293B" xml:space="preserve">|   `-- web/</text>
+<text x="26" y="442" font-size="13.5" fill="#1E293B" xml:space="preserve">|       `-- src/</text>
+<text x="26" y="466" font-size="13.5" fill="#1E293B" xml:space="preserve">|           |-- api/               接口封装</text>
+<text x="26" y="490" font-size="13.5" fill="#1E293B" xml:space="preserve">|           |-- auth/              登录态上下文</text>
+<text x="26" y="514" font-size="13.5" fill="#1E293B" xml:space="preserve">|           |-- components/</text>
+<text x="26" y="538" font-size="13.5" fill="#4338CA" font-weight="600" xml:space="preserve">|           |   |-- notes/         编辑面板、AI 菜单、助手抽屉等</text>
+<text x="26" y="562" font-size="13.5" fill="#1E293B" xml:space="preserve">|           |   |-- share/</text>
+<text x="26" y="586" font-size="13.5" fill="#1E293B" xml:space="preserve">|           |   `-- teams/</text>
+<text x="26" y="610" font-size="13.5" fill="#1E293B" xml:space="preserve">|           |-- pages/             Login / Register / Home / Share / Print</text>
+<text x="26" y="634" font-size="13.5" fill="#1E293B" xml:space="preserve">|           `-- utils/             Markdown 导出等</text>
+<text x="26" y="658" font-size="13.5" fill="#1E293B" xml:space="preserve">`-- packages/</text>
+<text x="26" y="682" font-size="13.5" fill="#1E293B" xml:space="preserve">    `-- shared/                    src/index.ts（前后端共享类型）</text>
+</svg>

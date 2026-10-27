@@ -1,0 +1,319 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3400 2400" font-family="'PingFang SC','Microsoft YaHei',sans-serif">
+<rect x="0" y="0" width="3400" height="2400" fill="#FFFFFF"/>
+<line x1="707.8" y1="1048.0" x2="753.2" y2="745.5" stroke="#64748B" stroke-width="1.8"/>
+<text x="744.9" y="976.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="709.2" y1="412.0" x2="752.1" y2="655.3" stroke="#64748B" stroke-width="1.8"/>
+<text x="694.3" y="477.3" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="760,650.0 835.0,700 760,750.0 685.0,700" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="760" y="700" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">拥有</text>
+<line x1="676.6" y1="1048.0" x2="537.3" y2="738.5" stroke="#64748B" stroke-width="1.8"/>
+<text x="665.5" y="959.9" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">M</text>
+<line x1="672.5" y1="412.0" x2="539.6" y2="663.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="616.3" y="462.6" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="520,650.0 595.0,700 520,750.0 445.0,700" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="520" y="700" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">加入</text>
+<line x1="475.4" y1="679.7" x2="350.1" y2="622.8" stroke="#64748B" stroke-width="1.6"/>
+<ellipse cx="300" cy="600" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="300" y="600" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">角色</text>
+<line x1="480.2" y1="723.5" x2="344.2" y2="803.9" stroke="#64748B" stroke-width="1.6"/>
+<ellipse cx="300" cy="830" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="300" y="830" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">加入时间</text>
+<line x1="765.0" y1="1048.0" x2="965.9" y2="887.3" stroke="#64748B" stroke-width="1.8"/>
+<text x="831.5" y="1028.1" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1635.0" y1="352.0" x2="1034.1" y2="832.7" stroke="#64748B" stroke-width="1.8"/>
+<text x="1468.5" y="451.9" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1000,810.0 1075.0,860 1000,910.0 925.0,860" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1000" y="860" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">发出</text>
+<line x1="790.0" y1="354.6" x2="1131.2" y2="334.1" stroke="#64748B" stroke-width="1.8"/>
+<text x="876.9" y="375.4" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1596.0" y1="306.2" x2="1268.8" y2="325.9" stroke="#64748B" stroke-width="1.8"/>
+<text x="1512.6" y="285.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1200,280.0 1275.0,330 1200,380.0 1125.0,330" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1200" y="330" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">招募</text>
+<line x1="790.0" y1="1086.0" x2="1089.2" y2="1039.5" stroke="#64748B" stroke-width="1.8"/>
+<text x="868.8" y="1100.1" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1510.0" y1="974.0" x2="1210.8" y2="1020.5" stroke="#64748B" stroke-width="1.8"/>
+<text x="1431.2" y="959.9" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1150,980.0 1225.0,1030 1150,1080.0 1075.0,1030" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1150" y="1030" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">创建</text>
+<line x1="790.0" y1="1100.0" x2="1325.0" y2="1100.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="923.8" y="1126.0" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="2260.0" y1="1100.0" x2="1475.0" y2="1100.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="2063.8" y="1074.0" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1400,1050.0 1475.0,1100 1400,1150.0 1325.0,1100" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1400" y="1100" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">编写</text>
+<line x1="731.2" y1="1152.0" x2="828.6" y2="1314.3" stroke="#64748B" stroke-width="1.8"/>
+<text x="733.2" y="1205.9" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="968.8" y1="1548.0" x2="871.4" y2="1385.7" stroke="#64748B" stroke-width="1.8"/>
+<text x="966.8" y="1494.1" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="850,1300.0 925.0,1350 850,1400.0 775.0,1350" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="850" y="1350" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">产生</text>
+<line x1="775.6" y1="1152.0" x2="1063.1" y2="1349.6" stroke="#64748B" stroke-width="1.8"/>
+<text x="832.8" y="1222.8" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1424.4" y1="1598.0" x2="1136.9" y2="1400.4" stroke="#64748B" stroke-width="1.8"/>
+<text x="1367.2" y="1527.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1100,1325.0 1175.0,1375 1100,1425.0 1025.0,1375" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1100" y="1375" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">生成</text>
+<line x1="693.5" y1="1152.0" x2="649.7" y2="1503.8" stroke="#64748B" stroke-width="1.8"/>
+<text x="656.8" y="1236.7" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="606.5" y1="1848.0" x2="638.2" y2="1596.1" stroke="#64748B" stroke-width="1.8"/>
+<text x="640.2" y="1788.3" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="644,1500.0 719.0,1550 644,1600.0 569.0,1550" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="644" y="1550" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">发起</text>
+<line x1="790.0" y1="400.4" x2="1480.2" y2="709.9" stroke="#64748B" stroke-width="1.8"/>
+<text x="951.9" y="501.5" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="2260.0" y1="1059.6" x2="1569.8" y2="750.1" stroke="#64748B" stroke-width="1.8"/>
+<text x="2098.1" y="958.5" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1525,680.0 1600.0,730 1525,780.0 1450.0,730" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1525" y="730" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">发布</text>
+<line x1="1690.0" y1="980.8" x2="1994.3" y2="1051.1" stroke="#64748B" stroke-width="1.8"/>
+<text x="1760.2" y="1023.7" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="2260.0" y1="1089.2" x2="2113.6" y2="1071.6" stroke="#64748B" stroke-width="1.8"/>
+<text x="2226.5" y="1059.0" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="2050,1014.0 2125.0,1064 2050,1114.0 1975.0,1064" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="2050" y="1064" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">收纳</text>
+<line x1="2412.9" y1="1048.0" x2="2691.5" y2="817.7" stroke="#64748B" stroke-width="1.8"/>
+<text x="2499.1" y="1010.5" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">M</text>
+<line x1="3037.1" y1="532.0" x2="2758.5" y2="762.3" stroke="#64748B" stroke-width="1.8"/>
+<text x="2950.9" y="569.5" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="2725,740.0 2800.0,790 2725,840.0 2650.0,790" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="2725" y="790" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">标注</text>
+<line x1="2260.0" y1="1133.3" x2="1723.2" y2="1332.1" stroke="#64748B" stroke-width="1.8"/>
+<text x="2116.8" y="1158.7" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1104.0" y1="1561.5" x2="1626.8" y2="1367.9" stroke="#64748B" stroke-width="1.8"/>
+<text x="1243.7" y="1537.5" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1675,1300.0 1750.0,1350 1675,1400.0 1600.0,1350" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1675" y="1350" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">留存</text>
+<line x1="2440.0" y1="1075.0" x2="2747.1" y2="989.7" stroke="#64748B" stroke-width="1.8"/>
+<text x="2523.7" y="1078.7" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="3146.0" y1="878.9" x2="2852.9" y2="960.3" stroke="#64748B" stroke-width="1.8"/>
+<text x="3065.8" y="874.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="2800,925.0 2875.0,975 2800,1025.0 2725.0,975" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="2800" y="975" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">记录</text>
+<line x1="2440.0" y1="1116.9" x2="2691.5" y2="1164.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="2498.1" y="1154.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="3060.0" y1="1233.1" x2="2808.5" y2="1186.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="3001.9" y="1195.8" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<polygon points="2750,1125.0 2825.0,1175 2750,1225.0 2675.0,1175" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="2750" y="1175" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">对应</text>
+<line x1="2269.6" y1="1152.0" x2="1963.1" y2="1350.4" stroke="#64748B" stroke-width="1.8"/>
+<text x="2178.9" y="1179.8" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1580.4" y1="1598.0" x2="1886.9" y2="1399.6" stroke="#64748B" stroke-width="1.8"/>
+<text x="1671.1" y="1570.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1925,1325.0 2000.0,1375 1925,1425.0 1850.0,1375" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1925" y="1375" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">分享</text>
+<line x1="2357.4" y1="1152.0" x2="2393.5" y2="1404.3" stroke="#64748B" stroke-width="1.8"/>
+<text x="2340.7" y="1218.8" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="2442.6" y1="1748.0" x2="2406.5" y2="1495.7" stroke="#64748B" stroke-width="1.8"/>
+<text x="2459.3" y="1681.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">0..1</text>
+<polygon points="2400,1400.0 2475.0,1450 2400,1500.0 2325.0,1450" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="2400" y="1450" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">派生</text>
+<line x1="2422.8" y1="1152.0" x2="2663.8" y2="1324.1" stroke="#64748B" stroke-width="1.8"/>
+<text x="2467.9" y="1216.2" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="2977.2" y1="1548.0" x2="2736.2" y2="1375.9" stroke="#64748B" stroke-width="1.8"/>
+<text x="2932.1" y="1483.8" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="2700,1300.0 2775.0,1350 2700,1400.0 2625.0,1350" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="2700" y="1350" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">切分</text>
+<line x1="700.4" y1="1931.4" x2="948.9" y2="2009.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="754.8" y="1975.6" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">1</text>
+<line x1="1299.6" y1="2118.6" x2="1051.1" y2="2041.0" stroke="#64748B" stroke-width="1.8"/>
+<text x="1245.2" y="2074.4" font-size="26" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="middle">N</text>
+<polygon points="1000,1975.0 1075.0,2025 1000,2075.0 925.0,2025" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="1000" y="2025" font-size="30" font-weight="600" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">包含</text>
+<rect x="610.0" y="308.0" width="180" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="700" y="351" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">团队</text>
+<text x="700" y="387" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">teams</text>
+<rect x="610.0" y="1048.0" width="180" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="700" y="1091" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">用户</text>
+<text x="700" y="1127" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">users</text>
+<rect x="1596.0" y="248.0" width="208.0" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="1700" y="291" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">团队邀请</text>
+<text x="1700" y="327" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">team_invitations</text>
+<rect x="1510.0" y="908.0" width="180" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="1600" y="951" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">文件夹</text>
+<text x="1600" y="987" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">folders</text>
+<rect x="2260.0" y="1048.0" width="180" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="2350" y="1091" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">笔记</text>
+<text x="2350" y="1127" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">notes</text>
+<rect x="3010.0" y="428.0" width="180" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="3100" y="471" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">标签</text>
+<text x="3100" y="507" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">tags</text>
+<rect x="896.0" y="1548.0" width="208.0" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="1000" y="1591" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">笔记版本</text>
+<text x="1000" y="1627" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">note_versions</text>
+<rect x="3146.0" y="798.0" width="208.0" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="3250" y="841" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">协作增量</text>
+<text x="3250" y="877" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">yjs_updates</text>
+<rect x="3060.0" y="1198.0" width="180" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="3150" y="1241" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">回收站</text>
+<text x="3150" y="1277" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">recycle_bin</text>
+<rect x="1396.0" y="1598.0" width="208.0" height="104" fill="#FFFFFF" stroke="#475569" stroke-width="2.4"/>
+<text x="1500" y="1641" font-size="36" font-weight="700" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">分享链接</text>
+<text x="1500" y="1677" font-size="19" fill="#64748B" text-anchor="middle" dominant-baseline="middle">share_links</text>
+<rect x="499.6" y="1848.0" width="200.8" height="104" fill="#EEF2FF" stroke="#6366F1" stroke-width="2.4"/>
+<text x="600" y="1891" font-size="36" font-weight="700" fill="#312E81" text-anchor="middle" dominant-baseline="middle">AI 会话</text>
+<text x="600" y="1927" font-size="19" fill="#6366F1" text-anchor="middle" dominant-baseline="middle">ai_conversations</text>
+<rect x="1299.6" y="2098.0" width="200.8" height="104" fill="#EEF2FF" stroke="#6366F1" stroke-width="2.4"/>
+<text x="1400" y="2141" font-size="36" font-weight="700" fill="#312E81" text-anchor="middle" dominant-baseline="middle">AI 消息</text>
+<text x="1400" y="2177" font-size="19" fill="#6366F1" text-anchor="middle" dominant-baseline="middle">ai_messages</text>
+<rect x="2295.6" y="1748.0" width="308.8" height="104" fill="#EEF2FF" stroke="#6366F1" stroke-width="2.4"/>
+<text x="2450" y="1791" font-size="36" font-weight="700" fill="#312E81" text-anchor="middle" dominant-baseline="middle">AI 整理元数据</text>
+<text x="2450" y="1827" font-size="19" fill="#6366F1" text-anchor="middle" dominant-baseline="middle">note_ai_meta</text>
+<rect x="2946.0" y="1548.0" width="208.0" height="104" fill="#EEF2FF" stroke="#6366F1" stroke-width="2.4"/>
+<text x="3050" y="1591" font-size="36" font-weight="700" fill="#312E81" text-anchor="middle" dominant-baseline="middle">向量切片</text>
+<text x="3050" y="1627" font-size="19" fill="#6366F1" text-anchor="middle" dominant-baseline="middle">note_embeddings</text>
+<line x1="518.4" y1="464.9" x2="610.0" y2="412.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="475.0" cy="490.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="475.0" y="490.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">团队ID</text>
+<line x1="430.2" y1="510.0" x2="519.8" y2="510.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="511.4" y1="309.7" x2="610.0" y2="336.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="449.0" cy="293.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="449.0" y="293.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">名称</text>
+<line x1="587.4" y1="165.1" x2="670.0" y2="308.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="570.0" cy="135.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="570.0" y="135.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">简介</text>
+<line x1="557.4" y1="1346.9" x2="670.0" y2="1152.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="540.0" cy="1377.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="540.0" y="1377.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">用户ID</text>
+<line x1="495.2" y1="1397.0" x2="584.8" y2="1397.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="477.5" y1="1211.2" x2="610.0" y2="1145.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="430.0" cy="1235.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="430.0" y="1235.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">邮箱</text>
+<line x1="453.1" y1="1056.1" x2="610.0" y2="1084.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="385.0" cy="1044.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="385.0" y="1044.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">用户名</text>
+<line x1="503.0" y1="903.0" x2="648.0" y2="1048.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="474.0" cy="874.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="474.0" y="874.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">密码哈希</text>
+<line x1="1863.9" y1="177.1" x2="1769.3" y2="248.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1900.0" cy="150.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1900.0" y="150.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">邀请ID</text>
+<line x1="1855.2" y1="170.0" x2="1944.8" y2="170.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="1716.6" y1="149.0" x2="1705.7" y2="248.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1720.0" cy="118.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1720.0" y="118.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">受邀邮箱</text>
+<line x1="1561.7" y1="178.0" x2="1641.1" y2="248.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1530.0" cy="150.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1530.0" y="150.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">状态</text>
+<line x1="1467.0" y1="237.9" x2="1596.0" y2="272.3" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1400.0" cy="220.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1400.0" y="220.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">到期时间</text>
+<line x1="1301.0" y1="814.8" x2="1510.0" y2="916.3" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1250.0" cy="790.0" rx="84.8" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1250.0" y="790.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">文件夹ID</text>
+<line x1="1191.2" y1="810.0" x2="1308.8" y2="810.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="1826.9" y1="944.9" x2="1690.0" y2="954.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1900.0" cy="940.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1900.0" y="940.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">名称</text>
+<line x1="2000.1" y1="806.7" x2="2288.0" y2="1048.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1967.0" cy="779.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1967.0" y="779.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">笔记ID</text>
+<line x1="1922.2" y1="799.0" x2="2011.8" y2="799.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="2153.2" y1="677.4" x2="2325.8" y2="1048.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="2139.0" cy="647.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="2139.0" y="647.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">标题</text>
+<line x1="2350.0" y1="631.0" x2="2350.0" y2="1048.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="2350.0" cy="600.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="2350.0" y="600.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">正文</text>
+<line x1="2546.6" y1="683.4" x2="2374.5" y2="1048.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="2561.0" cy="653.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="2561.0" y="653.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">可见性</text>
+<line x1="3036.2" y1="239.8" x2="3086.2" y2="428.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3028.0" cy="209.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3028.0" y="209.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">标签ID</text>
+<line x1="2983.2" y1="229.0" x2="3072.8" y2="229.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="3168.4" y1="160.9" x2="3111.1" y2="428.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3175.0" cy="130.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3175.0" y="130.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">名称</text>
+<line x1="3269.4" y1="310.6" x2="3152.0" y2="428.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3298.0" cy="282.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3298.0" y="282.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">颜色</text>
+<line x1="1164.5" y1="1694.9" x2="1090.1" y2="1652.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1208.0" cy="1720.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1208.0" y="1720.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">版本ID</text>
+<line x1="1163.2" y1="1740.0" x2="1252.8" y2="1740.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="1053.8" y1="1801.2" x2="1013.9" y2="1652.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1062.0" cy="1832.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1062.0" y="1832.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">版本号</text>
+<line x1="897.4" y1="1777.9" x2="970.0" y2="1652.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="880.0" cy="1808.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="880.0" y="1808.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">来源</text>
+<line x1="3107.0" y1="729.7" x2="3188.2" y2="798.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3074.0" cy="702.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3074.0" y="702.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">增量ID</text>
+<line x1="3029.2" y1="722.0" x2="3118.8" y2="722.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="3215.5" y1="654.9" x2="3240.8" y2="798.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3210.0" cy="624.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3210.0" y="624.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">增量数据</text>
+<line x1="3082.2" y1="1064.6" x2="3131.0" y2="1198.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3071.0" cy="1034.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3071.0" y="1034.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">记录ID</text>
+<line x1="3026.2" y1="1054.0" x2="3115.8" y2="1054.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="3217.8" y1="1064.7" x2="3169.0" y2="1198.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3229.0" cy="1034.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3229.0" y="1034.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">到期时间</text>
+<line x1="1679.3" y1="1715.6" x2="1604.0" y2="1688.1" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1735.0" cy="1736.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1735.0" y="1736.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">链接ID</text>
+<line x1="1690.2" y1="1756.0" x2="1779.8" y2="1756.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="1591.8" y1="1846.6" x2="1524.3" y2="1702.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1606.0" cy="1877.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1606.0" y="1877.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">令牌</text>
+<line x1="1425.2" y1="1854.4" x2="1481.0" y2="1702.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1414.0" cy="1885.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1414.0" y="1885.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">权限</text>
+<line x1="562.4" y1="2115.1" x2="590.9" y2="1952.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="557.0" cy="2146.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="557.0" y="2146.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">会话ID</text>
+<line x1="512.2" y1="2166.0" x2="601.8" y2="2166.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="420.7" y1="1834.4" x2="499.6" y2="1863.3" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="365.0" cy="1814.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="365.0" y="1814.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">标题</text>
+<line x1="1605.5" y1="2071.0" x2="1500.4" y2="2111.4" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1660.0" cy="2050.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1660.0" y="2050.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">消息ID</text>
+<line x1="1615.2" y1="2070.0" x2="1704.8" y2="2070.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="1611.0" y1="2150.0" x2="1500.4" y2="2150.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1685.0" cy="2150.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1685.0" y="2150.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">角色</text>
+<line x1="1605.5" y1="2229.0" x2="1500.4" y2="2188.6" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1660.0" cy="2250.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1660.0" y="2250.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">内容</text>
+<line x1="1748.1" y1="2297.9" x2="1500.4" y2="2192.7" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="1800.0" cy="2320.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="1800.0" y="2320.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">令牌数</text>
+<line x1="2623.5" y1="1700.1" x2="2540.3" y2="1748.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="2667.0" cy="1675.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="2667.0" y="1675.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">笔记ID</text>
+<line x1="2622.2" y1="1695.0" x2="2711.8" y2="1695.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="2623.5" y1="1899.9" x2="2540.3" y2="1852.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="2667.0" cy="1925.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="2667.0" y="1925.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">摘要</text>
+<line x1="2450.0" y1="2019.0" x2="2450.0" y2="1852.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="2450.0" cy="2050.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="2450.0" y="2050.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">标签建议</text>
+<line x1="3210.3" y1="1658.6" x2="3154.0" y2="1638.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3266.0" cy="1679.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3266.0" y="1679.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">切片ID</text>
+<line x1="3221.2" y1="1699.0" x2="3310.8" y2="1699.0" stroke="#1E293B" stroke-width="2"/>
+<line x1="3147.5" y1="1768.7" x2="3080.1" y2="1652.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3165.0" cy="1799.0" rx="82.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3165.0" y="1799.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">切片内容</text>
+<line x1="3015.5" y1="1795.1" x2="3040.8" y2="1652.0" stroke="#64748B" stroke-width="1.5"/>
+<ellipse cx="3010.0" cy="1826.0" rx="74.0" ry="31.0" fill="#FFFFFF" stroke="#475569" stroke-width="1.6"/>
+<text x="3010.0" y="1826.0" font-size="28" fill="#1E293B" text-anchor="middle" dominant-baseline="middle">向量</text>
+<g font-size="26" fill="#1E293B">
+<rect x="110" y="2258" width="64" height="40" fill="#FFFFFF" stroke="#475569" stroke-width="2"/>
+<text x="192" y="2280" text-anchor="start">实体</text>
+<ellipse cx="348.0" cy="2278" rx="34" ry="21" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/>
+<text x="396.0" y="2280" text-anchor="start">属性</text>
+<polygon points="552.0,2256 588.0,2278 552.0,2300 516.0,2278" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+<text x="600.0" y="2280" text-anchor="start">联系</text>
+<ellipse cx="756.0" cy="2278" rx="34" ry="21" fill="#FFFFFF" stroke="#475569" stroke-width="1.7"/>
+<text x="756.0" y="2278" font-size="24" text-anchor="middle" dominant-baseline="middle">属性</text>
+<line x1="742.0" y1="2289" x2="770.0" y2="2289" stroke="#1E293B" stroke-width="2"/>
+<text x="804.0" y="2280" text-anchor="start">主键</text>
+<rect x="926.0" y="2258" width="64" height="40" fill="#EEF2FF" stroke="#6366F1" stroke-width="2"/>
+<text x="1008.0" y="2280" text-anchor="start">AI 派生实体</text>
+</g>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 190" font-family="'SF Mono',Menlo,monospace">
+<rect x="0" y="0" width="100%" height="100%" fill="#101418"/><!--svg-bg-white-->
+<rect x="0" y="0" width="880" height="36" fill="#DFE1E4"/>
+<circle cx="22" cy="18" r="7" fill="#FF5F57"/>
+<circle cx="46" cy="18" r="7" fill="#FEBC2E"/>
+<circle cx="70" cy="18" r="7" fill="#28C840"/>
+<text x="440.0" y="23" font-size="13" fill="#5B6470" text-anchor="middle">ssh nas — 容器运行状态（论文 5.9.3）</text>
+<text x="18" y="46" font-size="12.5" fill="#57C46B" font-weight="600" xml:space="preserve">$ ssh root@192.168.3.3 'docker ps --filter name=wangyan --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'</text>
+<text x="18" y="67" font-size="12.5" fill="#E8EAED" xml:space="preserve">NAMES              STATUS      PORTS</text>
+<text x="18" y="88" font-size="12.5" fill="#E8EAED" xml:space="preserve">wangyan-web        Up 6 days   0.0.0.0:18080-&gt;80/tcp, :::18080-&gt;80/tcp</text>
+<text x="18" y="109" font-size="12.5" fill="#E8EAED" xml:space="preserve">wangyan-server     Up 6 days   0.0.0.0:13000-&gt;13000/tcp, :::13000-&gt;13000/tcp</text>
+<text x="18" y="130" font-size="12.5" fill="#E8EAED" xml:space="preserve">wangyan-postgres   Up 6 days   0.0.0.0:15432-&gt;5432/tcp, :::15432-&gt;5432/tcp</text>
+<text x="18" y="151" font-size="12.5" fill="#E8EAED" xml:space="preserve">wangyan-redis      Up 6 days   0.0.0.0:16379-&gt;6379/tcp, :::16379-&gt;6379/tcp</text>
+</svg>

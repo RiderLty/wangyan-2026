@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 700" font-family="'PingFang SC','Microsoft YaHei',sans-serif"><rect x="0" y="0" width="100%" height="100%" fill="white"/><!--svg-bg-white-->
+  <defs>
+    <style>
+      .root{fill:#F1F5F9;stroke:#475569;stroke-width:2}
+      .mod{fill:#FFFFFF;stroke:#475569;stroke-width:1.8}
+      .mod-ai{fill:#EEF2FF;stroke:#6366F1;stroke-width:2}
+      .fn{fill:#FFFFFF;stroke:#CBD5E1;stroke-width:1.2}
+      .fn-ai{fill:#EEF2FF;stroke:#A5B4FC;stroke-width:1.2}
+      .t{fill:#1E293B;font-size:15px;font-weight:600;text-anchor:middle;dominant-baseline:middle}
+      .ft{fill:#334155;font-size:14px;text-anchor:middle;dominant-baseline:middle}
+      .line{stroke:#64748B;stroke-width:1.6;fill:none}
+    </style>
+  </defs>
+
+  <!-- 根节点 -->
+  <rect x="50" y="323" width="190" height="52" rx="6" class="root"/>
+  <text x="145" y="349" class="t">在线Markdown笔记平台</text>
+
+  <!-- 主干 -->
+  <line x1="240" y1="349" x2="290" y2="349" class="line"/>
+  <line x1="290" y1="62" x2="290" y2="636" class="line"/>
+
+  <!-- 8 行：模块框 x=340 w=180 h=44；功能框 x=560 w=380 h=44 -->
+  <!-- 连接线 -->
+  <line x1="290" y1="62"  x2="340" y2="62"  class="line"/>
+  <line x1="290" y1="144" x2="340" y2="144" class="line"/>
+  <line x1="290" y1="226" x2="340" y2="226" class="line"/>
+  <line x1="290" y1="308" x2="340" y2="308" class="line"/>
+  <line x1="290" y1="390" x2="340" y2="390" class="line"/>
+  <line x1="290" y1="472" x2="340" y2="472" class="line"/>
+  <line x1="290" y1="554" x2="340" y2="554" class="line"/>
+  <line x1="290" y1="636" x2="340" y2="636" class="line"/>
+
+  <!-- 模块框 → 功能框 连线 -->
+  <line x1="520" y1="62"  x2="560" y2="62"  class="line"/>
+  <line x1="520" y1="144" x2="560" y2="144" class="line"/>
+  <line x1="520" y1="226" x2="560" y2="226" class="line"/>
+  <line x1="520" y1="308" x2="560" y2="308" class="line"/>
+  <line x1="520" y1="390" x2="560" y2="390" class="line"/>
+  <line x1="520" y1="472" x2="560" y2="472" class="line"/>
+  <line x1="520" y1="554" x2="560" y2="554" class="line"/>
+  <line x1="520" y1="636" x2="560" y2="636" class="line"/>
+
+  <!-- 1 用户管理 -->
+  <rect x="340" y="40" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="62" class="t">用户管理</text>
+  <rect x="560" y="40" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="62" class="ft">注册与登录 ｜ 退出登录 ｜ 个人信息查看</text>
+
+  <!-- 2 个人笔记管理 -->
+  <rect x="340" y="122" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="144" class="t">个人笔记管理</text>
+  <rect x="560" y="122" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="144" class="ft">创建与编辑 ｜ 文件夹与标签 ｜ 搜索与导出 ｜ 自动保存</text>
+
+  <!-- 3 团队协作 -->
+  <rect x="340" y="204" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="226" class="t">团队协作</text>
+  <rect x="560" y="204" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="226" class="ft">团队创建与解散 ｜ 邀请与审批 ｜ 角色与可见性</text>
+
+  <!-- 4 实时协作编辑 -->
+  <rect x="340" y="286" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="308" class="t">实时协作编辑</text>
+  <rect x="560" y="286" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="308" class="ft">内容实时同步 ｜ 光标与在线感知 ｜ 冲突自动收敛</text>
+
+  <!-- 5 笔记分享 -->
+  <rect x="340" y="368" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="390" class="t">笔记分享</text>
+  <rect x="560" y="368" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="390" class="ft">链接生成 ｜ 访客访问 ｜ 有效期与停用</text>
+
+  <!-- 6 版本管理 -->
+  <rect x="340" y="450" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="472" class="t">版本管理</text>
+  <rect x="560" y="450" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="472" class="ft">手动与自动保存 ｜ 版本回滚 ｜ 历史快照查看</text>
+
+  <!-- 7 回收站 -->
+  <rect x="340" y="532" width="180" height="44" rx="5" class="mod"/>
+  <text x="430" y="554" class="t">回收站</text>
+  <rect x="560" y="532" width="380" height="44" rx="5" class="fn"/>
+  <text x="750" y="554" class="ft">恢复笔记 ｜ 彻底删除 ｜ 到期自动清理</text>
+
+  <!-- 8 AI 智能辅助（淡紫描边） -->
+  <rect x="340" y="614" width="180" height="44" rx="5" class="mod-ai"/>
+  <text x="430" y="636" class="t" fill="#312E81">AI 智能辅助</text>
+  <rect x="560" y="614" width="380" height="44" rx="5" class="fn-ai"/>
+  <text x="750" y="636" class="ft">编辑器AI辅助 ｜ AI对话助手 ｜ 智能整理 ｜ 混合检索问答</text>
+</svg>
